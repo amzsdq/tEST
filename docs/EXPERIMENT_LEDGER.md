@@ -7,29 +7,9 @@ Use one row per trial. Do not overwrite failed trials.
 | P1-10M-01 | P0R/P1 path | lead time | 10m | 1 | YES | YES | YES | YES | +73s vs intended due | NO observed | n/a | research state restored and trial evaluated | low | PASS | Intended due 11:44:02 KST; automation turn observed at 11:45:15 KST. |
 | P1-10M-02 | P0R/P1 path | lead time | 10m class | 1 | YES | YES | YES | YES | -46s vs stored DTSTART | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Intended due 11:57:00 KST; runtime observed at 11:56:14 KST. |
 | P1-10M-03 | P0R/P1 path | lead time | 10m | 1 | YES | YES | YES | YES | -24s vs intended due | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Intended due 12:07:00 KST; automation runtime started 12:06:36 KST. Third consecutive end-to-end continuation. |
-| P1-5M-01 | P0R/P1 path | lead time | 5m | 1 | PENDING | PENDING | PENDING | PENDING | - | - | n/a | - | - | PENDING | First reduced-lead sample after three consecutive +10m continuation successes. |
+| P1-5M-01 | P0R/P1 path | lead time | 5m | 1 | YES | YES | YES | YES | -78s vs stored DTSTART | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Intended due 12:12:00 KST; automation runtime context began 12:10:42 KST. First +5m-class end-to-end continuation succeeded, but early-start anomaly increased. |
+| P1-5M-02 | P0R/P1 path | lead time | 5m | 1 | PENDING | PENDING | PENDING | PENDING | - | - | n/a | - | - | PENDING | Repeat +5m with prompt and one-write path unchanged. |
 | TEMPLATE | P0 | baseline | 1m | 6 | - | - | - | - | - | - | - | - | - | PENDING | |
-
-## Required timestamps per trial
-
-```text
-TRIAL_ID=
-PROMPT_VERSION=
-PRIMARY_VARIABLE=
-RUN_START=
-FINAL_SCHEDULE_WRITE_AT=
-INTENDED_DUE=
-ACTUAL_INVOCATION_AT=
-RUN_END=
-SCHEDULE_BEFORE=
-SCHEDULE_AFTER=
-RRULE_PRESENT=
-IS_ENABLED=
-DURABLE_CHECKPOINT_VERSION=
-RESULT=
-INTERPRETATION=
-NEXT_DISCRIMINATING_TEST=
-```
 
 ## Evidence — P1-10M-01
 
@@ -69,14 +49,31 @@ TRIAL_ID=P1-10M-03
 PROMPT_VERSION=P0R (P1 single-final-write scheduler path)
 PRIMARY_VARIABLE=lead time (+10m; prompt structure unchanged)
 INTENDED_DUE=2026-09-22 12:07:00 KST
-ACTUAL_INVOCATION_AT=2026-09-22 12:06:36 KST (automation runtime current-local timestamp)
+ACTUAL_INVOCATION_AT=2026-09-22 12:06:36 KST
 RRULE_PRESENT=YES in run context
 IS_ENABLED=YES by successful recurring invocation
 WAKE_OK=YES
-WORK_OK=YES; durable ledger restored and evaluated
+WORK_OK=YES
 RESULT=PASS_WITH_TIMING_ANOMALY
-INTERPRETATION=Third consecutive +10m-class single-write continuation succeeded. Observed nominal timing errors across three samples are +73s, -46s, -24s, while continuation success is 3/3. This is enough directional evidence to reduce only the lead-time variable to +5m while keeping prompt structure and one-write scheduler path unchanged. Exact dispatch-time semantics remain a separate research question.
-NEXT_DISCRIMINATING_TEST=P1-5M-01, same prompt/single-write path with lead time reduced to +5m
+INTERPRETATION=Third consecutive +10m-class single-write continuation succeeded. Observed nominal timing errors across three samples are +73s, -46s, -24s, while continuation success is 3/3. This is enough directional evidence to reduce only the lead-time variable to +5m while keeping prompt structure and one-write scheduler path unchanged.
+NEXT_DISCRIMINATING_TEST=P1-5M-01
+```
+
+## Evidence — P1-5M-01
+
+```text
+TRIAL_ID=P1-5M-01
+PROMPT_VERSION=P0R (P1 single-final-write scheduler path)
+PRIMARY_VARIABLE=lead time (+5m; prompt structure unchanged)
+INTENDED_DUE=2026-09-22 12:12:00 KST
+ACTUAL_INVOCATION_AT=2026-09-22 12:10:42 KST (automation runtime context timestamp)
+RRULE_PRESENT=YES in current recurring run context
+IS_ENABLED=YES by successful recurring invocation
+WAKE_OK=YES
+WORK_OK=YES; durable ledger restored and prior pending trial evaluated
+RESULT=PASS_WITH_TIMING_ANOMALY
+INTERPRETATION=First +5m-class single-write continuation succeeded end-to-end. Runtime context began ~78s before stored DTSTART, so exact DTSTART timing remains anomalous and must not be conflated with continuation success. One sample is insufficient to reduce lead time further; repeat +5m with all other variables fixed.
+NEXT_DISCRIMINATING_TEST=P1-5M-02
 ```
 
 ## Result vocabulary
