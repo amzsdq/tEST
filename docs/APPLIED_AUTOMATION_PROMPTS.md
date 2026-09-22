@@ -9,9 +9,36 @@ Purpose: version every relay prompt actually tested so experiment results can be
 
 ---
 
-## P4V5 — Routine compact timing-field reduction trial
+## P4V6 — Routine negative-duplicate-field omission trial
 
 State: REGISTERED EXPERIMENTAL VARIANT
+Parent: P4V5
+Trial: `P4-COMPACT-DUPLICATE-NEGATIVE-01`
+Primary variable: routine clean-success non-boundary Issue compact evidence fields only
+Rollback: P4V5
+
+### Semantic diff from P4V5
+
+Exactly one control-policy variable changes:
+
+- **P4V5:** every routine clean-success non-boundary Issue record includes `DUPLICATE=NO observed`.
+- **P4V6:** omit `DUPLICATE` only when the observation is the routine negative case (no duplicate/anomaly). `DUPLICATE` remains explicit whenever a duplicate is observed or duplicate state is relevant to anomaly, recovery, rollback, boundary, or timing-specific evidence.
+
+Routine clean-success durable schema becomes `EXPERIMENT`, `SAMPLE`, `RESULT`, `WRITE_OK`, `STATE_OK`, `WAKE_OK`, `WORK_OK`, `NEXT`. START/END policy from P4V5 is unchanged. ANOMALY/ROLLBACK and non-negative DUPLICATE evidence remain conditional fields.
+
+Everything else is frozen: same automation, P1 single-final-write scheduler path, +3m-class lead policy, `RRULE:FREQ=HOURLY`, P4V0 conditional verification, P4V2 Issue-only routine logging with boundary reconciliation, P4V4 Issue-tail-only routine bootstrap, checkpoint/authority/recovery rules, substantive-work requirement, and no new automation.
+
+Failure/rollback rule: if the next routine wake cannot reconstruct candidate/trial/sample order/result/status tuple/NEXT or cannot safely infer the clean-path duplicate-negative state from the absence of `DUPLICATE`, or if a later anomaly/recovery/boundary reconciliation loses duplicate evidence, immediately restore P4V5 routine schema with explicit `DUPLICATE=NO observed`.
+
+### Trial interpretation
+
+This tests whether an invariant-negative field can be represented by absence on clean paths without reducing duplicate-prevention observability. Smaller records alone are not a pass; end-to-end continuation and boundary reconciliation must remain exact.
+
+---
+
+## P4V5 — Routine compact timing-field reduction trial
+
+State: PROVISIONALLY PROMOTED
 Parent: P4V4
 Trial: `P4-COMPACT-TIMING-FIELDS-01`
 Primary variable: routine non-boundary Issue compact evidence fields only
@@ -26,7 +53,7 @@ Exactly one control-policy variable changes:
 
 Routine durable schema becomes `EXPERIMENT`, `SAMPLE`, `RESULT`, `WRITE_OK`, `STATE_OK`, `WAKE_OK`, `WORK_OK`, `DUPLICATE`, `NEXT`, with `ANOMALY`/`ROLLBACK` only when non-empty.
 
-Everything else is frozen: same automation, P1 single-final-write scheduler path, +3m-class lead policy, `RRULE:FREQ=HOURLY`, P4V0 conditional verification, P4V2 Issue-only routine logging with boundary reconciliation, P4V3 compact evidence semantics, P4V4 Issue-tail-only routine bootstrap, checkpoint/authority/recovery rules, substantive-work requirement, and no new automation.
+Everything else is frozen: same automation, P1 single-final-write scheduler path, +3m-class lead policy, `RRULE:FREQ=HOURLY`, P4V0 conditional verification policy, P4V2 Issue-only routine logging with ledger-at-boundary reconciliation, P4V3 compact evidence semantics, P4V4 Issue-tail-only routine bootstrap, checkpoint/authority/recovery rules, substantive-work requirement, and no new automation.
 
 Failure/rollback rule: if the next routine wake cannot reconstruct candidate/trial/sample order/result/status tuple/duplicate/NEXT from the reduced Issue record, if loss of START/END prevents required anomaly/recovery/reconciliation analysis, or if boundary reconciliation disagrees, immediately restore P4V4 routine schema with START/END.
 
@@ -96,8 +123,6 @@ Rollback: P4V1
 
 ### Semantic diff from P4V1
 
-Exactly one control-policy variable changes:
-
 - **P4V1:** routine successful turns may persist substantially overlapping per-turn evidence to both Issue #1 and canonical ledger/docs.
 - **P4V2:** routine non-boundary successful turns append per-turn evidence to Issue #1 only. Canonical `EXPERIMENT_LEDGER.md` mutation is deferred to a trial boundary: sample-set completion, promotion/rejection/rollback, or explicit reconciliation checkpoint.
 
@@ -120,8 +145,6 @@ Primary variable: normal-path bootstrap repository read-set only
 Rollback: P4V0
 
 ### Semantic diff from P4V0
-
-Exactly one control-policy variable changes:
 
 - **P4V0:** every wake reads `RELAY_RESEARCH_PROGRAM.md`, `APPLIED_AUTOMATION_PROMPTS.md`, `RELAY_OPTIMIZATION_CONVERGENCE.md`, `EXPERIMENT_LEDGER.md`, and Issue #1 before reconstructing state.
 - **P4V1:** normal-path bootstrap reads `EXPERIMENT_LEDGER.md` and Issue #1 first. Read `RELAY_RESEARCH_PROGRAM.md`, `APPLIED_AUTOMATION_PROMPTS.md`, and `RELAY_OPTIMIZATION_CONVERGENCE.md` only when state is ambiguous/inconsistent, a prompt change is being prepared, promotion/rollback is being decided, or reconstruction lacks a required invariant.
