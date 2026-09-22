@@ -9,6 +9,33 @@ Purpose: version every relay prompt actually tested so experiment results can be
 
 ---
 
+## P4V7 — Routine positive-wake-field omission trial
+
+State: REGISTERED EXPERIMENTAL VARIANT
+Parent: P4V6
+Trial: `P4-WAKE-POSITIVE-OMISSION-01`
+Primary variable: routine clean-success positive `WAKE_OK` evidence only
+Rollback: P4V6
+
+### Semantic diff from P4V6
+
+Exactly one control-policy variable changes:
+
+- **P4V6:** routine clean-success non-boundary Issue records explicitly include `WAKE_OK=YES`.
+- **P4V7:** omit `WAKE_OK` only for a routine clean-success scheduled invocation, because the current invocation itself is positive wake evidence. `WAKE_OK` remains explicit whenever it is `PENDING`/`NO`, or in anomaly, recovery, rollback, boundary, or timing-specific evidence where wake state must be independently visible.
+
+Routine clean-success durable schema becomes `EXPERIMENT`, `SAMPLE`, `RESULT`, `WRITE_OK`, `STATE_OK`, `WORK_OK`, `NEXT`. P4V6 conditional `DUPLICATE` policy and P4V5 START/END policy are unchanged.
+
+Everything else is frozen: same automation, P1 single-final-write scheduler path, +3m-class lead policy, `RRULE:FREQ=HOURLY`, P4V0 conditional verification, P4V2 Issue-only routine logging with boundary reconciliation, P4V4 Issue-tail-only routine bootstrap, checkpoint/authority/recovery rules, substantive-work requirement, and no new automation.
+
+Failure/rollback rule: if the next routine wake cannot reconstruct candidate/trial/sample order/result/WRITE_OK/STATE_OK/WAKE_OK/WORK_OK/NEXT, if absence of `WAKE_OK` cannot be safely interpreted as positive wake evidence on a clean scheduled invocation, or if anomaly/recovery/boundary reconciliation loses wake-state evidence, immediately restore P4V6 routine schema with explicit `WAKE_OK=YES`.
+
+### Trial interpretation
+
+This tests whether a successful scheduled invocation can serve as the positive wake observation without redundantly persisting `WAKE_OK=YES`. Smaller records alone are not a pass; end-to-end continuation and boundary reconciliation must remain exact.
+
+---
+
 ## P4V6 — Routine negative-duplicate-field omission trial
 
 State: REGISTERED EXPERIMENTAL VARIANT
@@ -26,7 +53,7 @@ Exactly one control-policy variable changes:
 
 Routine clean-success durable schema becomes `EXPERIMENT`, `SAMPLE`, `RESULT`, `WRITE_OK`, `STATE_OK`, `WAKE_OK`, `WORK_OK`, `NEXT`. START/END policy from P4V5 is unchanged. ANOMALY/ROLLBACK and non-negative DUPLICATE evidence remain conditional fields.
 
-Everything else is frozen: same automation, P1 single-final-write scheduler path, +3m-class lead policy, `RRULE:FREQ=HOURLY`, P4V0 conditional verification, P4V2 Issue-only routine logging with boundary reconciliation, P4V4 Issue-tail-only routine bootstrap, checkpoint/authority/recovery rules, substantive-work requirement, and no new automation.
+Everything else is frozen: same automation, P1 single-final-write scheduler path, +3m-class lead policy, `RRULE:FREQ=HOURLY`, P4V0 conditional verification policy, P4V2 Issue-only routine logging with boundary reconciliation, P4V4 Issue-tail-only routine bootstrap, checkpoint/authority/recovery rules, substantive-work requirement, and no new automation.
 
 Failure/rollback rule: if the next routine wake cannot reconstruct candidate/trial/sample order/result/status tuple/NEXT or cannot safely infer the clean-path duplicate-negative state from the absence of `DUPLICATE`, or if a later anomaly/recovery/boundary reconciliation loses duplicate evidence, immediately restore P4V5 routine schema with explicit `DUPLICATE=NO observed`.
 
