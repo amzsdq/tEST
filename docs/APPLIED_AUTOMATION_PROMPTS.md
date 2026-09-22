@@ -9,9 +9,34 @@ Purpose: version every relay prompt actually tested so experiment results can be
 
 ---
 
-## P4V3 — Compact routine Issue evidence trial
+## P4V4 — Issue-tail-only routine bootstrap trial
 
 State: REGISTERED EXPERIMENTAL VARIANT
+Parent: P4V3
+Trial: `P4-BOOTSTRAP-SINGLE-SOURCE-01`
+Primary variable: routine clean-success bootstrap read-source count only
+Rollback: P4V3
+
+### Semantic diff from P4V3
+
+Exactly one control-policy variable changes:
+
+- **P4V3:** normal-path bootstrap reads `EXPERIMENT_LEDGER.md` and Issue #1 first.
+- **P4V4:** a routine clean-success continuation reads the latest Issue #1 state/comments first and may reconstruct directly from the compact Issue tail without a mandatory `EXPERIMENT_LEDGER.md` read. `EXPERIMENT_LEDGER.md` remains mandatory at sample-set completion/reconciliation boundaries and whenever state is ambiguous/inconsistent, promotion/rejection/rollback is being decided, prompt/invariant recovery is required, or Issue-tail reconstruction is insufficient.
+
+Everything else is frozen: same automation, P1 single-final-write scheduler path, +3m-class lead policy, `RRULE:FREQ=HOURLY`, P4V0 conditional verification policy, P4V2 Issue-only routine logging with ledger-at-boundary reconciliation, P4V3 compact routine Issue schema, checkpoint/authority/recovery rules, substantive-work requirement, and no new automation.
+
+Failure/rollback rule: if Issue-tail-only routine bootstrap cannot reconstruct CURRENT_CANDIDATE, active trial/sample identity and order, result, WRITE_OK/STATE_OK/WAKE_OK/WORK_OK, duplicate observation, NEXT, or any required invariant; or if boundary reconciliation disagrees with Issue-tail reconstruction, immediately restore P4V3 ledger+Issue-first bootstrap behavior.
+
+### Trial interpretation
+
+The test asks whether one routine repository read source can be removed without reducing continuation correctness. Fewer reads alone is not a pass; end-to-end wake plus later boundary reconciliation must preserve the same state.
+
+---
+
+## P4V3 — Compact routine Issue evidence trial
+
+State: PROVISIONALLY PROMOTED
 Parent: P4V2
 Trial: `P4-ISSUE-COMPACT-01`
 Primary variable: routine Issue evidence shape/verbosity only
