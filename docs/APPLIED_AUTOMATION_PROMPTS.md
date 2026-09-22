@@ -9,9 +9,36 @@ Purpose: version every relay prompt actually tested so experiment results can be
 
 ---
 
-## P4V4 — Issue-tail-only routine bootstrap trial
+## P4V5 — Routine compact timing-field reduction trial
 
 State: REGISTERED EXPERIMENTAL VARIANT
+Parent: P4V4
+Trial: `P4-COMPACT-TIMING-FIELDS-01`
+Primary variable: routine non-boundary Issue compact evidence fields only
+Rollback: P4V4
+
+### Semantic diff from P4V4
+
+Exactly one control-policy variable changes:
+
+- **P4V4:** routine successful Issue records include `START` and `END` alongside continuation-state fields.
+- **P4V5:** routine clean-success non-boundary Issue records omit `START` and `END`. Timing fields remain available/required for boundary, anomaly, rollback, or timing-specific experiments. User-facing completion still reports START/END/DURATION.
+
+Routine durable schema becomes `EXPERIMENT`, `SAMPLE`, `RESULT`, `WRITE_OK`, `STATE_OK`, `WAKE_OK`, `WORK_OK`, `DUPLICATE`, `NEXT`, with `ANOMALY`/`ROLLBACK` only when non-empty.
+
+Everything else is frozen: same automation, P1 single-final-write scheduler path, +3m-class lead policy, `RRULE:FREQ=HOURLY`, P4V0 conditional verification, P4V2 Issue-only routine logging with boundary reconciliation, P4V3 compact evidence semantics, P4V4 Issue-tail-only routine bootstrap, checkpoint/authority/recovery rules, substantive-work requirement, and no new automation.
+
+Failure/rollback rule: if the next routine wake cannot reconstruct candidate/trial/sample order/result/status tuple/duplicate/NEXT from the reduced Issue record, if loss of START/END prevents required anomaly/recovery/reconciliation analysis, or if boundary reconciliation disagrees, immediately restore P4V4 routine schema with START/END.
+
+### Trial interpretation
+
+This tests whether routine durable timestamps are redundant when scheduler/wake timing is not the active variable. Smaller records alone are not a pass; continuation and later reconciliation must remain exact.
+
+---
+
+## P4V4 — Issue-tail-only routine bootstrap trial
+
+State: PROVISIONALLY PROMOTED
 Parent: P4V3
 Trial: `P4-BOOTSTRAP-SINGLE-SOURCE-01`
 Primary variable: routine clean-success bootstrap read-source count only
