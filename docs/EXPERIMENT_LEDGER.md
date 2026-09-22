@@ -11,28 +11,46 @@ Use one row per trial. Do not overwrite failed trials.
 | P1-5M-02 | P0R/P1 path | lead time | 5m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Second +5m continuation. |
 | P1-5M-03 | P0R/P1 path | lead time | 5m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Third +5m continuation. |
 | P1-3M-01 | P0R/P1 path | lead time | 3m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | First +3m continuation. |
-| P1-3M-02 | P0R/P1 path | lead time | 3m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | durable state restored; trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Reconciled from Issue #1; intended 12:29:00 KST, run context 12:28:16 KST. |
+| P1-3M-02 | P0R/P1 path | lead time | 3m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | durable state restored; trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Reconciled from Issue #1. |
 | P1-3M-03 | P0R/P1 path | lead time | 3m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | third identical +3m sample | low | PASS_WITH_TIMING_ANOMALY | Issue #1 records +3m class reaching 3/3 end-to-end continuation. |
 | P1-2M-01 | P0R/P1 path | lead time | 2m | 1 | YES | YES | NO near wake | YES after fallback | n/a | NO observed | YES | hourly RRULE cold recovery | low | MISSED_NEAR_OCCURRENCE + RECOVERY_PASS | First +2m sample missed fast continuation; recurring fallback recovered. |
 | P1-2M-02 | P0R/P1 path | lead time | 2m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | durable state restored | low | PASS_WITH_TIMING_ANOMALY | Mixed +2m evidence; not suitable as reliable default. |
 | P1-3M-04 | P0R/P1 path | lead time | 3m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | prior E5 evidence | boundary confirmation | low | PASS | +3m retained as leading minimum practical default. |
-| TEMPLATE | P0 | baseline | 1m | 6 | - | - | - | - | - | - | - | - | - | PENDING | |
+| P2-3M-01 | P0R/P2 path | provisional fallback presence | 3m final | 2 | YES | YES | YES | YES | non-authoritative | NO observed | no incremental benefit | normal-path comparison | higher than P1 | PASS_BUT_REJECTED | Added one scheduler mutation without demonstrated recovery/correctness gain over P1. |
+| E8-P1-COLD-01 | P0R/P1 path | omit final fast rearm after durable checkpoint | hourly fallback | 0 after checkpoint | n/a | YES | YES | YES | ~59m recovery | NO observed | YES | cold resume from GitHub | low | RECOVERY_PASS | Existing hourly RRULE recovered without P2 provisional write. |
+| E7-AUTHORITY | P0R/P1 path | duplicate authority/recovery | 3m fixed | 1 | n/a | YES | YES | YES | n/a | 0 | YES | atomic claim/recovery research | research-only | PASS_WITH_CONSTRAINT | Immutable epoch fencing + create-if-absent claim; external effects still require idempotency/reconciliation. |
+| E8-MINIMAL-CHECKPOINT | P0R/P1 path | checkpoint schema | 3m fixed | 1 | YES | YES | YES | YES | n/a | 0 | YES | repeated interruption/resume | low | PASS | Minimal schema promoted: operation_id + immutable epoch/claim fence + executable next_action; fence-removal adverse test failed safely. |
+| TEMPLATE | P0 | baseline | 1m | 6 | - | - | - | - | - | - | - | - | - | PENDING | Historical stress fixture, not an active production candidate. |
 
-## Reconciliation note — 2026-09-22
+## Reconciliation note — 2026-09-22 17:22 KST
 
-Issue #1 contained fresher controlled-trial evidence than this file. The stale `P1-3M-02=PENDING` row was corrected rather than treated as a live unfinished trial. Issue evidence also showed P1-3M-03, P1-2M-01, P1-2M-02, and P1-3M-04 had already executed. This ledger now reflects those outcomes.
+Issue #1 is authoritative for completed controlled trials. P2, E7 and E8 are no longer unresolved:
+- P2 works but loses to P1 on parsimony.
+- E8/P1 cold recovery proves the existing hourly recurrence can recover without a provisional scheduler write.
+- E7 converged on immutable epoch fencing + atomic create-if-absent authority, with destination idempotency/reconciliation required for ambiguous external effects.
+- E8 converged on the three-field minimal durable checkpoint `{operation_id, immutable epoch/claim fence, executable next_action}` with repeated resume success and a fence-removal adverse test.
 
-Current scheduler candidate after reconciliation:
+Current candidate:
 
 ```text
 CURRENT_CANDIDATE=P0R/P1 single-final-write path
 LEAD_TIME=+3m
 SCHEDULER_WRITES_PER_WAKE=1
 RECURRENCE=RRULE:FREQ=HOURLY
-KNOWN_FAILURES=+2m mixed reliability; runtime-context timing offsets are non-authoritative
-RECOVERY_EVIDENCE=P1-2M-01 recovered through hourly RRULE fallback
-NEXT_DISCRIMINATING_TEST=continue the already-started P2-3M-01 comparison before inventing another trial
+CHECKPOINT={operation_id, immutable epoch/claim fence, executable next_action}
+AUTHORITY=immutable epoch + atomic create-if-absent claim
+KNOWN_FAILURES=+2m mixed reliability; arbitrary external non-idempotent effects cannot be exactly-once without destination support
+RECOVERY_EVIDENCE=P1-2M-01 and E8-P1-COLD-01
+NEXT_DISCRIMINATING_TEST=P4-VERIFY-FREQUENCY-01
 ```
+
+## P4-VERIFY-FREQUENCY-01 design
+
+Phase A/B/C evidence is sufficient to begin duty-cycle simplification. The next single primary variable is **final live-metadata verification frequency**. Scheduler path, +3m lead, RRULE recurrence, durable checkpoint and authority rules remain fixed.
+
+Hypothesis: update success plus next-turn end-to-end WAKE_OK/WORK_OK may make unconditional same-turn post-write metadata verification redundant on the normal path. Because the current P0R prompt hard-requires verification, this turn only records the experiment design. A prompt-version change must be registered before executing the omission trial.
+
+Success criterion for a future omission trial: scheduler update accepted; next intended wake occurs; correct checkpoint resumes; RRULE recurrence remains observable on the following turn; no duplicate work. Failure/rollback trigger: lost recurrence, wrong DTSTART behavior that cannot recover, or ambiguous scheduler state requiring same-turn verification.
 
 ## Result vocabulary
 
