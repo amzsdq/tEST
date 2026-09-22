@@ -9,6 +9,53 @@ Purpose: version every relay prompt actually tested so experiment results can be
 
 ---
 
+## P4V10 — Wake-jitter telemetry instrumentation
+
+State: REGISTERED OBSERVABILITY VARIANT
+Parent: P4V9
+Trial: `P4-WAKE-JITTER-TELEMETRY-01`
+Primary variable: wake-timing telemetry only
+Rollback: P4V9
+
+### Semantic diff from P4V9
+
+Exactly one operational variable changes:
+
+- **P4V9:** relay continuation and evidence are evaluated without a mandatory accumulated wake-jitter series.
+- **P4V10:** preserve all P4V9 relay behavior, schema semantics, scheduler path, lead-time policy, and rollback rules, while adding observational wake-jitter telemetry. No scheduler decision may be changed because of the telemetry until a later separately registered experiment.
+
+For each actual automation invocation, before the final scheduler mutation:
+- read the same automation's pre-update scheduled DTSTART and actual last-run/invocation time when available;
+- define signed `JITTER_SEC = ACTUAL_RUN - SCHEDULED_FOR` (positive = late, negative = early);
+- append a compact jitter sample to Issue #1;
+- maintain running `N`, signed mean, mean absolute jitter, population standard deviation, minimum, and maximum using the previous aggregate;
+- every 10 accepted samples, additionally calculate median and P95 from the accepted jitter sample set.
+
+Manual/user-triggered turns or turns without a trustworthy matching scheduled DTSTART/actual-run pair are not accepted as jitter samples and must be marked `JITTER_SAMPLE=SKIP` rather than guessed.
+
+Telemetry must remain append-only evidence. Do not rewrite the historical ledger merely to store routine jitter samples. Timing telemetry is observational and does not count as a second experimental PRIMARY_VARIABLE.
+
+Everything else is frozen from P4V9: same automation id, single final recurring RRULE write, current promoted +3m-class lead policy, `RRULE:FREQ=HOURLY`, `is_enabled=true`, no new automation, P4V9 positive-field absence semantics, issue-tail bootstrap, substantive-work requirement, and existing recovery rules.
+
+### Initial metric contract
+
+```
+TELEMETRY=WAKE_JITTER_V1
+SCHEDULED_FOR=<timestamp>
+ACTUAL_RUN=<timestamp>
+JITTER_SEC=<signed seconds>
+N=<accepted sample count>
+MEAN_SIGNED_SEC=<running mean>
+MEAN_ABS_SEC=<running mean absolute jitter>
+STDDEV_SEC=<population stddev>
+MIN_SEC=<minimum signed jitter>
+MAX_SEC=<maximum signed jitter>
+P50_SEC=<every 10 samples only>
+P95_SEC=<every 10 samples only>
+```
+
+---
+
 ## P4V9 — Routine positive-write-field omission trial
 
 State: REGISTERED EXPERIMENTAL VARIANT
