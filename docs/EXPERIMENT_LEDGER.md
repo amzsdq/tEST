@@ -20,37 +20,35 @@ Use one row per trial. Do not overwrite failed trials.
 | E8-P1-COLD-01 | P0R/P1 path | omit final fast rearm after durable checkpoint | hourly fallback | 0 after checkpoint | n/a | YES | YES | YES | ~59m recovery | NO observed | YES | cold resume from GitHub | low | RECOVERY_PASS | Existing hourly RRULE recovered without P2 provisional write. |
 | E7-AUTHORITY | P0R/P1 path | duplicate authority/recovery | 3m fixed | 1 | n/a | YES | YES | YES | n/a | 0 | YES | atomic claim/recovery research | research-only | PASS_WITH_CONSTRAINT | Immutable epoch fencing + create-if-absent claim; external effects still require idempotency/reconciliation. |
 | E8-MINIMAL-CHECKPOINT | P0R/P1 path | checkpoint schema | 3m fixed | 1 | YES | YES | YES | YES | n/a | 0 | YES | repeated interruption/resume | low | PASS | Minimal schema promoted: operation_id + immutable epoch/claim fence + executable next_action; fence-removal adverse test failed safely. |
+| P4-VFY-01-A | P4V0 | omit unconditional post-write live read | 3m class | 1 | YES | YES via update return | YES | YES | +10s | NO observed | inherited unchanged P1/E8 path | state restore + research | lower | PASS | First clean intended-due end-to-end omission sample. |
+| P4-VFY-01-B | P4V0 | omit unconditional post-write live read | 3m class | 1 | YES | YES via update return | YES | YES | +108s | NO observed | inherited unchanged P1/E8 path | state restore + research | lower | PASS | Second clean intended-due sample. |
+| P4-VFY-01-C | P4V0 | omit unconditional post-write live read | 3m class | 1 | YES | YES via update return | YES | YES | +141s | NO observed | inherited unchanged P1/E8 path | state restore + research | lower | PASS | Third clean intended-due sample. |
+| P4-VFY-EARLY-01 | P4V0 | verification frequency | 3m class | 1 | YES | YES via update return | INCONCLUSIVE | YES | -146s | NO observed | n/a | anomaly classification | lower | TIMING_ANOMALY | Early invocation cannot be attributed to verification omission. |
+| P4-VFY-EARLY-02 | P4V0 | verification frequency | 3m class | 1 | YES | YES via update return | INCONCLUSIVE | YES | -173s | NO observed | n/a | replicated anomaly + evidence-transfer analysis | lower | TIMING_ANOMALY | Replicates early-dispatch class; does not discriminate read-after-write policy. |
 | TEMPLATE | P0 | baseline | 1m | 6 | - | - | - | - | - | - | - | - | - | PENDING | Historical stress fixture, not an active production candidate. |
 
-## Reconciliation note — 2026-09-22 17:22 KST
+## Reconciliation note — 2026-09-22 18:24 KST
 
-Issue #1 is authoritative for completed controlled trials. P2, E7 and E8 are no longer unresolved:
-- P2 works but loses to P1 on parsimony.
-- E8/P1 cold recovery proves the existing hourly recurrence can recover without a provisional scheduler write.
-- E7 converged on immutable epoch fencing + atomic create-if-absent authority, with destination idempotency/reconciliation required for ambiguous external effects.
-- E8 converged on the three-field minimal durable checkpoint `{operation_id, immutable epoch/claim fence, executable next_action}` with repeated resume success and a fence-removal adverse test.
+Current candidate is now the P1 single-final-write scheduler path with the P4V0 verification policy provisionally promoted: unconditional same-turn post-write live-metadata read is omitted on the normal path, while conditional verification/reconciliation remains required for malformed update output, ambiguous reconstruction, or later inconsistency.
 
-Current candidate:
+Rationale:
+- three clean P4V0 end-to-end samples succeeded without the extra read;
+- two early-dispatch anomalies were observed, but the anomaly class is orthogonal to verification frequency because a read-after-write can confirm stored state but cannot prevent/explain early dispatch;
+- P4V0 does not alter RRULE, mutation count, lead time, checkpoint, authority, or recovery mechanics, so demonstrated P1/E8 recovery evidence transfers to this observation-only simplification;
+- no duplicate substantive execution or recurrence loss has been observed.
 
 ```text
-CURRENT_CANDIDATE=P0R/P1 single-final-write path
-LEAD_TIME=+3m
+CURRENT_CANDIDATE=P4V0 on P1 single-final-write path
+LEAD_TIME=+3m class
 SCHEDULER_WRITES_PER_WAKE=1
 RECURRENCE=RRULE:FREQ=HOURLY
 CHECKPOINT={operation_id, immutable epoch/claim fence, executable next_action}
 AUTHORITY=immutable epoch + atomic create-if-absent claim
-KNOWN_FAILURES=+2m mixed reliability; arbitrary external non-idempotent effects cannot be exactly-once without destination support
-RECOVERY_EVIDENCE=P1-2M-01 and E8-P1-COLD-01
-NEXT_DISCRIMINATING_TEST=P4-VERIFY-FREQUENCY-01
+VERIFICATION=normal-path update-return validation; live read only on ambiguity/failure/reconciliation
+KNOWN_FAILURES=+2m mixed reliability; dispatch timestamp anomalies; arbitrary external non-idempotent effects require destination support
+RECOVERY_EVIDENCE=P1-2M-01 and E8-P1-COLD-01 (mechanics unchanged by P4V0)
+NEXT_DISCRIMINATING_TEST=next single-variable duty-cycle simplification; keep lead time and scheduler path fixed
 ```
-
-## P4-VERIFY-FREQUENCY-01 design
-
-Phase A/B/C evidence is sufficient to begin duty-cycle simplification. The next single primary variable is **final live-metadata verification frequency**. Scheduler path, +3m lead, RRULE recurrence, durable checkpoint and authority rules remain fixed.
-
-Hypothesis: update success plus next-turn end-to-end WAKE_OK/WORK_OK may make unconditional same-turn post-write metadata verification redundant on the normal path. Because the current P0R prompt hard-requires verification, this turn only records the experiment design. A prompt-version change must be registered before executing the omission trial.
-
-Success criterion for a future omission trial: scheduler update accepted; next intended wake occurs; correct checkpoint resumes; RRULE recurrence remains observable on the following turn; no duplicate work. Failure/rollback trigger: lost recurrence, wrong DTSTART behavior that cannot recover, or ambiguous scheduler state requiring same-turn verification.
 
 ## Result vocabulary
 
