@@ -9,9 +9,34 @@ Purpose: version every relay prompt actually tested so experiment results can be
 
 ---
 
-## P4V2 — Issue-first routine logging fan-out trial
+## P4V3 — Compact routine Issue evidence trial
 
 State: REGISTERED EXPERIMENTAL VARIANT
+Parent: P4V2
+Trial: `P4-ISSUE-COMPACT-01`
+Primary variable: routine Issue evidence shape/verbosity only
+Rollback: P4V2
+
+### Semantic diff from P4V2
+
+Exactly one control-policy variable changes:
+
+- **P4V2:** routine non-boundary successful turns append durable Issue #1 evidence without a required compact representation.
+- **P4V3:** the same one Issue #1 append is retained, but routine success evidence uses a fixed compact record containing only `EXPERIMENT`, `SAMPLE`, `START`, `END`, `RESULT`, `WRITE_OK`, `STATE_OK`, `WAKE_OK`, `WORK_OK`, `DUPLICATE`, and `NEXT`; add `ANOMALY` or `ROLLBACK` only when non-empty.
+
+Everything else is frozen: same automation, P1 single-final-write scheduler path, +3m-class lead policy, `RRULE:FREQ=HOURLY`, P4V0 conditional verification policy, P4V1 ledger+Issue-first bootstrap, P4V2 Issue-only routine logging with ledger-at-boundary reconciliation, checkpoint/authority/recovery rules, substantive-work requirement, and no new automation.
+
+Failure/rollback rule: if the next turn cannot reconstruct sample identity/order, result, WRITE_OK/STATE_OK/WAKE_OK/WORK_OK, duplicate observation, and NEXT from the compact record plus unchanged ledger, or if a needed anomaly/rollback fact is lost, immediately restore P4V2 prose-capable Issue evidence.
+
+### Trial interpretation
+
+The test asks whether evidence representation can be reduced without reducing continuation/reconciliation correctness. Smaller comments alone are not a pass.
+
+---
+
+## P4V2 — Issue-first routine logging fan-out trial
+
+State: PROVISIONALLY PROMOTED
 Parent: P4V1
 Trial: `P4-LOG-FANOUT-01`
 Primary variable: normal-path durable logging fan-out/frequency only
