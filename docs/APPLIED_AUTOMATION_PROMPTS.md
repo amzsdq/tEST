@@ -9,9 +9,34 @@ Purpose: version every relay prompt actually tested so experiment results can be
 
 ---
 
-## P4V1 — Ledger+Issue-first bootstrap trial
+## P4V2 — Issue-first routine logging fan-out trial
 
 State: REGISTERED EXPERIMENTAL VARIANT
+Parent: P4V1
+Trial: `P4-LOG-FANOUT-01`
+Primary variable: normal-path durable logging fan-out/frequency only
+Rollback: P4V1
+
+### Semantic diff from P4V1
+
+Exactly one control-policy variable changes:
+
+- **P4V1:** routine successful turns may persist substantially overlapping per-turn evidence to both Issue #1 and canonical ledger/docs.
+- **P4V2:** routine non-boundary successful turns append per-turn evidence to Issue #1 only. Canonical `EXPERIMENT_LEDGER.md` mutation is deferred to a trial boundary: sample-set completion, promotion/rejection/rollback, or explicit reconciliation checkpoint.
+
+Everything else is frozen: same automation, P1 single-final-write scheduler path, +3m-class lead policy, `RRULE:FREQ=HOURLY`, P4V0 conditional verification policy, P4V1 ledger+Issue-first bootstrap read-set, checkpoint/authority/recovery rules, substantive-work requirement, and no new automation.
+
+Failure/rollback rule: if Issue-only routine evidence cannot reconstruct sample ordering/result/WRITE_OK/STATE_OK/WAKE_OK/WORK_OK/duplicate observation/NEXT test at the next boundary, or deferred ledger reconciliation loses evidence, immediately restore P4V1 routine logging behavior.
+
+### Trial interpretation
+
+The test asks whether canonical write fan-out can be reduced without reducing durable evidence quality or reconstruction correctness. Fewer writes alone is not a pass.
+
+---
+
+## P4V1 — Ledger+Issue-first bootstrap trial
+
+State: PROVISIONALLY PROMOTED
 Parent: P4V0
 Trial: `P4-BOOTSTRAP-READSET-01`
 Primary variable: normal-path bootstrap repository read-set only
