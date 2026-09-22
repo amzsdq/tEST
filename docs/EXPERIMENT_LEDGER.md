@@ -29,35 +29,35 @@ Use one row per trial. Do not overwrite failed trials.
 | P4-LOG-01-B | P4V2 | routine durable logging fan-out | 3m class | 1 | YES | YES via update return | YES | YES | non-authoritative | NO observed | inherited unchanged P1/E8 path | second Issue-only sample + boundary reconciliation | lower | PASS | SAMPLE-2 plus SAMPLE-1 ordering/status/NEXT were recoverable from unchanged ledger + Issue stream. |
 | P4-COMPACT-01-A | P4V3 | routine Issue evidence shape | 3m class | 1 | YES | YES via update return | YES | YES | non-authoritative | NO observed | inherited unchanged P1/E8 path | compact Issue-only sample + exact next-turn reconstruction | lower | PASS | SAMPLE-1 compact record preserved identity/order/result/status/duplicate/NEXT. |
 | P4-COMPACT-01-B | P4V3 | routine Issue evidence shape | 3m class | 1 | YES | YES via update return | YES | YES | non-authoritative | NO observed | inherited unchanged P1/E8 path | second compact sample + boundary reconstruction | lower | PASS | SAMPLE-1→2 ordering and required fields reconstructed without prose. |
+| P4-BOOTSTRAP-01-A | P4V4 | routine bootstrap source count | 3m class | 1 | YES | YES via update return | YES | YES | non-authoritative | NO observed | inherited unchanged P1/E8 path | Issue-tail-only state restoration | lower | PASS | SAMPLE-1 restored active trial/state/NEXT without reading ledger. |
+| P4-BOOTSTRAP-01-B | P4V4 | routine bootstrap source count | 3m class | 1 | YES | YES via update return | YES | YES | non-authoritative | NO observed | inherited unchanged P1/E8 path | second Issue-tail-only reconstruction + boundary comparison | lower | PASS | SAMPLE-2 reconstructed SAMPLE-1; boundary ledger comparison found no conflict. |
 | TEMPLATE | P0 | baseline | 1m | 6 | - | - | - | - | - | - | - | - | - | PENDING | Historical stress fixture, not an active production candidate. |
 
 ## Reconciliation note — 2026-09-22 19:21 KST
 
 P4V2 logging fan-out is provisionally promoted on top of the existing P1/P4 path. Routine non-boundary success evidence may be appended to Issue #1 only; EXPERIMENT_LEDGER is updated at sample-set completion, promotion/rejection/rollback, or explicit reconciliation checkpoints.
 
-Evidence:
-- SAMPLE-1 was written only to Issue #1 while the ledger remained unchanged;
-- SAMPLE-2 reconstructed SAMPLE-1 ordering, result, WRITE_OK/STATE_OK/WAKE_OK/WORK_OK, duplicate observation, and NEXT without ambiguity;
-- at this boundary both samples were reconciled into this ledger without observed evidence loss;
-- scheduler, +3m lead, checkpoint, authority, verification, and recovery mechanics were unchanged.
-
 ## Reconciliation note — 2026-09-22 19:44 KST
 
-P4V3 compact Issue evidence is provisionally promoted. Two routine samples were recorded with the fixed compact schema while the ledger remained unchanged; the following turns reconstructed sample identity/order, result, WRITE_OK/STATE_OK/WAKE_OK/WORK_OK, duplicate observation, and NEXT without ambiguity. Boundary reconstruction also preserved SAMPLE-1→SAMPLE-2 ordering. Both samples are now reconciled here with no observed evidence loss. Scheduler, +3m lead, checkpoint, authority, verification, bootstrap, and P4V2 Issue-only routine logging destination/write count remained fixed.
+P4V3 compact Issue evidence is provisionally promoted. Two routine samples were recorded with the fixed compact schema while the ledger remained unchanged; subsequent turns reconstructed required state without ambiguity and reconciled both samples without evidence loss.
+
+## Reconciliation note — 2026-09-22 20:10 KST
+
+P4V4 Issue-tail-only routine bootstrap is provisionally promoted. SAMPLE-1 and SAMPLE-2 each restored continuation state without reading EXPERIMENT_LEDGER. At this boundary, the ledger was read and compared against the Issue stream; no contradiction or evidence loss was found. The ledger remains an exception/boundary source rather than a mandatory routine read. Scheduler, +3m lead, checkpoint, authority, verification, compact Issue logging, and recovery mechanics were unchanged.
 
 ```text
-CURRENT_CANDIDATE=P4V3 on P1 single-final-write path
+CURRENT_CANDIDATE=P4V4 on P1 single-final-write path
 LEAD_TIME=+3m class
 SCHEDULER_WRITES_PER_WAKE=1
 RECURRENCE=RRULE:FREQ=HOURLY
 CHECKPOINT={operation_id, immutable epoch/claim fence, executable next_action}
 AUTHORITY=immutable epoch + atomic create-if-absent claim
 VERIFICATION=normal-path update-return validation; live read only on ambiguity/failure/reconciliation
-BOOTSTRAP=EXPERIMENT_LEDGER + Issue #1 first; conditional canonical fallback
+BOOTSTRAP=Issue #1 compact tail first on routine clean-success; ledger/canonical docs only on boundary, ambiguity, prompt/promotion/rollback, or invariant recovery
 ROUTINE_LOGGING=Issue #1 only using compact fixed schema; ledger at boundaries/reconciliation
 KNOWN_FAILURES=+2m mixed reliability; dispatch timestamp anomalies; arbitrary external non-idempotent effects require destination support
 RECOVERY_EVIDENCE=P1-2M-01 and E8-P1-COLD-01
-NEXT_DISCRIMINATING_TEST=select one further simplification with P4V3 fixed; do not alter scheduler, +3m lead, checkpoint, authority, verification, bootstrap, or logging destination/write count
+NEXT_DISCRIMINATING_TEST=select one further simplification with P4V4 fixed; do not alter scheduler, +3m lead, checkpoint, authority, verification, or compact logging semantics
 ```
 
 ## Result vocabulary
