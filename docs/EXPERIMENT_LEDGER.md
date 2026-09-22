@@ -25,29 +25,33 @@ Use one row per trial. Do not overwrite failed trials.
 | P4-VFY-01-C | P4V0 | omit unconditional post-write live read | 3m class | 1 | YES | YES via update return | YES | YES | +141s | NO observed | inherited unchanged P1/E8 path | state restore + research | lower | PASS | Third clean intended-due sample. |
 | P4-VFY-EARLY-01 | P4V0 | verification frequency | 3m class | 1 | YES | YES via update return | INCONCLUSIVE | YES | -146s | NO observed | n/a | anomaly classification | lower | TIMING_ANOMALY | Early invocation cannot be attributed to verification omission. |
 | P4-VFY-EARLY-02 | P4V0 | verification frequency | 3m class | 1 | YES | YES via update return | INCONCLUSIVE | YES | -173s | NO observed | n/a | replicated anomaly + evidence-transfer analysis | lower | TIMING_ANOMALY | Replicates early-dispatch class; does not discriminate read-after-write policy. |
+| P4-LOG-01-A | P4V2 | routine durable logging fan-out | 3m class | 1 | YES | YES via update return | YES | YES | non-authoritative | NO observed | inherited unchanged P1/E8 path | Issue-only routine evidence + next-turn reconstruction | lower | PASS | SAMPLE-1 evidence existed only in Issue #1 and was reconstructed exactly on SAMPLE-2. |
+| P4-LOG-01-B | P4V2 | routine durable logging fan-out | 3m class | 1 | YES | YES via update return | YES | YES | non-authoritative | NO observed | inherited unchanged P1/E8 path | second Issue-only sample + boundary reconciliation | lower | PASS | SAMPLE-2 plus SAMPLE-1 ordering/status/NEXT were recoverable from unchanged ledger + Issue stream. |
 | TEMPLATE | P0 | baseline | 1m | 6 | - | - | - | - | - | - | - | - | - | PENDING | Historical stress fixture, not an active production candidate. |
 
-## Reconciliation note — 2026-09-22 18:24 KST
+## Reconciliation note — 2026-09-22 19:21 KST
 
-Current candidate is now the P1 single-final-write scheduler path with the P4V0 verification policy provisionally promoted: unconditional same-turn post-write live-metadata read is omitted on the normal path, while conditional verification/reconciliation remains required for malformed update output, ambiguous reconstruction, or later inconsistency.
+P4V2 logging fan-out is provisionally promoted on top of the existing P1/P4 path. Routine non-boundary success evidence may be appended to Issue #1 only; EXPERIMENT_LEDGER is updated at sample-set completion, promotion/rejection/rollback, or explicit reconciliation checkpoints.
 
-Rationale:
-- three clean P4V0 end-to-end samples succeeded without the extra read;
-- two early-dispatch anomalies were observed, but the anomaly class is orthogonal to verification frequency because a read-after-write can confirm stored state but cannot prevent/explain early dispatch;
-- P4V0 does not alter RRULE, mutation count, lead time, checkpoint, authority, or recovery mechanics, so demonstrated P1/E8 recovery evidence transfers to this observation-only simplification;
-- no duplicate substantive execution or recurrence loss has been observed.
+Evidence:
+- SAMPLE-1 was written only to Issue #1 while the ledger remained unchanged;
+- SAMPLE-2 reconstructed SAMPLE-1 ordering, result, WRITE_OK/STATE_OK/WAKE_OK/WORK_OK, duplicate observation, and NEXT without ambiguity;
+- at this boundary both samples were reconciled into this ledger without observed evidence loss;
+- scheduler, +3m lead, checkpoint, authority, verification, and recovery mechanics were unchanged.
 
 ```text
-CURRENT_CANDIDATE=P4V0 on P1 single-final-write path
+CURRENT_CANDIDATE=P4V2 on P1 single-final-write path
 LEAD_TIME=+3m class
 SCHEDULER_WRITES_PER_WAKE=1
 RECURRENCE=RRULE:FREQ=HOURLY
 CHECKPOINT={operation_id, immutable epoch/claim fence, executable next_action}
 AUTHORITY=immutable epoch + atomic create-if-absent claim
 VERIFICATION=normal-path update-return validation; live read only on ambiguity/failure/reconciliation
+BOOTSTRAP=EXPERIMENT_LEDGER + Issue #1 first; conditional canonical fallback
+ROUTINE_LOGGING=Issue #1 only; ledger at boundaries/reconciliation
 KNOWN_FAILURES=+2m mixed reliability; dispatch timestamp anomalies; arbitrary external non-idempotent effects require destination support
-RECOVERY_EVIDENCE=P1-2M-01 and E8-P1-COLD-01 (mechanics unchanged by P4V0)
-NEXT_DISCRIMINATING_TEST=next single-variable duty-cycle simplification; keep lead time and scheduler path fixed
+RECOVERY_EVIDENCE=P1-2M-01 and E8-P1-COLD-01
+NEXT_DISCRIMINATING_TEST=select one further duty-cycle/control-overhead simplification; keep scheduler, +3m lead, checkpoint, authority, verification, bootstrap, and logging fixed
 ```
 
 ## Result vocabulary
