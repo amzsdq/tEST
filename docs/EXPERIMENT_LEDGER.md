@@ -31,6 +31,8 @@ Use one row per trial. Do not overwrite failed trials.
 | P4-COMPACT-01-B | P4V3 | routine Issue evidence shape | 3m class | 1 | YES | YES via update return | YES | YES | non-authoritative | NO observed | inherited unchanged P1/E8 path | second compact sample + boundary reconstruction | lower | PASS | SAMPLE-1→2 ordering and required fields reconstructed without prose. |
 | P4-BOOTSTRAP-01-A | P4V4 | routine bootstrap source count | 3m class | 1 | YES | YES via update return | YES | YES | non-authoritative | NO observed | inherited unchanged P1/E8 path | Issue-tail-only state restoration | lower | PASS | SAMPLE-1 restored active trial/state/NEXT without reading ledger. |
 | P4-BOOTSTRAP-01-B | P4V4 | routine bootstrap source count | 3m class | 1 | YES | YES via update return | YES | YES | non-authoritative | NO observed | inherited unchanged P1/E8 path | second Issue-tail-only reconstruction + boundary comparison | lower | PASS | SAMPLE-2 reconstructed SAMPLE-1; boundary ledger comparison found no conflict. |
+| P4-TIMING-FIELDS-01-A | P4V5 | routine compact timing fields | 3m class | 1 | YES | YES via update return | YES | YES | non-authoritative | NO observed | inherited unchanged P1/E8 path | reduced Issue record without START/END + next-turn reconstruction | lower | PASS | SAMPLE-1 restored candidate/trial/order/status/duplicate/NEXT without timing fields. |
+| P4-TIMING-FIELDS-01-B | P4V5 | routine compact timing fields | 3m class | 1 | YES | YES via update return | YES | YES | non-authoritative | NO observed | inherited unchanged P1/E8 path | second reduced-record reconstruction + boundary comparison | lower | PASS | SAMPLE-2 reconstructed SAMPLE-1; no timing-specific evidence was needed and boundary comparison found no conflict. |
 | TEMPLATE | P0 | baseline | 1m | 6 | - | - | - | - | - | - | - | - | - | PENDING | Historical stress fixture, not an active production candidate. |
 
 ## Reconciliation note — 2026-09-22 19:21 KST
@@ -45,8 +47,12 @@ P4V3 compact Issue evidence is provisionally promoted. Two routine samples were 
 
 P4V4 Issue-tail-only routine bootstrap is provisionally promoted. SAMPLE-1 and SAMPLE-2 each restored continuation state without reading EXPERIMENT_LEDGER. At this boundary, the ledger was read and compared against the Issue stream; no contradiction or evidence loss was found. The ledger remains an exception/boundary source rather than a mandatory routine read. Scheduler, +3m lead, checkpoint, authority, verification, compact Issue logging, and recovery mechanics were unchanged.
 
+## Reconciliation note — 2026-09-22 20:32 KST
+
+P4V5 reduced routine compact schema is provisionally promoted. SAMPLE-1 and SAMPLE-2 each reconstructed candidate/trial/sample order, result/status intent, duplicate observation, and NEXT from Issue records that omitted START/END. Boundary comparison against the P4V4 ledger baseline found no contradiction or required timing evidence loss. START/END remain required for boundary, anomaly, rollback, timing-specific evidence, and user-facing completion.
+
 ```text
-CURRENT_CANDIDATE=P4V4 on P1 single-final-write path
+CURRENT_CANDIDATE=P4V5 on P1 single-final-write path
 LEAD_TIME=+3m class
 SCHEDULER_WRITES_PER_WAKE=1
 RECURRENCE=RRULE:FREQ=HOURLY
@@ -54,10 +60,10 @@ CHECKPOINT={operation_id, immutable epoch/claim fence, executable next_action}
 AUTHORITY=immutable epoch + atomic create-if-absent claim
 VERIFICATION=normal-path update-return validation; live read only on ambiguity/failure/reconciliation
 BOOTSTRAP=Issue #1 compact tail first on routine clean-success; ledger/canonical docs only on boundary, ambiguity, prompt/promotion/rollback, or invariant recovery
-ROUTINE_LOGGING=Issue #1 only using compact fixed schema; ledger at boundaries/reconciliation
+ROUTINE_LOGGING=Issue #1 only; clean-success non-boundary schema={EXPERIMENT,SAMPLE,RESULT,WRITE_OK,STATE_OK,WAKE_OK,WORK_OK,DUPLICATE,NEXT}; START/END only for boundary/anomaly/rollback/timing evidence
 KNOWN_FAILURES=+2m mixed reliability; dispatch timestamp anomalies; arbitrary external non-idempotent effects require destination support
 RECOVERY_EVIDENCE=P1-2M-01 and E8-P1-COLD-01
-NEXT_DISCRIMINATING_TEST=select one further simplification with P4V4 fixed; do not alter scheduler, +3m lead, checkpoint, authority, verification, or compact logging semantics
+NEXT_DISCRIMINATING_TEST=select one further simplification with P4V5 fixed; do not alter scheduler, +3m lead, checkpoint, authority, verification, bootstrap, or recovery semantics
 ```
 
 ## Result vocabulary
