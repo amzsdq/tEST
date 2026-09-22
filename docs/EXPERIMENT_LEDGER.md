@@ -33,6 +33,8 @@ Use one row per trial. Do not overwrite failed trials.
 | P4-BOOTSTRAP-01-B | P4V4 | routine bootstrap source count | 3m class | 1 | YES | YES via update return | YES | YES | non-authoritative | NO observed | inherited unchanged P1/E8 path | second Issue-tail-only reconstruction + boundary comparison | lower | PASS | SAMPLE-2 reconstructed SAMPLE-1; boundary ledger comparison found no conflict. |
 | P4-TIMING-FIELDS-01-A | P4V5 | routine compact timing fields | 3m class | 1 | YES | YES via update return | YES | YES | non-authoritative | NO observed | inherited unchanged P1/E8 path | reduced Issue record without START/END + next-turn reconstruction | lower | PASS | SAMPLE-1 restored candidate/trial/order/status/duplicate/NEXT without timing fields. |
 | P4-TIMING-FIELDS-01-B | P4V5 | routine compact timing fields | 3m class | 1 | YES | YES via update return | YES | YES | non-authoritative | NO observed | inherited unchanged P1/E8 path | second reduced-record reconstruction + boundary comparison | lower | PASS | SAMPLE-2 reconstructed SAMPLE-1; no timing-specific evidence was needed and boundary comparison found no conflict. |
+| P4-DUP-NEG-01-A | P4V6 | routine duplicate-negative field | 3m class | 1 | YES | YES via update return | YES | YES | non-authoritative | omitted = NO observed | inherited unchanged P1/E8 path | compact Issue sample without negative DUPLICATE + next-turn reconstruction | lower | PASS | SAMPLE-1 preserved candidate/trial/order/status/NEXT; omitted DUPLICATE was unambiguous under P4V6 clean-success schema. |
+| P4-DUP-NEG-01-B | P4V6 | routine duplicate-negative field | 3m class | 1 | YES | YES via update return | YES | YES | non-authoritative | omitted = NO observed | inherited unchanged P1/E8 path | second reconstruction + boundary comparison | lower | PASS | SAMPLE-2 reconstructed SAMPLE-1 without ledger; boundary comparison found no contradiction or duplicate-state loss. |
 | TEMPLATE | P0 | baseline | 1m | 6 | - | - | - | - | - | - | - | - | - | PENDING | Historical stress fixture, not an active production candidate. |
 
 ## Reconciliation note — 2026-09-22 19:21 KST
@@ -51,8 +53,12 @@ P4V4 Issue-tail-only routine bootstrap is provisionally promoted. SAMPLE-1 and S
 
 P4V5 reduced routine compact schema is provisionally promoted. SAMPLE-1 and SAMPLE-2 each reconstructed candidate/trial/sample order, result/status intent, duplicate observation, and NEXT from Issue records that omitted START/END. Boundary comparison against the P4V4 ledger baseline found no contradiction or required timing evidence loss. START/END remain required for boundary, anomaly, rollback, timing-specific evidence, and user-facing completion.
 
+## Reconciliation note — 2026-09-22 20:53 KST
+
+P4V6 duplicate-negative omission is provisionally promoted. SAMPLE-1 and SAMPLE-2 each reconstructed the active experiment, ordering, four-way status semantics, and NEXT from Issue records with routine clean-success DUPLICATE omitted. Boundary comparison against the P4V5 ledger baseline found no contradiction or duplicate-state loss. Positive duplicate/anomaly/recovery/rollback/boundary evidence remains explicit.
+
 ```text
-CURRENT_CANDIDATE=P4V5 on P1 single-final-write path
+CURRENT_CANDIDATE=P4V6 on P1 single-final-write path
 LEAD_TIME=+3m class
 SCHEDULER_WRITES_PER_WAKE=1
 RECURRENCE=RRULE:FREQ=HOURLY
@@ -60,10 +66,10 @@ CHECKPOINT={operation_id, immutable epoch/claim fence, executable next_action}
 AUTHORITY=immutable epoch + atomic create-if-absent claim
 VERIFICATION=normal-path update-return validation; live read only on ambiguity/failure/reconciliation
 BOOTSTRAP=Issue #1 compact tail first on routine clean-success; ledger/canonical docs only on boundary, ambiguity, prompt/promotion/rollback, or invariant recovery
-ROUTINE_LOGGING=Issue #1 only; clean-success non-boundary schema={EXPERIMENT,SAMPLE,RESULT,WRITE_OK,STATE_OK,WAKE_OK,WORK_OK,DUPLICATE,NEXT}; START/END only for boundary/anomaly/rollback/timing evidence
+ROUTINE_LOGGING=Issue #1 only; clean-success non-boundary schema={EXPERIMENT,SAMPLE,RESULT,WRITE_OK,STATE_OK,WAKE_OK,WORK_OK,NEXT}; omitted DUPLICATE means NO duplicate/anomaly observed; START/END only for boundary/anomaly/rollback/timing evidence; positive duplicate/anomaly evidence remains explicit
 KNOWN_FAILURES=+2m mixed reliability; dispatch timestamp anomalies; arbitrary external non-idempotent effects require destination support
 RECOVERY_EVIDENCE=P1-2M-01 and E8-P1-COLD-01
-NEXT_DISCRIMINATING_TEST=select one further simplification with P4V5 fixed; do not alter scheduler, +3m lead, checkpoint, authority, verification, bootstrap, or recovery semantics
+NEXT_DISCRIMINATING_TEST=select one further simplification with P4V6 fixed; do not alter scheduler, +3m lead, checkpoint, authority, verification, bootstrap, or recovery semantics
 ```
 
 ## Result vocabulary
