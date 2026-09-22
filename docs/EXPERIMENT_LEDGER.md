@@ -6,7 +6,7 @@ Use one row per trial. Do not overwrite failed trials.
 |---|---|---|---:|---:|---|---|---|---|---:|---|---|---:|---:|---|---|
 | P1-10M-01 | P0R/P1 path | lead time | 10m | 1 | YES | YES | YES | YES | +73s vs intended due | NO observed | n/a | research state restored and trial evaluated | low | PASS | Intended due 11:44:02 KST; automation turn observed at 11:45:15 KST. |
 | P1-10M-02 | P0R/P1 path | lead time | 10m class | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Issue evidence: intended 11:57:00; runtime context 11:56:14. |
-| P1-10M-03 | P0R/P1 path | lead time | 10m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Third consecutive +10m-class continuation. |
+| P1-10M-03 | P0R/P1 path | lead time | 10m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | third identical +10m sample | low | PASS_WITH_TIMING_ANOMALY | Third consecutive +10m-class continuation. |
 | P1-5M-01 | P0R/P1 path | lead time | 5m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | First +5m continuation. |
 | P1-5M-02 | P0R/P1 path | lead time | 5m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Second +5m continuation. |
 | P1-5M-03 | P0R/P1 path | lead time | 5m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Third +5m continuation. |
@@ -27,6 +27,8 @@ Use one row per trial. Do not overwrite failed trials.
 | P4-VFY-EARLY-02 | P4V0 | verification frequency | 3m class | 1 | YES | YES via update return | INCONCLUSIVE | YES | -173s | NO observed | n/a | replicated anomaly + evidence-transfer analysis | lower | TIMING_ANOMALY | Replicates early-dispatch class; does not discriminate read-after-write policy. |
 | P4-LOG-01-A | P4V2 | routine durable logging fan-out | 3m class | 1 | YES | YES via update return | YES | YES | non-authoritative | NO observed | inherited unchanged P1/E8 path | Issue-only routine evidence + next-turn reconstruction | lower | PASS | SAMPLE-1 evidence existed only in Issue #1 and was reconstructed exactly on SAMPLE-2. |
 | P4-LOG-01-B | P4V2 | routine durable logging fan-out | 3m class | 1 | YES | YES via update return | YES | YES | non-authoritative | NO observed | inherited unchanged P1/E8 path | second Issue-only sample + boundary reconciliation | lower | PASS | SAMPLE-2 plus SAMPLE-1 ordering/status/NEXT were recoverable from unchanged ledger + Issue stream. |
+| P4-COMPACT-01-A | P4V3 | routine Issue evidence shape | 3m class | 1 | YES | YES via update return | YES | YES | non-authoritative | NO observed | inherited unchanged P1/E8 path | compact Issue-only sample + exact next-turn reconstruction | lower | PASS | SAMPLE-1 compact record preserved identity/order/result/status/duplicate/NEXT. |
+| P4-COMPACT-01-B | P4V3 | routine Issue evidence shape | 3m class | 1 | YES | YES via update return | YES | YES | non-authoritative | NO observed | inherited unchanged P1/E8 path | second compact sample + boundary reconstruction | lower | PASS | SAMPLE-1→2 ordering and required fields reconstructed without prose. |
 | TEMPLATE | P0 | baseline | 1m | 6 | - | - | - | - | - | - | - | - | - | PENDING | Historical stress fixture, not an active production candidate. |
 
 ## Reconciliation note — 2026-09-22 19:21 KST
@@ -39,8 +41,12 @@ Evidence:
 - at this boundary both samples were reconciled into this ledger without observed evidence loss;
 - scheduler, +3m lead, checkpoint, authority, verification, and recovery mechanics were unchanged.
 
+## Reconciliation note — 2026-09-22 19:44 KST
+
+P4V3 compact Issue evidence is provisionally promoted. Two routine samples were recorded with the fixed compact schema while the ledger remained unchanged; the following turns reconstructed sample identity/order, result, WRITE_OK/STATE_OK/WAKE_OK/WORK_OK, duplicate observation, and NEXT without ambiguity. Boundary reconstruction also preserved SAMPLE-1→SAMPLE-2 ordering. Both samples are now reconciled here with no observed evidence loss. Scheduler, +3m lead, checkpoint, authority, verification, bootstrap, and P4V2 Issue-only routine logging destination/write count remained fixed.
+
 ```text
-CURRENT_CANDIDATE=P4V2 on P1 single-final-write path
+CURRENT_CANDIDATE=P4V3 on P1 single-final-write path
 LEAD_TIME=+3m class
 SCHEDULER_WRITES_PER_WAKE=1
 RECURRENCE=RRULE:FREQ=HOURLY
@@ -48,10 +54,10 @@ CHECKPOINT={operation_id, immutable epoch/claim fence, executable next_action}
 AUTHORITY=immutable epoch + atomic create-if-absent claim
 VERIFICATION=normal-path update-return validation; live read only on ambiguity/failure/reconciliation
 BOOTSTRAP=EXPERIMENT_LEDGER + Issue #1 first; conditional canonical fallback
-ROUTINE_LOGGING=Issue #1 only; ledger at boundaries/reconciliation
+ROUTINE_LOGGING=Issue #1 only using compact fixed schema; ledger at boundaries/reconciliation
 KNOWN_FAILURES=+2m mixed reliability; dispatch timestamp anomalies; arbitrary external non-idempotent effects require destination support
 RECOVERY_EVIDENCE=P1-2M-01 and E8-P1-COLD-01
-NEXT_DISCRIMINATING_TEST=select one further duty-cycle/control-overhead simplification; keep scheduler, +3m lead, checkpoint, authority, verification, bootstrap, and logging fixed
+NEXT_DISCRIMINATING_TEST=select one further simplification with P4V3 fixed; do not alter scheduler, +3m lead, checkpoint, authority, verification, bootstrap, or logging destination/write count
 ```
 
 ## Result vocabulary
