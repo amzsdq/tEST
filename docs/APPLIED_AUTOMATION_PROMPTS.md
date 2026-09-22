@@ -9,6 +9,33 @@ Purpose: version every relay prompt actually tested so experiment results can be
 
 ---
 
+## P4V9 — Routine positive-write-field omission trial
+
+State: REGISTERED EXPERIMENTAL VARIANT
+Parent: P4V8
+Trial: `P4-WRITE-POSITIVE-OMISSION-01`
+Primary variable: routine clean-success positive `WRITE_OK` evidence only
+Rollback: P4V8
+
+### Semantic diff from P4V8
+
+Exactly one control-policy variable changes:
+
+- **P4V8:** routine clean-success non-boundary Issue records explicitly include `WRITE_OK=YES`.
+- **P4V9:** omit `WRITE_OK` only when the final scheduler update returns a valid success object and the same object satisfies the existing P4V8 positive `STATE_OK` contract. `WRITE_OK` remains logically evaluated and remains explicit whenever it is `PENDING`/`NO`, the update fails, the return is malformed/mismatched, or in anomaly, recovery, rollback, boundary, or timing-specific evidence.
+
+Routine clean-success durable schema becomes `EXPERIMENT`, `SAMPLE`, `RESULT`, `WORK_OK`, `NEXT`. P4V8 positive-state omission, P4V7 positive-wake omission, and P4V6 conditional duplicate policy remain unchanged.
+
+Everything else is frozen: same automation, P1 single-final-write scheduler path, +3m-class lead policy, `RRULE:FREQ=HOURLY`, P4V0 conditional verification, P4V2 Issue-only routine logging with boundary reconciliation, P4V4 Issue-tail-only routine bootstrap, checkpoint/authority/recovery rules, substantive-work requirement, and no new automation.
+
+Failure/rollback rule: if a subsequent routine wake cannot reconstruct candidate/trial/sample order/result/WRITE_OK/STATE_OK/WAKE_OK/WORK_OK/NEXT, if absence of `WRITE_OK` cannot be safely interpreted as a successful scheduler write on a clean valid scheduler update, or if anomaly/recovery/boundary reconciliation loses scheduler-write evidence, immediately restore P4V8 routine schema with explicit `WRITE_OK=YES`.
+
+### Trial interpretation
+
+This tests whether a valid scheduler update return can serve simultaneously as positive write and state evidence without redundantly persisting `WRITE_OK=YES`. Smaller records alone are not a pass; end-to-end continuation and boundary reconciliation must remain exact.
+
+---
+
 ## P4V8 — Routine positive-state-field omission trial
 
 State: REGISTERED EXPERIMENTAL VARIANT
