@@ -5,125 +5,33 @@ Use one row per trial. Do not overwrite failed trials.
 | Trial | Prompt | Primary variable | Lead time | Writes/wake | WRITE_OK | STATE_OK | WAKE_OK | WORK_OK | Dispatch delay | Duplicate? | Recovery? | Useful work | Control overhead | Result | Notes |
 |---|---|---|---:|---:|---|---|---|---|---:|---|---|---:|---:|---|---|
 | P1-10M-01 | P0R/P1 path | lead time | 10m | 1 | YES | YES | YES | YES | +73s vs intended due | NO observed | n/a | research state restored and trial evaluated | low | PASS | Intended due 11:44:02 KST; automation turn observed at 11:45:15 KST. |
-| P1-10M-02 | P0R/P1 path | lead time | 10m class | 1 | YES | YES | YES | YES | -46s vs stored DTSTART | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Intended due 11:57:00 KST; runtime observed at 11:56:14 KST. |
-| P1-10M-03 | P0R/P1 path | lead time | 10m | 1 | YES | YES | YES | YES | -24s vs intended due | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Intended due 12:07:00 KST; automation runtime started 12:06:36 KST. Third consecutive end-to-end continuation. |
-| P1-5M-01 | P0R/P1 path | lead time | 5m | 1 | YES | YES | YES | YES | -78s vs stored DTSTART | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Intended due 12:12:00 KST; automation runtime context began 12:10:42 KST. |
-| P1-5M-02 | P0R/P1 path | lead time | 5m | 1 | YES | YES | YES | YES | -102s vs stored DTSTART | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Intended due 12:17:00 KST; automation runtime context began 12:15:18 KST. Second +5m-class end-to-end continuation. |
-| P1-5M-03 | P0R/P1 path | lead time | 5m | 1 | YES | YES | YES | YES | +109s vs stored DTSTART | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Intended due 12:21:00 KST; scheduled automation run context at 12:22:49 KST. Third consecutive +5m continuation. |
-| P1-3M-01 | P0R/P1 path | lead time | 3m | 1 | YES | YES | YES | YES | -135s vs stored DTSTART | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Intended due 12:27:00 KST; automation run began 12:24:45 KST. First +3m continuation succeeded; timing field remains non-authoritative for dispatch-jitter inference. |
-| P1-3M-02 | P0R/P1 path | lead time | 3m | 1 | PENDING | PENDING | PENDING | PENDING | - | - | n/a | - | - | PENDING | Second +3m sample; only lead time condition retained. |
+| P1-10M-02 | P0R/P1 path | lead time | 10m class | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Issue evidence: intended 11:57:00; runtime context 11:56:14. |
+| P1-10M-03 | P0R/P1 path | lead time | 10m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Third consecutive +10m-class continuation. |
+| P1-5M-01 | P0R/P1 path | lead time | 5m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | First +5m continuation. |
+| P1-5M-02 | P0R/P1 path | lead time | 5m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Second +5m continuation. |
+| P1-5M-03 | P0R/P1 path | lead time | 5m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Third +5m continuation. |
+| P1-3M-01 | P0R/P1 path | lead time | 3m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | First +3m continuation. |
+| P1-3M-02 | P0R/P1 path | lead time | 3m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | durable state restored; trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Reconciled from Issue #1; intended 12:29:00 KST, run context 12:28:16 KST. |
+| P1-3M-03 | P0R/P1 path | lead time | 3m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | third identical +3m sample | low | PASS_WITH_TIMING_ANOMALY | Issue #1 records +3m class reaching 3/3 end-to-end continuation. |
+| P1-2M-01 | P0R/P1 path | lead time | 2m | 1 | YES | YES | NO near wake | YES after fallback | n/a | NO observed | YES | hourly RRULE cold recovery | low | MISSED_NEAR_OCCURRENCE + RECOVERY_PASS | First +2m sample missed fast continuation; recurring fallback recovered. |
+| P1-2M-02 | P0R/P1 path | lead time | 2m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | n/a | durable state restored | low | PASS_WITH_TIMING_ANOMALY | Mixed +2m evidence; not suitable as reliable default. |
+| P1-3M-04 | P0R/P1 path | lead time | 3m | 1 | YES | YES | YES | YES | non-authoritative | NO observed | prior E5 evidence | boundary confirmation | low | PASS | +3m retained as leading minimum practical default. |
 | TEMPLATE | P0 | baseline | 1m | 6 | - | - | - | - | - | - | - | - | - | PENDING | |
 
-## Evidence — P1-10M-01
+## Reconciliation note — 2026-09-22
+
+Issue #1 contained fresher controlled-trial evidence than this file. The stale `P1-3M-02=PENDING` row was corrected rather than treated as a live unfinished trial. Issue evidence also showed P1-3M-03, P1-2M-01, P1-2M-02, and P1-3M-04 had already executed. This ledger now reflects those outcomes.
+
+Current scheduler candidate after reconciliation:
 
 ```text
-TRIAL_ID=P1-10M-01
-PROMPT_VERSION=P0R (P1 single-final-write scheduler path)
-PRIMARY_VARIABLE=lead time (+10m)
-FINAL_SCHEDULE_WRITE_AT=2026-09-22 11:34:02 KST
-INTENDED_DUE=2026-09-22 11:44:02 KST
-ACTUAL_INVOCATION_AT=2026-09-22 11:45:15 KST
-RRULE_PRESENT=YES
-IS_ENABLED=YES
-RESULT=PASS
-NEXT_DISCRIMINATING_TEST=P1-10M-02
-```
-
-## Evidence — P1-10M-02
-
-```text
-TRIAL_ID=P1-10M-02
-PROMPT_VERSION=P0R (P1 single-final-write scheduler path)
-PRIMARY_VARIABLE=lead time (+10m class; prompt structure unchanged)
-INTENDED_DUE=2026-09-22 11:57:00 KST
-ACTUAL_INVOCATION_AT=2026-09-22 11:56:14 KST
-WAKE_OK=YES
-WORK_OK=YES
-RESULT=PASS_WITH_TIMING_ANOMALY
-NEXT_DISCRIMINATING_TEST=P1-10M-03
-```
-
-## Evidence — P1-10M-03
-
-```text
-TRIAL_ID=P1-10M-03
-PROMPT_VERSION=P0R (P1 single-final-write scheduler path)
-PRIMARY_VARIABLE=lead time (+10m; prompt structure unchanged)
-INTENDED_DUE=2026-09-22 12:07:00 KST
-ACTUAL_INVOCATION_AT=2026-09-22 12:06:36 KST
-WAKE_OK=YES
-WORK_OK=YES
-RESULT=PASS_WITH_TIMING_ANOMALY
-INTERPRETATION=Third consecutive +10m-class continuation succeeded. Reduce only lead time to +5m.
-NEXT_DISCRIMINATING_TEST=P1-5M-01
-```
-
-## Evidence — P1-5M-01
-
-```text
-TRIAL_ID=P1-5M-01
-PROMPT_VERSION=P0R (P1 single-final-write scheduler path)
-PRIMARY_VARIABLE=lead time (+5m; prompt structure unchanged)
-INTENDED_DUE=2026-09-22 12:12:00 KST
-ACTUAL_INVOCATION_AT=2026-09-22 12:10:42 KST
-WAKE_OK=YES
-WORK_OK=YES
-RESULT=PASS_WITH_TIMING_ANOMALY
-INTERPRETATION=First +5m-class continuation succeeded; exact timing remains anomalous. Repeat with all other variables fixed.
-NEXT_DISCRIMINATING_TEST=P1-5M-02
-```
-
-## Evidence — P1-5M-02
-
-```text
-TRIAL_ID=P1-5M-02
-PROMPT_VERSION=P0R (P1 single-final-write scheduler path)
-PRIMARY_VARIABLE=lead time (+5m; prompt structure unchanged)
-INTENDED_DUE=2026-09-22 12:17:00 KST
-ACTUAL_INVOCATION_AT=2026-09-22 12:15:18 KST (automation runtime context timestamp)
-OBSERVED_OFFSET=-102s relative to stored DTSTART
-RRULE_PRESENT=YES in current recurring run context
-IS_ENABLED=YES by successful recurring invocation
-WAKE_OK=YES
-WORK_OK=YES; durable ledger restored and prior pending trial evaluated
-DUPLICATE_EXECUTION=NO observed
-RESULT=PASS_WITH_TIMING_ANOMALY
-INTERPRETATION=Second consecutive +5m-class continuation succeeded end-to-end, while nominal early-start anomaly widened to ~102s. Continuation reliability and timestamp semantics remain separable. Keep the same +5m condition for a third sample before stepping down.
-NEXT_DISCRIMINATING_TEST=P1-5M-03
-```
-
-## Evidence — P1-5M-03
-
-```text
-TRIAL_ID=P1-5M-03
-PROMPT_VERSION=P0R (P1 single-final-write scheduler path)
-PRIMARY_VARIABLE=lead time (+5m; prompt structure unchanged)
-INTENDED_DUE=2026-09-22 12:21:00 KST
-ACTUAL_INVOCATION_AT=2026-09-22 12:22:49 KST
-OBSERVED_OFFSET=+109s relative to stored DTSTART
-WAKE_OK=YES
-WORK_OK=YES; durable ledger restored and trial evaluated
-DUPLICATE_EXECUTION=NO observed
-RESULT=PASS_WITH_TIMING_ANOMALY
-INTERPRETATION=Third consecutive +5m continuation succeeded. With 3/3 end-to-end success, reduce only lead time to +3m for the next discriminating test. Timing jitter remains a separate phenomenon.
-NEXT_DISCRIMINATING_TEST=P1-3M-01
-```
-
-## Evidence — P1-3M-01
-
-```text
-TRIAL_ID=P1-3M-01
-PROMPT_VERSION=P0R (P1 single-final-write scheduler path)
-PRIMARY_VARIABLE=lead time (+3m; prompt structure unchanged)
-INTENDED_DUE=2026-09-22 12:27:00 KST
-ACTUAL_INVOCATION_AT=2026-09-22 12:24:45 KST (automation run context)
-OBSERVED_OFFSET=-135s relative to stored DTSTART
-WAKE_OK=YES
-WORK_OK=YES; canonical research docs and ledger restored, trial evaluated
-DUPLICATE_EXECUTION=NO observed
-RESULT=PASS_WITH_TIMING_ANOMALY
-INTERPRETATION=First +3m-class continuation succeeded end-to-end. Because the runtime timestamp precedes stored DTSTART, this field cannot be treated as reliable dispatch-delay evidence; continuation success remains the primary signal. Repeat +3m without changing prompt structure.
-NEXT_DISCRIMINATING_TEST=P1-3M-02
+CURRENT_CANDIDATE=P0R/P1 single-final-write path
+LEAD_TIME=+3m
+SCHEDULER_WRITES_PER_WAKE=1
+RECURRENCE=RRULE:FREQ=HOURLY
+KNOWN_FAILURES=+2m mixed reliability; runtime-context timing offsets are non-authoritative
+RECOVERY_EVIDENCE=P1-2M-01 recovered through hourly RRULE fallback
+NEXT_DISCRIMINATING_TEST=continue the already-started P2-3M-01 comparison before inventing another trial
 ```
 
 ## Result vocabulary
