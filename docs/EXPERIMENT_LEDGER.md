@@ -10,7 +10,8 @@ Use one row per trial. Do not overwrite failed trials.
 | P1-5M-01 | P0R/P1 path | lead time | 5m | 1 | YES | YES | YES | YES | -78s vs stored DTSTART | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Intended due 12:12:00 KST; automation runtime context began 12:10:42 KST. |
 | P1-5M-02 | P0R/P1 path | lead time | 5m | 1 | YES | YES | YES | YES | -102s vs stored DTSTART | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Intended due 12:17:00 KST; automation runtime context began 12:15:18 KST. Second +5m-class end-to-end continuation. |
 | P1-5M-03 | P0R/P1 path | lead time | 5m | 1 | YES | YES | YES | YES | +109s vs stored DTSTART | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Intended due 12:21:00 KST; scheduled automation run context at 12:22:49 KST. Third consecutive +5m continuation. |
-| P1-3M-01 | P0R/P1 path | lead time | 3m | 1 | PENDING | PENDING | PENDING | PENDING | - | - | n/a | - | - | PENDING | First +3m sample; only lead time changed. |
+| P1-3M-01 | P0R/P1 path | lead time | 3m | 1 | YES | YES | YES | YES | -135s vs stored DTSTART | NO observed | n/a | durable state restored; prior trial evaluated | low | PASS_WITH_TIMING_ANOMALY | Intended due 12:27:00 KST; automation run began 12:24:45 KST. First +3m continuation succeeded; timing field remains non-authoritative for dispatch-jitter inference. |
+| P1-3M-02 | P0R/P1 path | lead time | 3m | 1 | PENDING | PENDING | PENDING | PENDING | - | - | n/a | - | - | PENDING | Second +3m sample; only lead time condition retained. |
 | TEMPLATE | P0 | baseline | 1m | 6 | - | - | - | - | - | - | - | - | - | PENDING | |
 
 ## Evidence — P1-10M-01
@@ -106,6 +107,23 @@ DUPLICATE_EXECUTION=NO observed
 RESULT=PASS_WITH_TIMING_ANOMALY
 INTERPRETATION=Third consecutive +5m continuation succeeded. With 3/3 end-to-end success, reduce only lead time to +3m for the next discriminating test. Timing jitter remains a separate phenomenon.
 NEXT_DISCRIMINATING_TEST=P1-3M-01
+```
+
+## Evidence — P1-3M-01
+
+```text
+TRIAL_ID=P1-3M-01
+PROMPT_VERSION=P0R (P1 single-final-write scheduler path)
+PRIMARY_VARIABLE=lead time (+3m; prompt structure unchanged)
+INTENDED_DUE=2026-09-22 12:27:00 KST
+ACTUAL_INVOCATION_AT=2026-09-22 12:24:45 KST (automation run context)
+OBSERVED_OFFSET=-135s relative to stored DTSTART
+WAKE_OK=YES
+WORK_OK=YES; canonical research docs and ledger restored, trial evaluated
+DUPLICATE_EXECUTION=NO observed
+RESULT=PASS_WITH_TIMING_ANOMALY
+INTERPRETATION=First +3m-class continuation succeeded end-to-end. Because the runtime timestamp precedes stored DTSTART, this field cannot be treated as reliable dispatch-delay evidence; continuation success remains the primary signal. Repeat +3m without changing prompt structure.
+NEXT_DISCRIMINATING_TEST=P1-3M-02
 ```
 
 ## Result vocabulary
