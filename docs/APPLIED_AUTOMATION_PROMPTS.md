@@ -194,6 +194,31 @@ Purpose: maximize useful-work duty cycle.
 
 ---
 
+## P4V0 — Verification-frequency omission trial
+
+State: REGISTERED EXPERIMENTAL VARIANT
+Parent: P0R
+Trial: `P4-VERIFY-FREQUENCY-01`
+Primary variable: post-write live metadata verification frequency only
+Rollback: P0R
+
+### Semantic diff from P0R
+
+Exactly one control-policy variable changes:
+
+- **P0R:** after every final scheduler write, immediately perform a separate live-metadata read and require matching automation id, `is_enabled=true`, `RRULE:FREQ=HOURLY`, and intended `DTSTART`.
+- **P4V0:** for this controlled trial only, omit that separate post-write live-metadata read on the normal path. Treat the scheduler update tool's successful returned object as `WRITE_OK/STATE_OK` evidence, but **do not** infer `WAKE_OK` until the future invocation actually occurs.
+
+Everything else remains unchanged: same automation, RRULE recurring schedule, single final write, current lead-time policy, substantive work requirement, durable evidence, no new automation, and hourly fallback semantics.
+
+Failure/rollback rule: if the next invocation does not occur as intended, returned update state is malformed, RRULE disappears, duplicate authority appears, or any ambiguity prevents state reconstruction, restore P0R's mandatory post-write verification before further experimentation.
+
+### Trial interpretation
+
+This variant tests whether a separate read-after-write materially improves continuation reliability or merely adds control-plane overhead. A successful metadata write is not counted as wake success; only the subsequent invocation can establish `WAKE_OK`.
+
+---
+
 ## Prompt-version experiment rule
 
 Every scheduler experiment MUST record:
