@@ -127,3 +127,23 @@ Before promoting a relay candidate, compare it against the benchmark principles 
 A candidate does not fail merely because it differs from an external system. It fails only when repository evidence shows weaker continuation, recovery, duplicate prevention, or useful-work efficiency.
 
 External case studies must never replace controlled experiments or become an additional primary variable in a trial.
+
+
+## Canonical current pointer / cold-start fast path
+
+Routine clean-success recovery MUST NOT require scanning the full Issue #1 history and MUST NOT introduce a separately mutable `status/current.json` mirror by default.
+
+Canonical routine pointer:
+- fetch Issue #1 metadata to obtain the current comment count;
+- fetch only the final bounded comment page needed to recover the latest 1-3 evidence records;
+- derive `CURRENT_CANDIDATE`, `CURRENT_EXPERIMENT`, `LAST_RESULT`, and `NEXT_DISCRIMINATING_TEST` from that compact tail;
+- broaden to `EXPERIMENT_LEDGER.md` or other research documents only under the existing ambiguity/boundary/reconciliation rules.
+
+Rationale:
+- the latest Issue evidence already carries the current experiment/result/next-test tuple;
+- a per-turn mutable mirror would add a second routine write, CAS/staleness risk, and repository-history churn;
+- bounded tail paging provides the cold-start read optimization without creating another authoritative state surface.
+
+The Issue body is a stable bootstrap/index only and MUST NOT contain a manually maintained experiment pointer that can silently become stale.
+
+A separate mutable current-state file may be reconsidered only if measured bootstrap cost remains material after bounded-tail retrieval and its benefit exceeds the added write/CAS/reconciliation overhead.
