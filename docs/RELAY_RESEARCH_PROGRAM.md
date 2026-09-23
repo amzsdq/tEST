@@ -107,3 +107,23 @@ One favorable trace is directional evidence only.
 ## Immediate next step
 
 Start with E1/E2 because recent behavior suggests the dominant uncertainty is not whether RRULE state persists, but whether a newly written near-term DTSTART is eligible for dispatch reliably.
+
+
+## External benchmark layer
+
+Reference: `docs/EXTERNAL_CASE_STUDIES.md`
+
+Use mature distributed-systems implementations as a source of invariants and adverse-test ideas, not as proof of ChatGPT Automation behavior.
+
+Before promoting a relay candidate, compare it against the benchmark principles for:
+- durable reconstruction;
+- at-least-once-safe wake handling;
+- stable work/effect identity;
+- exclusive authority;
+- authoritative completion evidence;
+- recovery-horizon coverage;
+- durable fallback.
+
+A candidate does not fail merely because it differs from an external system. It fails only when repository evidence shows weaker continuation, recovery, duplicate prevention, or useful-work efficiency.
+
+External case studies must never replace controlled experiments or become an additional primary variable in a trial.
