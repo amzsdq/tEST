@@ -1,3 +1,38 @@
+## P4V11 — GitHub server timestamp work-duration source of truth
+
+State: APPLIED
+Parent: P4V10
+Primary variable: work-duration time source only
+Rollback: P4V10
+
+### Semantic diff from P4V10
+
+- **P4V10:** work start/end could be reported as model-written time strings in chat/evidence.
+- **P4V11:** work-duration judgment MUST use GitHub server timestamps only.
+- At actual work start, append a distinct `START_MARKER` Issue #1 comment.
+- At actual work end, append a distinct `END_MARKER` Issue #1 comment.
+- The authoritative duration is:
+
+```text
+WORK_DURATION Source of Truth =
+GitHub server comment timestamps
+```
+
+```text
+WORKED =
+END_MARKER.created_at
+-
+START_MARKER.created_at
+```
+
+- Model-written START/END/time strings are display-only metadata and MUST NOT participate in work-duration judgment, thresholding, promotion/rejection, or utilization metrics.
+- If either marker or its GitHub `created_at` is unavailable/ambiguous, WORKED is UNKNOWN; do not estimate it from model text or local clock.
+- START_MARKER and END_MARKER must belong to the same execution turn and be uniquely identifiable.
+
+Everything else is frozen from P4V10: same automation id, recurring `RRULE:FREQ=HOURLY`, no one-shot schedule, same scheduler mutation policy, same state/evidence rules, same jitter telemetry, same experiment discipline.
+
+---
+
 # Applied Automation Prompt Registry
 
 Status: ACTIVE
