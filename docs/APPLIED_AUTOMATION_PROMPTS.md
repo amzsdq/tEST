@@ -5,16 +5,25 @@ Repository: `amzsdq/tEST`
 
 Purpose: version relay prompt semantics actually tested while keeping runtime identifiers out of this public repository.
 
+## P5M8 — Auto-refill finalization-reserve controlled step-down
+
+State: APPLIED / E12 250S STEP-DOWN ACTIVE
+Parent: P5M7 directional finalization reserve
+Primary variable: FINALIZATION_RESERVE_CUTOFF_STEPDOWN
+
+### Contract
+AUTO_REFILL remains promoted: `PACKAGE_COMPLETE != TURN_COMPLETE`. LW26 and LW27 independently used the same predeclared 240-second new-package admission cutoff and safely committed final baton + sole scheduler mutation + END. Normalized tails were LW26 A/B/C=22/31/53s and LW27=13/21/34s, so 240s is `CONSERVATIVE_REPEAT_CONFIRMED` within observed conditions.
+
+P5M8 changes only the admission cutoff to a separately predeclared 250 seconds. External time is checked at substantive package admission boundaries only. A safe 250s sample is directional and requires repeat before promotion. Lost continuation, `RESERVE_TOO_SMALL`, or materially ambiguous finalization margin restores 240s on the next trial. `PACKAGE_OVERRUN` is tracked separately and does not equal reserve failure unless finalization is lost. Never infer a fixed runtime ceiling from one trace and never tune the cutoff within a live run.
+
 ## P5M7 — Auto-refill with directional finalization reserve
 
-State: APPLIED / E12 BASELINE ACTIVE
+State: SUPERSEDED FOR ACTIVE TESTING / 240S REPEAT COMPLETED
 Parent: promoted P5M6 same-invocation auto-refill
 Primary variable: FINALIZATION_RESERVE_POLICY
 
 ### Contract
-AUTO_REFILL remains default: `PACKAGE_COMPLETE != TURN_COMPLETE`. Elapsed time is used only as a safety/finalization admission signal. At substantive package boundaries, compare an external clock with GitHub START server time. The first E12 baseline predeclares a conservative 240-second cutoff for starting a NEW substantive package. Once reached, preserve exact remainder, write final baton, perform the sole scheduler mutation, and append END. Do not sleep, pad, or interrupt an active validation merely to hit the cutoff.
-
-Prior successful final-baton -> END envelopes are 23s (LW24) and 25s (LW25), measured from GitHub server timestamps. They are sparse evidence, not a safe minimum. One E12 sample cannot promote or shrink the reserve.
+AUTO_REFILL remains default. Elapsed time is only a safety/finalization admission signal. LW26 and LW27 supplied the repeated 240-second evidence now consumed by P5M8. Normalized E12 telemetry is A=`RESERVE_ENTRY->FINAL_BATON`, B=`FINAL_BATON->END`, C=`RESERVE_ENTRY->END`.
 
 ## P5M6 — Same-invocation auto-refill
 
