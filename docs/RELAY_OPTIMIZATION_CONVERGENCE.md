@@ -1,60 +1,61 @@
-# Relay Optimization Convergence Protocol v0.7
+# Relay Optimization Convergence Protocol v0.8
 
-Status: P5M9 AUTO-REFILL + E12 260S REPEAT ACTIVE
+Status: P5M11 AUTO_REFILL + scoped 270s cutoff + fixed-3 coalescing ACTIVE
 
 ## Objective
 Converge to the smallest relay policy that maximizes semantic useful work while preserving continuation reliability, crash recovery, duplicate prevention, recurring fallback, and inspectable durable state. Longer wall-clock time is diagnostic only; fast completion exposes spare capacity for more useful work.
 
 ## Evidence classes
-- SEMANTIC_OUTPUT: validated rule/spec/decision with named downstream consequence and auditable OUTPUT_ID / DURABLE_CHANGE / DOWNSTREAM_CONSEQUENCE / VALIDATED_BY; otherwise report UNKNOWN rather than reconstructing a favorable count.
-- ARTIFACT_IO: persistence/fetch required by real dependency or review boundary.
+- SEMANTIC_OUTPUT: validated rule/spec/decision with auditable OUTPUT_ID / DURABLE_CHANGE / DOWNSTREAM_CONSEQUENCE / VALIDATED_BY; otherwise UNKNOWN.
+- ARTIFACT_IO: persistence/fetch required by a real dependency or review boundary.
 - CONTROL_IO: scheduler mutations, markers, baton/checkpoint writes, verification-only control reads.
-- REFILL_IO: compact same-invocation recovery checkpoints between substantive packages.
+- EFFECT_EVIDENCE_IO: mandatory effect receipt/result and any mandatory durable attempt/intent evidence. Never count this as removable package-boundary I/O.
 - WALL_TIME: GitHub-server END_MARKER.created_at - START_MARKER.created_at.
 - RESERVE_TAIL: D=last admitted boundary->reserve entry; A=reserve entry->final baton; B=final baton->END; C=reserve entry->END.
 
 ## Controlled convergence
-Freeze baseline; change one primary variable; repeat samples; separate WRITE_OK/STATE_OK/WAKE_OK/WORK_OK; measure semantic outputs independently from artifact/control/refill I/O and WALL_TIME. A claim about one layer is NON_COMPARABLE if another causal layer changes without normalization.
-
-Causal layers include package size, packages-per-invocation/refill, target ranking, persistence mode, semantic counting, scheduler/control, lead time, and finalization-reserve admission cutoff.
+Freeze baseline; change one primary variable; repeat samples; separate WRITE_OK/STATE_OK/WAKE_OK/WORK_OK; measure semantic outputs independently from artifact/control/effect-evidence I/O and WALL_TIME. A claim about one layer is NON_COMPARABLE if another causal layer changes without normalization.
 
 ## Eligibility / anti-gaming
-Every added work unit needs downstream value, substantive uncertainty or real correction need, and a discriminating result. Reject filler, sleep, redundant summaries/reads, fake defects, or units created only to enlarge elapsed time/package count.
+Every added work unit needs downstream value, substantive uncertainty, or a real correction need and a discriminating result. Reject filler, sleep, redundant summaries/reads, fake defects, or units created only to enlarge elapsed time/package count.
 
-## Persistence gate
-FULL_CHAIN applies when newly persisted representation is decision-relevant, source-of-truth mutation occurs, or representation drift is material. THIN_ELIGIBLE applies only to reconstructible audit/decision work with named durable evidence and no omitted-boundary defect. Source reads remain ARTIFACT_IO.
+## Persistence / coalescing gate
+FULL_CHAIN applies when authoritative mutation or representation-dependent validation is decision-relevant. THIN_ELIGIBLE applies only to reconstructible audit/decision work.
 
-## Package / auto-refill rules
-30–36 eligible units is promoted per-package semantic-capacity guidance, not invocation cap or wall-time guarantee. `PACKAGE_COMPLETE != TURN_COMPLETE`: package completion triggers immediate parent-goal reassessment and same-invocation refill while useful work remains. Exactly one scheduler mutation occurs at actual invocation end. Cold `NEXT_PACKAGE` is revalidated before side effects.
+Fixed-3 package-boundary coalescing is promoted only for shared-recovery-fate work under `docs/COALESCING_PROTOCOL.md`. Compare package-boundary writes per audited output separately from total durable writes. Required effect receipt and pre-effect attempt/intent evidence are safety evidence, not coalescing overhead to erase. Larger/adaptive groups, multiple-effect groups, and unreceipted/non-idempotent effects remain unpromoted.
+
+## Package / AUTO_REFILL rules
+30–36 eligible units is per-package guidance, not invocation cap. `PACKAGE_COMPLETE != TURN_COMPLETE`: completion triggers parent-goal reassessment and same-invocation refill while useful work remains. Exactly one scheduler mutation occurs at actual invocation end. Cold NEXT is revalidated before side effects.
 
 ## E12 finalization-reserve convergence
-A cutoff controls admission of a NEW substantive package only. It is not a hard interruption deadline and does not bound D after admission. `PACKAGE_OVERRUN` is evidence, not failure unless continuation is lost. Future step-down decisions review D and C jointly so package exposure is not hidden by a short finalization tail.
+A cutoff controls admission of a NEW substantive package only. It is not a hard interruption deadline. Promotion requires repeated safe continuation and, once risk/complexity increases, demonstrated useful-work value.
 
-Frozen method:
-1. predeclare cutoff before live substantive work;
-2. check external time at package admission boundaries only;
-3. do not tune cutoff during the run;
-4. on reserve entry preserve exact remainder, write final baton, perform sole scheduler mutation, append END;
-5. normalize D/A/B/C from GitHub-server evidence;
-6. one safe step-down is DIRECTIONAL only;
-7. promotion requires an independent repeat at the same frozen cutoff with safe continuation;
-8. adverse/ambiguous step-down rolls back to the latest independently repeated safe cutoff;
-9. add class-specific admission guards only after repeated same-class long-tail evidence; do not globally poll per action absent demonstrated need;
-10. never infer a universal runtime ceiling from sparse near-limit traces.
+Current boundary: 240s repeated safe -> 250s tested -> 260s tested -> 270s repeated safe plus LW33 unique useful admission from +264s boundary. 270s is the scoped TESTED cutoff. 260s remains tested fallback. Cutoff chasing stops absent new value evidence; never infer a universal runtime ceiling.
 
-Current evidence: 240s repeated safe in LW26/LW27; 250s repeated safe in LW28/LW29 and is TESTED within current conditions; LW30 supplied one directional-safe 260s endpoint with D=8s, A/B/C=9/13/22s, WORKED=286s and one scheduler write. LW31 is the independent frozen-260s repeat. 260s remains unpromoted until LW31 safely commits final baton+scheduler+END.
+## Receipt/retry convergence
+For the currently promoted conservative one-mutation fixed-3 contract:
+1. reconcile authoritative receipt before retry;
+2. COMMITTED suppresses replay but does not skip remaining node validation;
+3. proof-bearing AUTHORITATIVE_NOT_FOUND grants retry eligibility only;
+4. unavailable/ambiguous/ordinary missing/expired/incomplete/drifted evidence => UNKNOWN;
+5. UNKNOWN does not authorize replay;
+6. any effect attempt causally consumes pre-attempt negative proof for later commit-status decisions;
+7. when that causal boundary is needed for a real effect, durable attempt/intent must precede effect emission unless target authority atomically supplies equivalent semantics;
+8. generic local emission markers are not authoritative proof of external commit.
+
+A possible narrower optimization — safe same-key retry from UNKNOWN under a target authority that itself guarantees idempotent replay/result reconciliation — is hypothesis-only until independently tested. Do not weaken the promoted conservative rule from synthetic assumption alone.
 
 ## Promotion / rollback
 - Scheduler/control: repeated WAKE_OK/WORK_OK, no duplicate-authority violation, relevant recovery evidence.
 - Work shaping: repeated semantic/downstream-value gain under unchanged scheduler/control.
-- Persistence thinning: repeated thin-eligible targets, no omitted-boundary defect, non-inferior quality, lower candidate-boundary I/O.
-- Auto-refill: repeated >=2 substantive packages/invocation when work remains, no padding, one final scheduler mutation, useful-output gain without recovery regression.
-- Reserve cutoff: repeated safe continuation at frozen cutoff; wall time alone never promotes.
+- Persistence/coalescing: same audited work graph, recovery equivalence, no weaker effect evidence, material package-boundary reduction, bounded replay exposure.
+- AUTO_REFILL: repeated multi-package work when useful work remains, no padding, one final scheduler mutation.
+- Reserve cutoff: repeated safe continuation plus useful incremental value when moving to a more aggressive boundary.
 
-Rollback immediately on duplicate substantive side effects, lost recurring fallback, stale-authority overwrite, unrecoverable durable state, omitted-boundary defect, manufactured low-value refill work, or reserve policy that loses continuation.
+Rollback immediately on duplicate substantive side effects, lost recurring fallback, stale-authority overwrite, unrecoverable durable state, omitted-boundary defect, manufactured low-value refill work, unsafe receipt inference, or reserve policy that loses continuation.
 
 ## Decision record
-Record PRIMARY_VARIABLE, COMPARABILITY, LEAD_TIME, CUTOFF when active, SCHEDULER_WRITES, PACKAGES_COMPLETED, UNITS, SEMANTIC_OUTPUTS (audited or UNKNOWN), ARTIFACT_IO, REFILL_IO, CONTROL_IO, WORKED, D/A/B/C when active, PACKAGE_OVERRUN, EVIDENCE, DECISION, STOP_REASON, NEXT.
+Record PRIMARY_VARIABLE, COMPARABILITY, CUTOFF when active, SCHEDULER_WRITES, PACKAGES_COMPLETED, SEMANTIC_OUTPUTS(audited or UNKNOWN), PACKAGE_BOUNDARY_WRITES, TOTAL_DURABLE_WRITES when meaningful, WORKED, D/A/B/C when active, EVIDENCE, DECISION, STOP_REASON, NEXT.
 
 ## Current long-work rule
-Dynamic top-of-prompt TO-DO is first queue head, not invocation cap. Issue #1 remains durable authority. Value gate ranks eligible work; persistence mode is separately gated; package completion refills while useful work remains; reserve admission protects final continuation. Do not infer reasoning depth from elapsed time.
+Dynamic TO-DO is queue head, not invocation cap. Issue #1 bounded tail remains routine durable authority. Value gate ranks work; persistence/coalescing mode is separately gated; package completion refills while useful work remains; reserve admission protects final continuation. Do not infer reasoning depth from elapsed time.
