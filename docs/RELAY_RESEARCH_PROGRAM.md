@@ -41,6 +41,13 @@ THIN_ELIGIBLE is a bounded candidate class for reconstructible audit/decision wo
 
 LW21 supplied one positive bounded sample: two thin targets had OMITTED_BOUNDARY_DEFECT=0 while a FULL_CHAIN policy artifact fresh-fetch caught a real regression. LW22 repeats on different thin targets before broader default promotion. Any defect attributable to an omitted persistence boundary immediately restores FULL_CHAIN for that target class.
 
+### Persistence review invariants
+- `PERSISTENCE_MODE` freezes before substantive execution; only a mandatory rollback after a thinning failure may change it.
+- FULL_CHAIN fresh-fetch review must compare persisted representation against the predeclared acceptance contract, not merely confirm file existence.
+- THIN_ELIGIBLE review must name authoritative durable inputs, reconstruct the exact decision fields from them, and report `OMITTED_BOUNDARY_DEFECT` explicitly.
+- Candidate-boundary operations avoided and necessary source-read I/O are reported separately; source reads never count as savings.
+- A thin result cannot mutate the authoritative source it is auditing. If the decision requires source mutation, route that mutation through FULL_CHAIN.
+
 ## External benchmark layer
 `docs/EXTERNAL_CASE_STUDIES.md` supplies invariants/adverse-test ideas, never proof of ChatGPT Automation behavior.
 
