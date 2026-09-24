@@ -5,16 +5,16 @@ Repository: `amzsdq/tEST`
 
 Purpose: version relay prompt semantics actually tested while keeping runtime identifiers out of this public repository.
 
-## P5M9 — Auto-refill finalization-reserve 260s directional step-down
+## P5M9 — Auto-refill finalization-reserve 260s step-down/repeat
 
-State: APPLIED / E12 260S DIRECTIONAL STEP-DOWN ACTIVE
+State: APPLIED / E12 260S INDEPENDENT REPEAT ACTIVE
 Parent: P5M8 controlled 250s step-down
-Primary variable: FINALIZATION_RESERVE_CUTOFF_STEPDOWN
+Primary variable: FINALIZATION_RESERVE_260S_REPEATABILITY
 
 ### Contract
 AUTO_REFILL remains promoted: `PACKAGE_COMPLETE != TURN_COMPLETE`. LW28 and LW29 independently tested the predeclared 250-second new-package admission cutoff and safely committed final baton + sole scheduler mutation + END. Normalized tails were LW28 A/B/C=11/26/37s and LW29=8/17/25s. Therefore 250s is a TESTED CUTOFF within current relay/finalization conditions, not a universal runtime ceiling or arbitrary-package guarantee.
 
-P5M9 changes only the admission cutoff to a separately predeclared 260 seconds. External time is checked at substantive package admission boundaries only. Packages admitted after +200s retain admission-to-next-validated-boundary telemetry. A package admitted before cutoff may complete after cutoff; `PACKAGE_OVERRUN` is not reserve failure unless continuation is lost. A safe 260s sample is directional and requires independent repeat before promotion. Adverse or ambiguous 260s finalization rolls back to the independently repeated 250s cutoff; 240s remains the older conservative fallback if a shared-mode defect invalidates the 250s evidence. Never tune cutoff within a live run.
+LW30 separately predeclared 260s and safely finalized with D=8s, A/B/C=9/13/22s, WORKED=286s, one scheduler write, and no continuation loss. This is one directional-safe sample only; its semantic-output total is UNKNOWN_PENDING_AUDIT. LW31 independently repeats the same predeclared 260s cutoff. External time is checked at substantive package admission boundaries only. A package admitted before cutoff may complete after cutoff; `PACKAGE_OVERRUN` is not reserve failure unless continuation is lost. 260s promotes only after the independent repeat safely commits final baton+scheduler+END. Adverse or ambiguous 260s finalization rolls back to the independently repeated 250s cutoff; 240s remains the older conservative fallback if a shared-mode defect invalidates the 250s evidence. Never tune cutoff within a live run. Future step-down selection reviews D and C jointly rather than treating C alone as the safety envelope.
 
 ## P5M8 — Auto-refill finalization-reserve controlled step-down
 
@@ -23,7 +23,7 @@ Parent: P5M7 directional finalization reserve
 Primary variable: FINALIZATION_RESERVE_CUTOFF_STEPDOWN
 
 ### Contract
-LW28 safely finalized at 250s with A/B/C=11/26/37s and package overrun. LW29 independently repeated 250s and safely finalized with A/B/C=8/17/25s, one scheduler write, and no continuation loss. This promotes 250s only within the tested relay/finalization conditions.
+LW28 safely finalized at 250s with A/B/C=11/26/37s and package overrun. LW29 independently repeated 250s and safely finalized with A/B/C=8/17/25s, one scheduler write, and no continuation loss. This promotes 250s only within the tested relay/finalization conditions. Prior LW29 running semantic cumulative labels are not treated as audited throughput evidence.
 
 ## P5M7 — Auto-refill with directional finalization reserve
 
