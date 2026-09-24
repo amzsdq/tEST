@@ -1,6 +1,6 @@
 # Package-Boundary Coalescing Protocol
 
-Status: PROMOTED for the tested fixed-3 reconstructible class and for the narrow independently-receipted mutation-containing class described below. Reconstructible cold recovery was confirmed in LW35; mutation-containing cold repeat was independently confirmed in LW36; LW37 added cross-invocation fail-closed evidence for unavailable receipt authority; LW38 confirmed UNKNOWN->COMMITTED cold recovery; LW39 confirmed proof-bearing AUTHORITATIVE_NOT_FOUND as retry-eligibility only.
+Status: PROMOTED for the tested fixed-3 reconstructible class and for the narrow independently-receipted mutation-containing class described below. Reconstructible cold recovery was confirmed in LW35; mutation-containing cold repeat was independently confirmed in LW36; LW37 added cross-invocation fail-closed evidence for unavailable receipt authority; LW38 confirmed UNKNOWN->COMMITTED cold recovery; LW39 confirmed proof-bearing AUTHORITATIVE_NOT_FOUND as retry-eligibility only; LW40 cold-confirmed causal consumption of pre-attempt negative proof.
 
 ## Purpose
 Reduce durable package-boundary I/O without weakening crash recovery or effect safety.
@@ -27,7 +27,7 @@ Never coalesce across an unreceipted non-idempotent effect. Same effect identity
 - `AUTHORITATIVE_NOT_FOUND`: retry is only `ELIGIBLE_TO_CONSIDER`, and only when effect+canonical-payload binding, authority identity/scope, lookup completeness, and retention across the full legitimate replay/reconciliation horizon are all freshly valid. It does not execute or imply an effect and does not advance group NEXT.
 - `UNKNOWN`: unavailable, transiently unreachable, ambiguous, ordinary missing/404/empty without completeness proof, expired retention, incomplete authority, authority/payload drift without proven semantic equivalence, or otherwise insufficient evidence. UNKNOWN never authorizes effect replay or group COMPLETE; exact remainder stays at receipt reconciliation until safe resolution.
 
-`AUTHORITATIVE_NOT_FOUND` has a causal validity boundary in addition to a retention horizon. Once an effect attempt occurs, the pre-attempt negative proof is stale for subsequent commit-status decisions even if its retention date has not expired. A fresh post-attempt authoritative receipt lookup is mandatory before another retry or group advancement.
+`AUTHORITATIVE_NOT_FOUND` has a causal validity boundary in addition to a retention horizon. Once an effect attempt occurs, the pre-attempt negative proof is stale for subsequent commit-status decisions even if its retention date has not expired. A fresh post-attempt authoritative receipt lookup is mandatory before another retry or group advancement. LW40 confirmed this rule across an invocation boundary with no persisted node outputs: proof-before-attempt plus attempt-without-post-attempt-receipt recovered as UNKNOWN, with no replay and no group/NEXT advancement.
 
 Target-specific retry state machine:
 1. Revalidate effect identity + canonical payload + authority identity/scope + completeness + retention + causal freshness.
@@ -61,7 +61,8 @@ LW35: true cross-invocation reconstructible recovery with no persisted node outp
 LW36: fresh-effect cross-invocation one-mutation receipt repeat.
 LW37: unavailable-authority cold differential -> UNKNOWN/no replay/no COMPLETE.
 LW38: prior UNKNOWN later resolved by exact payload-bound COMMITTED receipt; no replay; remaining validation still required.
-LW39: proof-bearing complete-authority/full-horizon AUTHORITATIVE_NOT_FOUND cold probe -> retry eligibility only; ordinary/expired/incomplete negative evidence -> UNKNOWN. Negative proof becomes causally stale after an effect attempt and requires fresh post-attempt reconciliation.
+LW39: proof-bearing complete-authority/full-horizon AUTHORITATIVE_NOT_FOUND cold probe -> retry eligibility only; ordinary/expired/incomplete negative evidence -> UNKNOWN.
+LW40: cross-invocation causal-consumption probe -> pre-attempt AUTHORITATIVE_NOT_FOUND became unusable for post-attempt commit status; no post-attempt receipt => UNKNOWN/no replay/no COMPLETE, exact reconciliation remainder retained.
 
 ## Scope limit
 Only fixed `n=3` shared-recovery-fate groups are promoted. Mutation-containing groups are eligible only with exactly one authoritative/idempotent mutation satisfying the full receipt contract above. Larger/adaptive batching, multiple-effect groups, unreceipted effects, and non-idempotent effects are not promoted. Do not expand scope merely for additional write savings without independent safety/value evidence.
