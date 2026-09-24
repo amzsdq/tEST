@@ -39,14 +39,16 @@ Refill never relaxes eligibility. A refill package must contain substantive work
 The promoted 30–36 range is a per-package semantic-capacity boundary. Auto-refill may execute multiple packages in one invocation without claiming that a single package above 36 is safe. Do not inflate one package merely to increase wall time.
 
 ## Crash/recovery semantics
-A boundary must be sufficient to distinguish `package N validated` from `package N+1 started/completed`. Therefore it records `PACKAGE_COMPLETE=YES` only for N and never pre-claims N+1. If runtime terminates after a REFILL_BOUNDARY but before N+1 completes, `NEXT_PACKAGE` plus `SELECTED_BY` is the durable recovery pointer and cumulative counters provide the accounting baseline. If termination occurs mid-package, persist exact stage/remainder when possible; otherwise recover from the latest boundary plus durable artifact state. On cold recovery, never increment completed-package or semantic-output counters for work lacking validation evidence.
+A boundary must distinguish `package N validated` from `package N+1 started/completed`. It records `PACKAGE_COMPLETE=YES` only for N and never pre-claims N+1. If runtime terminates after a REFILL_BOUNDARY but before N+1 completes, `NEXT_PACKAGE` plus `SELECTED_BY` is the durable recovery pointer and cumulative counters provide the accounting baseline. If termination occurs mid-package, persist exact stage/remainder when possible; otherwise recover from the latest boundary plus durable artifact/effect state. On cold recovery, never increment completed-package or semantic-output counters for work lacking validation evidence.
+
+A generic durable `PACKAGE_START` marker is NOT a correctness requirement. It proves only that execution was attempted; it does not establish which side effects or mutations committed before a crash. Adding one per refill therefore increases control I/O without resolving ambiguous effects. Invocation-level START/END remain the WORKED clock. Targets whose replay can cause unsafe duplicate effects require target/effect-level stable identity plus authoritative receipt/status (or an equivalently strong checkpoint); a package START marker cannot substitute for that contract.
 
 ## Required REFILL_BOUNDARY fields
 - `PACKAGE`
 - `PACKAGE_COMPLETE=YES`
 - `RESULT`
 - `LAST_VALIDATION`
-- `UNITS_DONE_CUMULATIVE`
+- `UNITS_DONE_CUMULATIVE` when unit accounting is active
 - `SEMANTIC_OUTPUTS_CUMULATIVE`
 - `NEXT_PACKAGE`
 - `SELECTED_BY`
@@ -55,29 +57,12 @@ A boundary must be sufficient to distinguish `package N validated` from `package
 Optional package-local metrics may be added only when material. The boundary must remain compact enough for hot-path recovery.
 
 ## Metrics
-Per invocation record:
-- `PACKAGES_COMPLETED`
-- `REFILL_BOUNDARIES`
-- cumulative `UNITS_DONE`
-- cumulative `SEMANTIC_OUTPUTS`
-- `ARTIFACT_IO`
-- `REFILL_IO`
-- `CONTROL_IO`
-- GitHub-server `WORKED`
-- `STOP_REASON`
-- exact `NEXT/REMAINDER`
+Per invocation record: `PACKAGES_COMPLETED`, `REFILL_BOUNDARIES`, cumulative `UNITS_DONE`, cumulative `SEMANTIC_OUTPUTS`, `ARTIFACT_IO`, `REFILL_IO`, `CONTROL_IO`, GitHub-server `WORKED`, `STOP_REASON`, exact `NEXT/REMAINDER`.
 
-Per package retain package units, density, downstream consequences, SELECTED_BY, persistence mode, and validation result.
+Per package retain package units when meaningful, density, downstream consequences, SELECTED_BY, persistence mode, and validation result.
 
 ## First-sample acceptance
-Directional `REFILL_GAIN` requires:
-- package 1 completes substantively;
-- useful work remains;
-- package 2 is derived from actual package-1 evidence;
-- package 2 performs substantive work in the same invocation;
-- no filler/padding;
-- no scheduler mutation at refill boundary;
-- exactly one normal scheduler mutation at actual invocation end.
+Directional `REFILL_GAIN` requires package 1 complete substantively; useful work remains; package 2 is derived from actual package-1 evidence; package 2 performs substantive work in the same invocation; no filler/padding; no scheduler mutation at refill boundary; exactly one normal scheduler mutation at actual invocation end.
 
 Promotion requires repeat multi-package samples. One successful invocation is not sufficient for default promotion.
 
