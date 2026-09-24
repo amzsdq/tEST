@@ -5,15 +5,18 @@ Repository: `amzsdq/tEST`
 
 Purpose: version relay prompt semantics actually tested while keeping runtime identifiers out of this public repository.
 
-## P5M4 — Scalable Large TO-DO package candidate
+## P5M5 — Value-gated work shaping with bounded persistence optimization
 
-State: EXPERIMENTAL / CAPACITY-PROMOTED THROUGH 22 ELIGIBLE UNITS / 34 SUPPORTED_WITH_DENSITY_WARNING
-Parent: P5M3 dynamic TO-DO pointer
-Primary variable: PACKAGE_SIZE
-Rollback: P5M3
+State: APPLIED / VALUE-GATE PROMOTED / PERSISTENCE THINNING BOUNDED-REPEAT
+Parent: P5M4 scalable large TO-DO package
+Primary variable currently under test: PERSISTENCE_BOUNDARY
+Rollback for thinning: FULL_CHAIN on any omitted-boundary defect
 
-### Intent
-P5M3 reduced startup reconstruction, but 5–6 unit packages remained compressible. P5M4 scales materially useful package work without adding scheduler/control mutations. LW15-A/B completed 15 eligible units, LW16 completed 22/22, and LW17 completed 34/34 with no saturation but density 4.12/10 versus frozen 4.13 guardrail. LW18 repeats 34 under frozen counting before any larger scale-up.
+### Promoted work-shaping defaults
+- Pre-shaped packages are promoted through tested 30–36 eligible-unit scale for semantic capacity+density. No 10-minute wall-time guarantee and no safety claim beyond 36.
+- VALUE_GATED_TARGET_SELECTION is promoted as the default selector within tested conditions after LW19 and LW20 independently produced 18/34 = 5.29 semantic outputs/10 on different candidate pools versus LW18 4.71/10.
+- Value dimensions remain decision reach, unresolved uncertainty, falsifiability, and downstream reuse. Value score cannot force persistence.
+- Exactly one final recurring scheduler mutation and practical +3m lead remain the control baseline.
 
 ### Hot-path contract
 - Keep `TO-DO LIST FOR THIS TURN` near the top and replace it each continuing turn.
@@ -22,63 +25,45 @@ P5M3 reduced startup reconstruction, but 5–6 unit packages remained compressib
 - START/END GitHub server timestamps are the only WORKED clock.
 
 ### Unit eligibility gate
-A unit is eligible only if omitting it removes decision-required evidence, a material durable semantic change, an independent persisted validation boundary, a defect-caused operational correction, or synthesis that changes a future experiment/prompt/recovery/promotion decision. Bullet splitting, style rewrites, repeated summaries, redundant fetches, synthetic checkpoints, fabricated defects, and low-value artifacts never create units.
-
-Eligibility is judged before seeing the final density verdict where practicable. Do not delete legitimate completed units from the denominator or split outputs after the fact to cross the guardrail. If a planned unit proves ineligible, record why and remove it transparently from both planned/done accounting rather than silently reclassifying it.
+A unit is eligible only if omitting it removes decision-required evidence, a material durable semantic change, an independent validation boundary, a defect-caused operational correction, or synthesis that changes a future experiment/prompt/recovery/promotion decision. Bullet splitting, style rewrites, repeated summaries, redundant fetches, synthetic checkpoints, fabricated defects, and low-value artifacts never create units.
 
 ### Result-dependent target rule
-Broad dependent stages may be named before START, but a later substantive target remains unresolved until preceding validation. Record `SELECTED_BY=<prior validated result> -> <later target>`. Missing mapping means no dependency credit.
+Broad dependent stages may be named before START, but a later substantive focus remains unresolved until preceding validation. Record `SELECTED_BY=<prior validated result> -> <later target/focus>`. Missing mapping means no dependency credit.
 
-### Scalable package shapes
-- 12–15: normally two eligible artifact chains plus synthesis.
-- 20–24: normally three chains plus synthesis.
-- 30–36: normally four chains plus synthesis.
+### Semantic-output contract
+A semantic output is one validated durable rule/spec/decision with a named downstream consequence. Log `OUTPUT_ID`, `DURABLE_CHANGE`, `DOWNSTREAM_CONSEQUENCE`, `VALIDATED_BY`. Duplicate consequences count once. Aggregation prose counts only when it changes a new named decision.
 
-Shapes are not quotas. `NO_MORE_ELIGIBLE_WORK` beats fabricated units. Runtime/blocker/safety interruption with eligible remainder is SATURATED and carries exact remainder.
+### Persistence eligibility
+Target value and persistence mode are separate gates.
 
-### Persisted-output chain
-When persistence adds decision value: evidence+criteria -> candidate persist -> fresh fetch -> criteria-first review -> real defect record -> defect-caused revision persist -> fresh fetch -> validation. Zero defects is valid; never invent defects.
+FULL_CHAIN is mandatory when newly persisted representation is decision evidence, policy/source-of-truth is mutated, or representation drift is material: evidence/criteria → candidate persist → fresh fetch → criteria-first review → defect-caused revision persist → fresh fetch → validation.
 
-### Frozen semantic-output contract for 30–36 repeat
-A semantic output is one validated durable rule/spec/decision with a named downstream consequence. Log `OUTPUT_ID`, `DURABLE_CHANGE`, `DOWNSTREAM_CONSEQUENCE`, `VALIDATED_BY`. Duplicate formulations sharing a consequence count once unless they independently alter different named decisions. Aggregation prose counts only if it changes a new named decision.
+THIN_ELIGIBLE is limited to reconstructible audit/decision work when named durable inputs are authoritative/freshly readable, exact decision fields can be reconstructed, candidate persistence adds no authority, and omission cannot hide relevant representation drift. Semantic review is never skipped. Source reads remain artifact I/O and never count as thinning savings.
 
-For LW18, density guardrail is 4.13 outputs per 10 actual eligible units. Raw count remains visible under value override. A value override identifies exact output(s), materially larger named consequence, dominated baseline output(s), and falsifiable dominance evidence; subjective quality claims are invalid.
-
-### 30–36 promotion gate
-Promote 30–36 only if frozen repeat completes eligible work with `SATURATED=NO`, `UNITS_REMAINING=0`, unchanged one-write/+3m policy, density >=4.13, auditable output/dependency records, and no post-hoc denominator/numerator gaming. If density repeats below 4.13 without valid value override, stop scale-up: retain 22 as promoted scale, treat 30–36 as tested capacity with density regression, and make target-selection quality the next variable. Do not average away two boundary failures.
-
-### Saturation and exact handoff
-`SATURATED=YES` only when runtime/external blocker/safety interrupts while eligible units remain. Record UNITS_DONE/REMAINING, exact artifact/stage, last validated result, immediate next action. Next TO-DO begins with exact remainder.
+Any material defect attributable to an omitted candidate boundary is `THINNING_FAILURE` and immediately restores FULL_CHAIN for that target class. If a thin audit discovers that its authoritative source itself needs mutation, the audit may make that decision but the source mutation routes through FULL_CHAIN.
 
 ### Measurement
-Record UNITS_PLANNED/DONE/REMAINING, any INELIGIBLE_AFTER_REVIEW units with reasons, PACKAGE_COMPLETE/SATURATED, SEMANTIC_OUTPUTS plus IDs, SEMANTIC_OUTPUTS_PER_10_UNITS, DOWNSTREAM_DECISIONS_CHANGED, RESULT_DEPENDENT_TRANSITIONS, ARTIFACTS_CHANGED, ARTIFACT_IO_RAW, ARTIFACT_IO_PER_SEMANTIC_OUTPUT, CONTROL_IO, WORKED, and valid VALUE_OVERRIDE if any.
-
-Interpret semantic capacity, density, and wall time separately. Wall time alone never promotes.
-
-### Evidence freshness
-Historical evidence remains evidence, but comparability is mechanism-specific. Material drift in relevant prompt/runtime/scheduler/eligibility/counting fields requires fresh comparable evidence before historical result alone controls promotion/blocking.
+Record UNITS_PLANNED/DONE/REMAINING, PACKAGE_COMPLETE/SATURATED, SEMANTIC_OUTPUTS and IDs, density, downstream decisions, SELECTED_BY, PERSISTENCE_MODE/REASON, candidate-boundary I/O, source-read I/O, OMITTED_BOUNDARY_DEFECT, CONTROL_IO, WORKED, RESULT, exact NEXT. Interpret semantic capacity, density, persistence cost, and wall time separately.
 
 ### Recovery
 If prompt TO-DO and Issue #1 disagree, Issue #1 wins. Incomplete packages hand off exact remaining units and immediate next action.
 
 ---
 
+## P5M4 — Scalable Large TO-DO package evidence
+P5M4 established that 30–36 eligible-unit packages can raise semantic capacity without extra scheduler mutations. LW18 promoted the range after 34/34, 16 outputs=4.71/10 under frozen counting. LW19/LW20 then promoted value-gated target selection at 5.29/10. Wall time remained non-monotonic, including a later 34-unit sample around 80 seconds; package size is not a duration guarantee.
+
 ## P4V11 — GitHub server timestamp work-duration source of truth
-
 State: APPLIED
-Parent: P4V10
-Primary variable: work-duration time source only
-Rollback: P4V10
-
 - Append unique START_MARKER immediately before substantive work and matching END_MARKER after all substantive work and allowed final scheduler update.
 - `WORKED = END_MARKER.created_at - START_MARKER.created_at` using GitHub server timestamps only.
 - Model/local time strings are display-only; missing/ambiguous marker pair means WORKED=UNKNOWN.
 
-## Promoted P4 hot-path invariants retained by P5M4
+## Promoted hot-path invariants retained
 - Same automation identity; no new automation for normal continuation.
 - One final recurring RRULE scheduler write on normal path.
 - Issue #1 compact tail is routine bootstrap; broader documents are cold-path unless substantive evidence/boundary/recovery requires them.
-- Wake, scheduler write/state, and useful work remain distinct observations.
+- Wake, scheduler write/state, useful work, semantic density, and persistence cost remain distinct observations.
 - Simplicity is preferred only after recovery and duplicate-safety equivalence is established.
 
 ## Historical note
