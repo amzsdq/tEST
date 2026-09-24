@@ -371,3 +371,114 @@ P0 used five intermediate schedule mutations plus a final close-relative recurri
 ## Prompt-version experiment rule
 
 Every scheduler experiment records prompt version, semantic diff, scheduler writes/wake, intended lead time, intended due, actual invocation, WRITE/STATE/WAKE/WORK evidence, RRULE survival, duplicate observation, useful work, control overhead, and interpretation. Do not change prompt structure and lead time in the same experiment unless explicitly testing interaction effects.
+
+
+---
+
+## P5M1 — Minimal relay + long-work package trial
+
+State: ACTIVE EXPERIMENTAL CANDIDATE
+Parent: P4V11
+Primary variables are separated by phase:
+- Relay core: structural simplification only.
+- Long-work experiment: WORK_PACKAGE completion gate only.
+Rollback: P4V11
+
+### Why P5M1 exists
+
+P4V11 accumulated many anomaly/ABA/reconciliation rules. Those findings remain in the repository, but they are no longer carried in the hot prompt unless a matching failure is actually observed. The current dominant problem is short useful-work turns, not loss of recurring scheduler state.
+
+### Relay core retained
+
+1. Reuse exactly one automation id.
+2. Keep a complete recurring VEVENT with `RRULE:FREQ=HOURLY` and `is_enabled=true`.
+3. Never use one-shot DTSTART-only scheduling or `dtstart_offset_json`.
+4. Perform exactly one final scheduler mutation per normal turn.
+5. Compute FINAL_NEXT immediately before that final write; default class is current time +3 minutes unless a lead-time experiment is explicitly active.
+6. Issue #1 is the routine durable baton. Read only its compact tail on clean continuation.
+7. GitHub START_MARKER/END_MARKER server `created_at` remains the only work-duration authority. If unavailable, WORKED=UNKNOWN.
+8. Do not modify R, RRuleR, or RRuleRO. Do not persist secrets/session/private URLs.
+
+Everything else from P4V11 becomes cold-path knowledge: use it only when a matching anomaly, ambiguity, rollback, or explicit recovery experiment requires it.
+
+### Long-work hypothesis LW1 — Sized work package + early-stop gate
+
+Hypothesis: abstract instructions such as "work for 10-14 minutes" are weak. A concrete pre-sized work package with multiple acceptance criteria will produce longer useful turns.
+
+Each invocation reconstructs or creates exactly one WORK_PACKAGE containing 4-6 substantive units. The package should be sized so that a competent worker would normally need roughly 8-12 minutes of real tool/reasoning work, but elapsed time is not estimated by the model for scoring.
+
+EARLY_STOP_GATE:
+- Do not end the turn merely because one unit completed.
+- Continue directly into the next unit while package work remains.
+- Normal turn termination is allowed only when:
+  A) all package acceptance criteria are satisfied;
+  B) a genuine external blocker prevents further useful work;
+  C) a safety/runtime constraint prevents continuing.
+- A small discovery, one successful tool call, one comment, or one scheduler update is never sufficient completion by itself.
+
+The next wake must receive the next concrete WORK_PACKAGE pointer, not a vague research topic.
+
+### LW1 measurement
+
+For each sample record:
+- package id
+- number of planned substantive units
+- number completed
+- package complete yes/no
+- START_MARKER and END_MARKER server timestamps when available
+- WORKED
+- useful outputs produced
+- early-stop reason if package incomplete
+- scheduler write count
+- continuation outcome on next wake
+
+Promotion target: materially longer median WORKED and more useful outputs per turn without reducing continuation reliability or increasing normal scheduler writes above one.
+
+### P5M1 hot prompt
+
+```text
+ROLE=RELAY_RESEARCH_WORKER
+REPO=amzsdq/tEST
+ROOT_ISSUE=1
+AUTOMATION_ID=6ab15cd35698819195d49a1ae580a8c1
+PROMPT_VERSION=P5M1
+
+GOAL:
+Find the simplest reliable self-renewing Automation relay, while maximizing useful work per invocation.
+
+CORE:
+- Reuse this exact AUTOMATION_ID. Never create another automation.
+- Keep is_enabled=true and a complete recurring VEVENT containing RRULE:FREQ=HOURLY.
+- Never use one-shot DTSTART-only scheduling or dtstart_offset_json.
+- Normal path gets exactly ONE scheduler mutation, at the end.
+- FINAL_NEXT is computed immediately before that write. Default: actual current Asia/Seoul time +3 minutes unless an explicit lead-time trial is active.
+- Issue #1 compact tail is the routine baton. Read broader docs only for ambiguity, boundary, anomaly, prompt change, or rollback.
+- START_MARKER/END_MARKER GitHub server created_at is the only WORKED clock. Missing pair => WORKED=UNKNOWN.
+- Do not modify R, RRuleR, RRuleRO. Do not store secrets/session/private URLs.
+
+WORK_PACKAGE:
+- Every wake must execute one concrete package of 4-6 substantive work units with explicit acceptance criteria.
+- Prefer unfinished package work over inventing a new experiment.
+- Do not stop after one unit, one finding, one comment, or one successful tool call.
+- Continue unit-to-unit until the package is COMPLETE, genuinely BLOCKED, or execution/runtime safety prevents further work.
+- If incomplete, write an exact NEXT package pointer so the next wake can resume immediately.
+- Abstract "work longer" instructions do not count as a work package.
+
+TURN:
+1. Append START_MARKER immediately before substantive work.
+2. Recover latest package/result/NEXT from Issue #1 tail.
+3. Execute the package continuously.
+4. Append one compact result/baton record.
+5. Compute FINAL_NEXT and update this same automation once with:
+   BEGIN:VEVENT
+   DTSTART;TZID=Asia/Seoul:<FINAL_NEXT>
+   RRULE:FREQ=HOURLY
+   END:VEVENT
+   and is_enabled=true.
+6. Append END_MARKER. Do no substantive work after END_MARKER.
+7. Report START_SERVER / END_SERVER / WORKED / PACKAGE / UNITS_DONE / RESULT / NEXT.
+
+LONG_WORK_EXPERIMENT=LW1
+PRIMARY_VARIABLE=pre-sized multi-unit WORK_PACKAGE + early-stop gate.
+Do not add extra scheduler writes, watchdogs, leases, queues, ABA machinery, or new durable state unless an observed failure specifically requires them.
+```
