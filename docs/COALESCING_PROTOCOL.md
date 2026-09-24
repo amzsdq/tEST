@@ -1,6 +1,6 @@
 # Package-Boundary Coalescing Protocol
 
-Status: PROMOTED for the tested fixed-3 reconstructible class and for the narrow independently-receipted mutation-containing class described below. Reconstructible cold recovery was confirmed in LW35; mutation-containing cold repeat was independently confirmed in LW36; LW37 added cross-invocation fail-closed evidence for unavailable receipt authority; LW38 confirmed UNKNOWN->COMMITTED cold recovery; LW39 confirmed proof-bearing AUTHORITATIVE_NOT_FOUND as retry-eligibility only; LW40 cold-confirmed causal consumption of pre-attempt negative proof.
+Status: PROMOTED for the tested fixed-3 reconstructible class and for the narrow independently-receipted mutation-containing class described below. Reconstructible cold recovery was confirmed in LW35; mutation-containing cold repeat was independently confirmed in LW36; LW37 added cross-invocation fail-closed evidence for unavailable receipt authority; LW38 confirmed UNKNOWN->COMMITTED cold recovery; LW39 confirmed proof-bearing AUTHORITATIVE_NOT_FOUND as retry-eligibility only; LW40 cold-confirmed causal consumption of pre-attempt negative proof and narrowed the real-effect contract with a durable pre-effect attempt boundary.
 
 ## Purpose
 Reduce durable package-boundary I/O without weakening crash recovery or effect safety.
@@ -29,22 +29,27 @@ Never coalesce across an unreceipted non-idempotent effect. Same effect identity
 
 `AUTHORITATIVE_NOT_FOUND` has a causal validity boundary in addition to a retention horizon. Once an effect attempt occurs, the pre-attempt negative proof is stale for subsequent commit-status decisions even if its retention date has not expired. A fresh post-attempt authoritative receipt lookup is mandatory before another retry or group advancement. LW40 confirmed this rule across an invocation boundary with no persisted node outputs: proof-before-attempt plus attempt-without-post-attempt-receipt recovered as UNKNOWN, with no replay and no group/NEXT advancement.
 
+For a real effect, causal consumption must itself survive a crash. Therefore an attempt/intent identity must be durably established before effect emission whenever recovery relies on that boundary to invalidate prior negative proof. An after-the-fact attempt marker is insufficient because a crash after effect emission but before marker persistence makes the old negative proof appear fresh. A target-specific atomic authority may substitute only if it provides equivalent stable effect/attempt identity and reconciliation semantics. This is effect-level safety evidence, not removable package-boundary I/O.
+
 Target-specific retry state machine:
 1. Revalidate effect identity + canonical payload + authority identity/scope + completeness + retention + causal freshness.
 2. UNKNOWN -> block replay and retain receipt-reconciliation remainder.
-3. AUTHORITATIVE_NOT_FOUND -> effect retry may be considered; actual idempotent effect invocation is a separate target-specific step using the same stable identity/payload.
-4. After any effect attempt -> require fresh authoritative receipt/result. Old negative proof is consumed for commit-status purposes.
-5. COMMITTED -> suppress replay, reconcile authoritative result, validate remaining fixed-3 nodes, then group COMPLETE/exact NEXT.
+3. AUTHORITATIVE_NOT_FOUND -> effect retry may be considered.
+4. Before actual effect emission, durably establish the attempt/intent boundary unless an atomic target-specific authority supplies equivalent semantics.
+5. Invoke the target-specific idempotent effect using the same stable effect identity/canonical payload.
+6. After any effect attempt -> require fresh authoritative receipt/result. Old negative proof is consumed for commit-status purposes.
+7. COMMITTED -> suppress replay, reconcile authoritative result, validate remaining fixed-3 nodes, then group COMPLETE/exact NEXT.
 
 Crash-split behavior for the tested contract:
-- before effect: stable idempotency identity permits at most one committed effect for canonical payload;
+- before durable attempt boundary: no effect may have been emitted by this state machine; a still-valid proof-bearing AUTHORITATIVE_NOT_FOUND may retain retry eligibility;
+- after durable attempt boundary / before effect or receipt: recovery is UNKNOWN until fresh target authority resolves; do not infer non-execution from absence of a receipt;
 - after effect / before group boundary: COMMITTED receipt returns authoritative result and suppresses duplicate application; unavailable/ambiguous evidence remains UNKNOWN;
 - after group boundary: resume exact NEXT from coalesced boundary.
 
 ## Persistence routing and efficiency
 Coalescing changes package-boundary frequency, not evidence strength. THIN_ELIGIBLE reconstructible audit/decision work is the default candidate. FULL_CHAIN authoritative mutation keeps full representation-dependent validation; a later shared package boundary is allowed only under the promoted receipt contract.
 
-An independently durable effect receipt is required effect-level evidence and is not removable package-boundary I/O. For effectful groups report package-boundary writes and total durable writes separately. Modeled fixed-3 mutation graph: baseline 3 package boundaries + 1 required receipt = 4 writes; coalesced 1 boundary + same receipt = 2 writes. Package-boundary reduction=66.7%; total durable-write reduction=50%.
+An independently durable effect receipt is required effect-level evidence and is not removable package-boundary I/O. Mandatory durable attempt/intent evidence on retry paths is likewise effect-level evidence unless atomically supplied by the target authority. Report package-boundary writes and total durable writes separately, including all mandatory effect-level evidence. The simple first-attempt modeled fixed-3 mutation graph without an additional separate attempt-intent write remains baseline 3 package boundaries + 1 required receipt = 4 writes versus coalesced 1 boundary + same receipt = 2 writes. Do not reuse that 50% total-write figure for retry paths that require an additional durable attempt boundary.
 
 ## Validation failure
 Any node validation failure leaves the group uncommitted. Partial conclusions are not group COMPLETE and exact NEXT/REMAINDER does not advance past the failed node. If an independently receipted effect already committed, recovery reconciles that receipt while reconstructing the otherwise uncommitted group.
@@ -62,7 +67,7 @@ LW36: fresh-effect cross-invocation one-mutation receipt repeat.
 LW37: unavailable-authority cold differential -> UNKNOWN/no replay/no COMPLETE.
 LW38: prior UNKNOWN later resolved by exact payload-bound COMMITTED receipt; no replay; remaining validation still required.
 LW39: proof-bearing complete-authority/full-horizon AUTHORITATIVE_NOT_FOUND cold probe -> retry eligibility only; ordinary/expired/incomplete negative evidence -> UNKNOWN.
-LW40: cross-invocation causal-consumption probe -> pre-attempt AUTHORITATIVE_NOT_FOUND became unusable for post-attempt commit status; no post-attempt receipt => UNKNOWN/no replay/no COMPLETE, exact reconciliation remainder retained.
+LW40: cross-invocation causal-consumption probe -> pre-attempt AUTHORITATIVE_NOT_FOUND became unusable for post-attempt commit status; no post-attempt receipt => UNKNOWN/no replay/no COMPLETE. Follow-up crash-window analysis requires durable attempt/intent before real effect emission unless equivalent semantics are atomic in target authority.
 
 ## Scope limit
 Only fixed `n=3` shared-recovery-fate groups are promoted. Mutation-containing groups are eligible only with exactly one authoritative/idempotent mutation satisfying the full receipt contract above. Larger/adaptive batching, multiple-effect groups, unreceipted effects, and non-idempotent effects are not promoted. Do not expand scope merely for additional write savings without independent safety/value evidence.
