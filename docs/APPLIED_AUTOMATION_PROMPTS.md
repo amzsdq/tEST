@@ -48,6 +48,9 @@ Record UNITS_PLANNED/DONE/REMAINING, PACKAGE_COMPLETE/SATURATED, SEMANTIC_OUTPUT
 ### Recovery
 If prompt TO-DO and Issue #1 disagree, Issue #1 wins. Incomplete packages hand off exact remaining units and immediate next action.
 
+### LW22 registry validation
+A THIN_ELIGIBLE audit of the prior registry detected that P5M4 still described 34-unit scale as density-warning/repeat-pending and omitted the already-promoted value gate and active persistence boundary. Because the registry itself required mutation, correction was routed through FULL_CHAIN. Fresh-fetch review confirms P5M5 now records promoted scale/value defaults, bounded thinning scope, rollback, I/O accounting, and non-monotonic wall-time interpretation. `OMITTED_BOUNDARY_DEFECT=0`: the thin audit exposed the stale source rather than concealing it.
+
 ---
 
 ## P5M4 — Scalable Large TO-DO package evidence
