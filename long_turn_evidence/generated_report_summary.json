@@ -1,0 +1,23 @@
+{
+  "generated_by": "python3 long_turn_evidence/report.py against exact committed validator.py + fixtures.json bytes",
+  "execution_result": "PASS",
+  "fixture_count": 15,
+  "classification_counts": {
+    "ABRUPT_NONFINAL": 4,
+    "PLATFORM_RUNTIME_KILL_CANDIDATE": 1,
+    "REJECTED_INPUT": 3,
+    "TOOLPATH_LOSS_CANDIDATE": 1,
+    "UNKNOWN": 4,
+    "VOLUNTARY_FINAL": 2
+  },
+  "exact_content_proof": {
+    "validator_blob_sha": "e6861c9f940f8a0529b8f93dd546ebcd42c852a7",
+    "fixtures_blob_sha": "bc269b52a866b377e52813edb9395f1a7225d881",
+    "report_blob_sha": "15895ec4a2b86e9e6c7680323d6ecf419c1faaec"
+  },
+  "nonclaims": [
+    "censored lower bound is not exact kill time",
+    "classification is not provider root-cause proof",
+    "multiple invocations are never summed into one-turn success"
+  ]
+}
