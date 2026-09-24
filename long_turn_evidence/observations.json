@@ -1,27 +1,4 @@
 [
-  {
-    "invocation_id": "LT02-AUTO-LARGER-SUBSTANTIVE-PACKAGE-GRAPH-01",
-    "automation_id": "6ab15cd35698819195d49a1ae580a8c1",
-    "start": {"id": 5816702808, "created_at": "2026-09-24T15:05:22Z"},
-    "end": {"id": 5816816630, "created_at": "2026-09-24T15:12:13Z"},
-    "last_durable_boundary": {"id": 5816806499, "created_at": "2026-09-24T15:11:36Z"},
-    "final_baton": {"id": 5816809740, "created_at": "2026-09-24T15:11:48Z"},
-    "finalization_signature": true,
-    "scheduler_mutation_count": 1,
-    "target_seconds": 900,
-    "observation_state": "closed",
-    "provenance": "raw GitHub Issue #1 comments; START and END created_at are exact clock authority"
-  },
-  {
-    "invocation_id": "LT03-DETERMINISTIC-ARTIFACT-CONTEXT-VOLUME-01",
-    "automation_id": "6ab15cd35698819195d49a1ae580a8c1",
-    "start": {"id": 5816888104, "created_at": "2026-09-24T15:16:24Z"},
-    "end": null,
-    "last_durable_boundary": {"id": 5816927273, "created_at": "2026-09-24T15:18:39Z"},
-    "finalization_signature": false,
-    "scheduler_mutation_count": 0,
-    "target_seconds": 900,
-    "observation_state": "active",
-    "provenance": "live LT03 raw GitHub boundary; censored lower bound only until matching END exists"
-  }
+{"invocation_id":"LT02-AUTO-LARGER-SUBSTANTIVE-PACKAGE-GRAPH-01","automation_id":"6ab15cd35698819195d49a1ae580a8c1","start":{"id":5816702808,"created_at":"2026-09-24T15:05:22Z"},"end":{"id":5816816630,"created_at":"2026-09-24T15:12:13Z"},"last_durable_boundary":{"id":5816806499,"created_at":"2026-09-24T15:11:36Z"},"final_baton":{"id":5816809740,"created_at":"2026-09-24T15:11:48Z"},"finalization_signature":true,"scheduler_mutation_count":1,"target_seconds":900,"observation_state":"closed","provenance":"raw GitHub START/END created_at authority"},
+{"invocation_id":"LT03-DETERMINISTIC-ARTIFACT-CONTEXT-VOLUME-01","automation_id":"6ab15cd35698819195d49a1ae580a8c1","start":{"id":5816888104,"created_at":"2026-09-24T15:16:24Z"},"end":null,"last_durable_boundary":{"id":5817039946,"created_at":"2026-09-24T15:25:05Z"},"finalization_signature":false,"scheduler_mutation_count":0,"target_seconds":900,"observation_state":"active","provenance":"live raw GitHub boundary; 521s censored survival lower bound only"}
 ]
