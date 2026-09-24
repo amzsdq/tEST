@@ -31,15 +31,24 @@ Never interpret absence from a compact view as a failed or deleted trial.
 
 ## Frozen LW18 measurement contract
 
-A semantic output is exactly one validated durable rule, specification, or decision with a named downstream consequence. Summaries, stylistic edits, raw reads/writes, and merely restated evidence count zero.
+### Counting
+A semantic output is exactly one validated durable rule, specification, or decision with a named downstream consequence. Summaries, stylistic edits, raw reads/writes, and merely restated evidence count zero. Two statements with the same downstream consequence count once unless they independently change different named decisions.
 
-A result-dependent transition is auditable only when recorded as `SELECTED_BY=<prior validated result> -> <later substantive target>`. The later target must not have been substantively fixed before the prior validation.
+Each counted output must be logged as `OUTPUT_ID`, `DURABLE_CHANGE`, and `DOWNSTREAM_CONSEQUENCE`. This prevents retrospective inflation of the numerator.
 
-LW18 freezes the LW17 persistence baseline: candidate persist -> fresh fetch -> criteria-first review -> defect-caused revision persist -> fresh fetch -> validation for each eligible artifact. Persistence thinning is explicitly out of scope for this repeat.
+### Dependency
+A result-dependent transition is auditable only when recorded as `SELECTED_BY=<prior validated result> -> <later substantive target>`. The later target must not have been substantively fixed before the prior validation. A transition lacking this mapping is not counted as dependency evidence.
 
-Density guardrail is frozen at 4.13 semantic outputs per 10 eligible units. With target 34 units, 14 outputs yields 4.12 and 15 yields 4.41; therefore an ordinary CAPACITY_GAIN verdict requires at least 15 counted semantic outputs, no saturation, and no remainder loss. A lower count is DENSITY_DEGRADED unless concrete higher-value adjudication is named and auditable.
+### Persistence baseline
+LW18 freezes the LW17 persistence baseline: candidate persist -> fresh fetch -> criteria-first review -> defect-caused revision persist -> fresh fetch -> validation for each eligible artifact. Persistence thinning is explicitly out of scope. If a candidate has no real review defect, record `NO_DEFECT` and do not manufacture a revision; mark the artifact chain non-comparable to the full revision baseline rather than fabricating work.
 
-Capacity and density are separate. WORKED is GitHub START->END telemetry only. Raw artifact I/O is reported separately. Scheduler policy remains one final recurring mutation with +3m lead.
+### Density verdict
+Density guardrail is frozen at 4.13 semantic outputs per 10 eligible units. With exactly 34 units, 14 outputs yields 4.12 and 15 yields 4.41; ordinary `CAPACITY_GAIN` therefore requires >=15 counted outputs, `SATURATED=NO`, `UNITS_REMAINING=0`, and unchanged scheduler/control policy.
+
+If completed units differ from 34 but remain in the allowed 30-36 range, calculate density from actual eligible `UNITS_DONE`; do not use a fixed output-count shortcut. A result below 4.13 is `DENSITY_DEGRADED` unless higher-value adjudication identifies the specific lower-count output(s), their materially larger downstream consequence, and why raw count is misleading.
+
+### Telemetry separation
+Capacity and density are separate. WORKED is GitHub START->END telemetry only. Raw artifact I/O is reported separately as `ARTIFACT_IO_RAW` and `ARTIFACT_IO_PER_SEMANTIC_OUTPUT`. Scheduler policy remains exactly one final recurring mutation with +3m lead. Any extra scheduler mutation makes the sample control-non-comparable.
 
 ## Reconciliation contract
 Routine non-boundary evidence lives in Issue #1. Reconcile this index at sample-set completion, promotion/rejection/rollback, prompt-version boundary, or explicit evidence audit. The ledger must not become a mandatory hot-path read.
