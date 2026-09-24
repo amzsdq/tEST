@@ -31,18 +31,18 @@ Demotion: clean routine turn cannot reconstruct an execution-critical field.
 ### Large pre-shaped TO-DO packages — PROMOTED FOR SEMANTIC CAPACITY THROUGH TESTED 22-UNIT SCALE
 LW15-A/B completed 15 eligible units and LW16 completed 22/22 without saturation under one scheduler mutation/+3m lead. LW16 produced 11 semantic outputs (5.0/10 units), supporting capacity scaling through 22 without observed density collapse.
 
-LW17 extended capacity evidence to 34/34 units with SATURATED=NO, but produced 14 outputs = 4.12/10, 0.01 below the frozen 4.13 guardrail. Therefore 34-unit capacity is SUPPORTED_WITH_DENSITY_WARNING, not promoted scale. LW18 repeats 34 under frozen counting before any larger scale-up.
+LW17 extended capacity evidence to 34/34 units with SATURATED=NO, but produced 14 outputs = 4.12/10, 0.01 below frozen 4.13 guardrail. Therefore 34-unit capacity is SUPPORTED_WITH_DENSITY_WARNING, not promoted scale. LW18 repeats 34 under frozen counting before larger scale-up.
 
 Scope: semantic capacity only; no guaranteed wall-clock duration, greater reasoning depth, or arbitrary scaling beyond tested range.
 Demotion: repeated larger packages fail eligibility, lose exact remainder, increase control I/O, or cross density guardrail without compensating auditable downstream value.
 
 ## Evidence freshness rule
-A promotion is not timeless. Before a historical adverse sample or promotion controls a materially changed prompt/runtime/scheduler configuration, compare the fields relevant to that mechanism. If configuration drift is material, retain the evidence as historical but require fresh comparable evidence before blocking or promoting the changed candidate. Never silently discard old adverse evidence; mark its comparability.
+A promotion is not timeless, but freshness comparison is mechanism-specific rather than "any change invalidates history." Before historical evidence controls a changed candidate, compare only fields capable of changing that mechanism's causal interpretation. Examples: lead-time evidence compares lead class, recurrence/control policy, scheduler surface and materially relevant prompt/runtime behavior; package-size evidence compares eligibility/counting contract, scheduler/control policy, persistence baseline and target class. Record `COMPARABILITY=CURRENT/DRIFTED` plus named drift fields. Drifted evidence remains historical and can guide tests, but cannot alone block/promote the changed candidate. Never silently discard adverse evidence.
 
 ## Supported but bounded findings
 
 ### 34-unit large-package capacity — SUPPORTED WITH DENSITY WARNING
-LW17 completed 34/34 eligible units with no saturation and one scheduler mutation, proving tested execution capacity at that scale. Density 4.12/10 missed the experimental 4.13 guardrail. LW18 is the frozen repeat; >=4.13 with no saturation/remainder loss promotes the 30–36 scale, repeated <4.13 stops scale-up pending target-selection improvement unless a falsifiable value override is recorded.
+LW17 completed 34/34 eligible units with no saturation and one scheduler mutation. Density 4.12/10 missed experimental 4.13 guardrail. LW18 frozen repeat: >=4.13 with no saturation/remainder loss promotes 30–36 scale; repeated <4.13 stops scale-up pending target-selection improvement unless a falsifiable value override is recorded.
 
 ### Recurrence as cold recovery — SUPPORTED
 A missed near-term occurrence can leave recurrence intact and a later recurring wake can restore work; no precise fallback-latency guarantee is established.
@@ -67,4 +67,4 @@ Fresh-fetch review can expose material defects and force later work to consume a
 5. Cross-runtime generality remains untested.
 
 ## Promotion/edit contract
-Every promoted mechanism records failure/cost addressed, comparative/adverse relay-local evidence, added control cost, operational scope, explicit demotion trigger, and evidence comparability/freshness. A plausible mechanism without these fields stays OPEN or SUPPORTED.
+Every promoted mechanism records failure/cost addressed, comparative/adverse relay-local evidence, added control cost, operational scope, explicit demotion trigger, and mechanism-specific evidence comparability/freshness. A plausible mechanism without these fields stays OPEN or SUPPORTED.
