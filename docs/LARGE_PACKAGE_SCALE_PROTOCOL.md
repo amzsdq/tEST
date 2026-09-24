@@ -10,35 +10,36 @@ Maximize eligible semantic work per invocation while preserving continuation rel
 - LW16: 22/22, 11 semantic outputs, 5.00/10.
 - LW17: 34/34, 14 outputs, 4.12/10 -> density warning.
 - LW18 frozen repeat: 34/34, SATURATED=NO, 16 audited outputs, 4.71/10 -> clears 4.13 guardrail and promotes 30–36 scale.
-- Scheduler/control baseline across boundary: one final recurring mutation, +3m lead.
-
-Promotion scope is semantic capacity+density only. No 10-minute duration guarantee and no safety claim beyond 36 units.
+- Scheduler/control baseline: one final recurring mutation, +3m lead.
+Promotion scope is semantic capacity+density only. No 10-minute guarantee and no safety claim beyond 36.
 
 ## Scale decision algorithm
-1. Pre-shape only eligible work: decision-required evidence, material durable semantic change, independent persisted validation, material defect correction, or synthesis that changes a downstream decision.
-2. Keep result-dependent substantive focus unresolved; record `SELECTED_BY`.
+1. Pre-shape only eligible work.
+2. Keep result-dependent substantive focus unresolved; record SELECTED_BY.
 3. Execute until completion, genuine saturation, or eligible-work convergence.
-4. On saturation preserve exact remainder first next turn.
-5. Measure capacity, density, persistence cost, and WORKED separately.
-6. Scale beyond a promoted boundary only in a separate experiment; do not mix target-selection/persistence-policy changes with package-size attribution.
+4. Preserve exact remainder on saturation.
+5. Measure capacity, density, persistence cost, WORKED separately.
+6. Scale beyond promoted boundary only as separate experiment; do not mix target-selection/persistence changes with size attribution.
 
 ## Semantic-output contract
 One output = one validated durable rule/spec/decision with named downstream consequence. Duplicate consequence counts once. Summary/style/read-write bookkeeping counts zero. Audit with OUTPUT_ID / DURABLE_CHANGE / DOWNSTREAM_CONSEQUENCE / VALIDATED_BY.
 
 ## Target-selection layer
-Package-size eligibility is necessary but does not rank competing eligible work. Value-gated target selection is a separate OPEN mechanism under LW19. Its score may rank candidates but cannot lower unit eligibility, force persistence, alter semantic-output counting, or justify post-hoc cherry-picking. Promotion of target selection requires a fixed-scale controlled density/value comparison.
-
-## Density guardrail
-Historical scale guardrail=4.13 outputs/10. LW18 promoted 30–36 with 4.71/10. This 4.71 sample is the comparison baseline for LW19 target-selection quality, not a new universal guardrail.
+Package-size eligibility does not rank competing eligible work. Value-gated target selection is separate and remains unpromoted until controlled comparison. Scores cannot lower eligibility, force persistence, alter counting, or justify post-hoc cherry-picking.
 
 ## Persistence interaction
-Full persisted chains remain safe baseline where persisted reality matters. Target score and persistence eligibility are separate gates. Thinning is a separate controlled variable.
+Full persisted chains remain baseline where persisted reality matters. Target score and persistence eligibility are separate gates. Thinning is separate.
 
 ## Long-duration interpretation
-Larger packages increased useful WORKED directionally, including multi-minute samples, but elapsed time remains telemetry. A 10-minute guarantee remains unproven until an intrinsically useful package produces it without padding.
+Larger packages increased useful WORKED directionally, including multi-minute samples, but elapsed time remains telemetry. A 10-minute guarantee is unproven.
+
+## LW19 synthesis validation
+Fresh-fetch review found three confound risks and the protocol now resolves them:
+- TARGET=mechanism layering; FAILURE_MODE=package size, target ranking, persistence, and counting could collapse into one policy; REQUIRED_CHANGE=separate causal layers. RESOLVED.
+- TARGET=baseline misuse; FAILURE_MODE=LW18 4.71 could become a universal density law; REQUIRED_CHANGE=use it only as LW19 comparison baseline while 4.13 remains historical scale guardrail. RESOLVED.
+- TARGET=duration overclaim; FAILURE_MODE=multi-minute samples could be promoted as guaranteed duration; REQUIRED_CHANGE=retain explicit unproven status. RESOLVED.
+
+SYNTHESIS_VALIDATION=PASS. Future experiments can vary one layer while freezing the others.
 
 ## Required baton fields
-PACKAGE, UNITS_PLANNED/DONE/REMAINING, PACKAGE_COMPLETE, SATURATED, SEMANTIC_OUTPUTS/output IDs, density, downstream decisions, SELECTED_BY, target-selection evidence if active, ARTIFACTS_CHANGED, ARTIFACT_IO_RAW, I/O/output, CONTROL_IO, COMPARABILITY, WORKED, RESULT, exact NEXT.
-
-## LW19 cross-artifact synthesis
-P/Q/R/S jointly establish a cleaner causal stack: package size determines tested semantic capacity; value gate ranks eligible substantive targets; artifact eligibility independently decides whether persistence is warranted; semantic-output audit measures consequences; scheduler/control policy remains orthogonal. This prevents a high-value score from becoming permission for weak units, ceremonial persistence, or duration claims.
+PACKAGE, UNITS_PLANNED/DONE/REMAINING, PACKAGE_COMPLETE, SATURATED, semantic outputs/output IDs, density, downstream decisions, SELECTED_BY, target-selection evidence if active, artifacts, artifact I/O, I/O/output, CONTROL_IO, COMPARABILITY, WORKED, RESULT, exact NEXT.
