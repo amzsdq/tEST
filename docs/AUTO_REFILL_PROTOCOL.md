@@ -1,95 +1,62 @@
 # Same-Invocation Auto-Refill Protocol
 
-Status: PROMOTED DEFAULT within tested P5M6 / E11 relay conditions after independent LW24 + LW25 multi-package repeats
+Status: PROMOTED DEFAULT within tested P5M6+ conditions; E12 finalization-reserve optimization active
 
-## Purpose
-Use fast package completion as spare execution capacity. Increase useful work per invocation by continuing with another substantive package instead of ending merely because the current package is complete.
-
-## Primary invariant
-`PACKAGE_COMPLETE != TURN_COMPLETE`
-
-A package is a bounded work-shaping unit. An invocation is the execution opportunity that may contain multiple packages. Package completion transfers control to refill evaluation; it does not itself authorize invocation termination.
+## Purpose and invariant
+Use fast package completion as spare execution capacity. `PACKAGE_COMPLETE != TURN_COMPLETE`. A package is a bounded work-shaping unit; an invocation may contain many packages.
 
 ## Refill transition
-After package N validates:
-1. Persist one compact combined package-result/refill record with completed package identity, key result, last validation, cumulative accounting, exact next substantive package, and `SELECTED_BY` evidence.
-2. Reassess the parent GOAL against current durable evidence.
-3. If useful non-redundant work remains, derive package N+1 using the promoted value gate.
-4. Freeze target/persistence routing for N+1 as required by existing contracts.
-5. Execute N+1 immediately in the SAME invocation.
-6. Repeat.
-
-The refill record REPLACES a redundant per-package END/BATON; do not write both when one durable record can carry package completion and recovery-pointer semantics. Do not mutate the scheduler at refill boundaries. The normal scheduler mutation occurs exactly once at actual invocation end.
+After package N validates: persist one compact combined package-result/refill record; reassess parent GOAL; derive next value-gated substantive package if useful work remains; freeze persistence routing; execute N+1 immediately in the SAME invocation. The combined record replaces redundant package END + refill records. Do not mutate scheduler at refill boundaries; normal scheduler mutation occurs exactly once at actual invocation end.
 
 ## Valid stop conditions
-- `PROGRAM_COMPLETE`: parent goal is actually completed and validated.
-- `GENUINE_EXTERNAL_BLOCKER`: no useful independent goal-directed work can proceed because of an external/physical/permission dependency.
-- `RUNTIME_OR_SAFETY_LIMIT`: runtime, tool, or safety constraint prevents safe continuation.
-- `NO_USEFUL_WORK_REMAINS`: evidence-based reassessment finds no non-redundant goal-directed work.
+PROGRAM_COMPLETE; genuine external blocker with no independent useful work; runtime/tool/safety limit; evidence-based NO_USEFUL_WORK_REMAINS. TO-DO/package/artifact/checkpoint/quota completion is not a stop condition.
 
-Not stop conditions: current TO-DO exhausted; package complete; artifact/test/review complete; checkpoint written; semantic-output quota reached; next schedule prepared.
+## Eligibility and persistence
+Refill never relaxes eligibility. Filler/sleep/padding/redundant work is invalid. VALUE_GATED_TARGET_SELECTION remains active. THIN_ELIGIBLE is restricted to reconstructible audit/decision work; authoritative mutation or representation-dependent validation uses FULL_CHAIN. Source reads remain artifact I/O.
 
-## Work eligibility
-Refill never relaxes eligibility. A refill package must contain substantive work with downstream decision value, uncertainty or real correction need, and a discriminating result. Value-gated target selection remains active. Persistence mode remains separately gated. A package created merely to keep the invocation alive is `REFILL_INVALID_PADDING`.
+## Scale
+30–36 eligible units is per-package semantic-capacity guidance, not invocation cap or wall-time guarantee. Do not inflate one package merely to increase duration.
 
-## Persistence interaction
-The combined refill record is compact recovery state, not a substitute for FULL_CHAIN where persisted representation matters. THIN_ELIGIBLE remains restricted to reconstructible audit/decision work. A thin audit requiring source mutation escalates that mutation to FULL_CHAIN. If a package's authoritative completion already exists in a required artifact/effect receipt, the refill record should point to that evidence rather than duplicate its body, while still retaining exact NEXT and cumulative accounting.
+## Crash/recovery
+Combined boundary records only the validated package and exact recovery pointer; never pre-claims next completion. `NEXT_PACKAGE` is a recovery pointer, not unconditional cold-start command. Cold recovery revalidates authority/value/persistence gates before side effects. Generic per-package START is not a correctness requirement; unsafe replay targets need effect-level stable identity plus authoritative receipt/status or equivalent checkpoint. Invocation START/END remain the WORKED clock.
 
-## Scale interaction
-The promoted 30–36 range is a per-package semantic-capacity boundary. Auto-refill may execute multiple packages in one invocation without claiming that a single package above 36 is safe. Do not inflate one package merely to increase wall time.
+## E12 finalization reserve
+Elapsed time is a safety/admission signal only, never work quota. At substantive package admission boundaries compare external GitHub time to invocation START. A predeclared cutoff stops admission of a NEW substantive package; it does not interrupt an already-validating package. On reserve entry preserve exact remainder, write final baton, perform sole scheduler mutation, append END.
 
-## Crash/recovery semantics
-A boundary must distinguish `package N validated` from `package N+1 started/completed`. It records `PACKAGE_COMPLETE=YES` only for N and never pre-claims N+1. If runtime terminates after the boundary but before N+1 completes, `NEXT_PACKAGE` plus `SELECTED_BY` is the durable recovery pointer and cumulative counters provide the accounting baseline. If termination occurs mid-package, persist exact stage/remainder when possible; otherwise recover from the latest boundary plus durable artifact/effect state. On cold recovery, never increment completed-package or semantic-output counters for work lacking validation evidence.
+Normalize telemetry:
+- D = last admitted boundary -> reserve entry (package exposure/overrun)
+- A = reserve entry -> final baton
+- B = final baton -> END, including scheduler mutation
+- C = reserve entry -> END
 
-`NEXT_PACKAGE` is a recovery pointer, not an unconditional execution command. On cold recovery, revalidate the recorded next package against current authoritative state and the promoted value/persistence gates before causing substantive or external side effects. If intervening durable state already completed, invalidated, or superseded that target, record `RECOVERY_NEXT_STALE` and derive a new eligible package from the same parent goal without incrementing completion counters for the stale target. Same-invocation refill may rely on the immediately preceding validation when no intervening authority change is possible; cold recovery may not assume that freshness.
+Cutoff controls admission; it cannot bound D after admission. `PACKAGE_OVERRUN` is not reserve failure unless continuation is lost.
 
-A generic durable `PACKAGE_START` marker is NOT a correctness requirement. It proves only attempted execution, not committed side effects. Invocation-level START/END remain the WORKED clock. Targets whose replay can cause unsafe duplicate effects require target/effect-level stable identity plus authoritative receipt/status or an equivalently strong checkpoint.
+### E12 evidence
+- LW26 cutoff 240s: A/B/C=22/31/53s, safe.
+- LW27 cutoff 240s: A/B/C=13/21/34s, safe. 240s=`CONSERVATIVE_REPEAT_CONFIRMED`.
+- LW28 cutoff 250s: A/B/C=11/26/37s, safe with overrun; last admission +224 -> reserve boundary +267 (43s exposure).
+- LW29 cutoff 250s: A/B/C=8/17/25s, WORKED=282s, 33 packages / 156 conservative semantic outputs, one scheduler write, safe. Late exposures after +200s included 13s,6s,8s; edge admission +249 -> reserve +257.
+- Therefore 250s is a TESTED CUTOFF within current relay/finalization conditions after independent LW28+LW29 samples. This is not a universal runtime ceiling or arbitrary-package guarantee.
+- LW30 predeclares 260s as a separate directional step-down. One safe 260s sample remains directional and requires independent repeat before promotion.
 
-## E12 directional finalization reserve
-Auto-refill must preserve enough execution opportunity to commit continuation state. Elapsed time is a safety signal, never a work quota.
-
-At substantive package boundaries only, compare an external clock against the invocation START marker. A predeclared reserve threshold may stop admission of a NEW substantive package; it does not interrupt an already-validating package merely to hit a timestamp. On reserve entry, preserve exact unfinished useful work, write the final baton, perform the sole scheduler mutation, and append END.
-
-The first E12 baseline predeclared a 240-second new-package cutoff. LW26 safely finalized with normalized A=22s, B=31s, C=53s. LW27 repeated the same 240-second cutoff and safely finalized with A=13s, B=21s, C=34s. Both samples committed final baton, the sole scheduler mutation, and END. Therefore 240s is classified `CONSERVATIVE_REPEAT_CONFIRMED` within these samples, not as a required minimum.
-
-LW28 then tested the predeclared 250-second cutoff. It safely committed final baton, the sole scheduler mutation, and END with normalized A=11s, B=26s, C=37s. Its last package was admitted at +224s and completed after the cutoff, so `PACKAGE_OVERRUN=YES`; this did not cause continuation loss. Therefore 250s is `DIRECTIONAL_SAFE_WITH_PACKAGE_OVERRUN`, not yet promoted. LW29 repeats 250s unchanged before any further step-down.
-
-Any lost continuation, `RESERVE_TOO_SMALL`, or materially ambiguous margin rolls the next trial back to 240s. Do not tune the cutoff within a live run.
-
-Two earlier successful auto-refill turns provide B-like final-baton -> END envelopes of 23s (LW24) and 25s (LW25). They are sparse empirical tail samples and are not directly comparable with C.
-
-Normalize E12 tail telemetry before comparing samples: record (A) `RESERVE_ENTRY -> FINAL_BATON`, (B) `FINAL_BATON -> END`, and (C) `RESERVE_ENTRY -> END` separately. Do not infer a fixed runtime ceiling from a near-300-second trace.
-
-Interpret a live reserve sample using the following frozen rule:
-- `SAFE_FINALIZATION`: final baton, sole scheduler mutation, and END all commit after reserve entry.
-- `RESERVE_TOO_SMALL`: execution terminates or loses continuation state before those three steps complete.
-- `RESERVE_CONSERVATIVE`: safe finalization occurs and observed finalization tail is materially below the available reserve; this is evidence for a later controlled repeat, not authority to shrink within the same run.
-- `PACKAGE_OVERRUN`: a package admitted before cutoff completes after the cutoff. Preserve the observation; do not relabel it as reserve failure unless finalization is lost.
-
-Package-boundary clock checks are preferred over per-action polling because finalization risk changes meaningfully at package admission boundaries while per-action checks add control overhead without a demonstrated safety gain. If a package class later demonstrates a tail capable of consuming the reserve by itself, add class-specific admission evidence rather than globally polling every action.
+### Frozen E12 rules
+1. predeclare cutoff before live work;
+2. package-boundary clock checks only; no per-action polling absent demonstrated need;
+3. never tune cutoff within a live run;
+4. do not sleep/pad or interrupt active validation to hit cutoff;
+5. one safe step-down is directional; repeated same-cutoff safe continuation is required for promotion;
+6. adverse/ambiguous 260s evidence rolls back to independently repeated 250s; 240s is older fallback only if shared-mode defect invalidates 250 evidence;
+7. add class-specific admission guard only after repeated same-class long-tail evidence;
+8. never infer a fixed runtime ceiling from sparse near-limit traces.
 
 ## Required combined package-result/refill fields
-- `PACKAGE`
-- `PACKAGE_COMPLETE=YES`
-- `RESULT`
-- `LAST_VALIDATION`
-- `UNITS_DONE_CUMULATIVE` when unit accounting is active
-- `SEMANTIC_OUTPUTS_CUMULATIVE`
-- `NEXT_PACKAGE`
-- `SELECTED_BY`
-- `TURN_COMPLETE=NO`
+`PACKAGE`, `PACKAGE_COMPLETE=YES`, `RESULT`, `LAST_VALIDATION`, cumulative semantic/unit accounting when active, `NEXT_PACKAGE`, `SELECTED_BY`, `TURN_COMPLETE=NO`. Optional fields only when material.
 
-Optional package-local metrics may be added only when material. The record must remain compact enough for hot-path recovery.
-
-## Metrics
-Per invocation record: `PACKAGES_COMPLETED`, `REFILL_BOUNDARIES`, cumulative `UNITS_DONE`, cumulative `SEMANTIC_OUTPUTS`, `ARTIFACT_IO`, `REFILL_IO`, `CONTROL_IO`, GitHub-server `WORKED`, `STOP_REASON`, exact `NEXT/REMAINDER`.
-
-For E12 reserve trials additionally record: `RESERVE_CUTOFF_SECONDS`, last admitted package boundary elapsed, reserve-entry elapsed, final-baton server time when available, END server time, observed normalized A/B/C tail, `PACKAGE_OVERRUN`, and whether exact unfinished useful work was preserved.
-
-Per package retain package units when meaningful, density, downstream consequences, SELECTED_BY, persistence mode, and validation result.
+## Invocation metrics
+Record PACKAGES_COMPLETED, cumulative SEMANTIC_OUTPUTS, ARTIFACT_IO, REFILL_IO, CONTROL_IO, GitHub-server WORKED, STOP_REASON, exact NEXT/REMAINDER. E12 adds cutoff, last admission elapsed, reserve entry, D/A/B/C, PACKAGE_OVERRUN, continuation safety.
 
 ## Promotion evidence
-LW24 demonstrated 11 substantive packages in one invocation without package-complete early exit and with one final scheduler mutation. LW25 independently repeated same-invocation refill across multiple substantive packages using the combined boundary from package 1, and exposed/hardened cold-recovery stale-NEXT handling. Within tested relay conditions, auto-refill is therefore the default invocation work-loop. This does not promote filler, unbounded single-package size, or unsafe replay.
+LW24 demonstrated 11 substantive packages in one invocation; LW25 independently repeated multi-package refill and hardened cold stale-NEXT handling. AUTO_REFILL is therefore default within tested relay conditions. LW28+LW29 independently establish scoped 250s finalization-reserve admission evidence.
 
 ## Rollback / adverse evidence
-Reject or narrow auto-refill if it causes duplicate side effects, stale-authority overwrite, lost recovery state, extra scheduler mutations, material quality regression, counter inflation after crash, or systematic creation of low-value work. If cold recovery from the combined record cannot identify last validated package + exact next package + cumulative counters, restore richer boundary fields; do not add redundant package-end records by default. Runtime saturation is not a failure; record `REFILL_SATURATED_RUNTIME` with exact recovery state.
+Narrow or reject auto-refill on duplicate side effects, stale-authority overwrite, lost recovery state, extra scheduler mutations, material quality regression, counter inflation, or systematic low-value work. Runtime saturation itself is not failure if exact recovery state is preserved.
