@@ -17,7 +17,8 @@ def strict_int(v,name,positive=False):
 def marker(m,kind):
     if m is None:return
     if not isinstance(m,dict):raise ValueError(f"{kind}: marker must be object")
-    strict_int(m.get("id"),f"{kind} marker id",True)
+    mid=m.get("id")
+    if isinstance(mid,bool) or not isinstance(mid,int) or mid<=0:raise ValueError(f"{kind}: invalid marker id")
     if "created_at" not in m or not isinstance(m["created_at"],str) or not m["created_at"]:raise ValueError(f"{kind}: missing created_at")
     ts(m["created_at"])
 def validate(r):
