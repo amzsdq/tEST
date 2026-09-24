@@ -1,187 +1,84 @@
-# Relay Research Program v0.1
+# Relay Research Program v0.2-candidate
 
-Status: ACTIVE
+Status: ACTIVE — LW15 large-package capacity trial
 Repository: `amzsdq/tEST`
 
 ## Research question
+What is the simplest relay mechanism that keeps a ChatGPT Automation workload progressing for long periods with high useful-work duty cycle, remains recoverable after missed wakes, and avoids duplicate execution?
 
-What is the simplest relay mechanism that can keep a ChatGPT Automation workload progressing for long periods with high useful-work duty cycle, while remaining recoverable after missed wakes and avoiding duplicate execution?
-
-## Current observations to reproduce independently
-
-These are hypotheses until reproduced in this sandbox:
-
-1. A recurring RRULE automation can update its own DTSTART while preserving `RRULE:FREQ=HOURLY`.
-2. Near-term DTSTART writes may persist successfully while the intended near-term occurrence is still missed.
-3. When a near-term RRULE occurrence is missed, the later recurrence may remain as a cold fallback.
-4. Schedule mutation and UI **Run now** are distinct mechanisms and must not be treated as equivalent.
-5. Multiple schedule writes in one wake require a final-writer rule or durable state can project a stale due back onto the scheduler.
-
-## Experiment matrix
-
-### E1 — RRULE self-shift baseline
-Same automation, one schedule mutation, recurring VEVENT preserved.
-Measure 10 samples at +10m or longer first to establish a low-risk baseline.
-
-### E2 — Minimum lead-time search
-Test close-relative next wake at:
-- +1m
-- +2m
-- +3m
-- +5m
-- +10m
-
-Do not promote a threshold from a single success. Record repeated samples.
-
-### E3 — Repeated mutation stress
-Within one wake:
-- write T1…T5, each far enough in the future
-- final write to close-relative next wake
-- verify that only the final write determines the intended next due
-
-Purpose: detect final-writer races, stale restoration, or mutation lag.
-
-### E4 — Provisional + final two-stage relay
-At wake start:
-- arm a provisional recurring crash-insurance due beyond expected work duration
-
-At close:
-- write final close-relative fast continuation
-
-Measure:
-- useful work duration
-- control overhead
-- whether provisional state incorrectly survives normal close
-- whether final fast wake occurs
-
-### E5 — Missed-wake recovery
-Intentionally select a lead time known to be risky.
-Verify:
-- schedule remains recurring
-- exact near occurrence can be missed
-- later RRULE occurrence still wakes
-- durable checkpoint can resume safely
-
-### E6 — Cross-automation wake
-Research three distinct mechanisms separately:
-A. update another automation's schedule
-B. enable/disable another automation
-C. UI **Run now**
-
-Do not infer C from A or B.
-
-### E7 — Duplicate authority
-Create synthetic competing wake attempts against one durable lease/epoch.
-Goal: only one actor may perform substantive side effects.
-
-### E8 — Durable cold-resume
-Terminate a turn after checkpoint but before normal final rearm.
-Verify next valid wake reconstructs from GitHub only.
+## Established experiment families
+E1 RRULE self-shift baseline; E2 minimum lead-time; E3 repeated mutation stress; E4 provisional/final relay; E5 missed-wake recovery; E6 cross-automation wake; E7 duplicate authority; E8 durable cold-resume; E9 useful-work/package shaping.
 
 ## Metrics
+Primary: continuation success, missed intended wake rate, duplicate substantive execution, dispatch delay, useful-work duty cycle, recovery latency, and semantic useful outputs per invocation.
+Secondary: scheduler mutations per useful-work minute, bootstrap/control overhead, artifact I/O per semantic output, stale-state reconciliation.
 
-Primary:
-- continuation success rate
-- missed intended wake rate
-- duplicate substantive execution count
-- median and tail dispatch delay
-- useful-work duty cycle
-- recovery latency
-
-Secondary:
-- scheduler mutations per useful-work minute
-- bootstrap/control overhead
-- stale-state reconciliation events
-
-## Promotion rule
-
-A mechanism can be considered a candidate default only after:
-- repeated success under identical conditions
-- at least one adverse/failure test
-- no duplicate-authority violation
-- evidence that recovery path works
-- simpler alternatives were compared
-
-One favorable trace is directional evidence only.
-
-## Immediate next step
-
-Start with E1/E2 because recent behavior suggests the dominant uncertainty is not whether RRULE state persists, but whether a newly written near-term DTSTART is eligible for dispatch reliably.
-
+## Promotion principle
+Repeated evidence is required. One favorable trace is directional only. A mechanism must preserve recovery/authority and beat simpler alternatives for the layer being claimed.
 
 ## External benchmark layer
-
-Reference: `docs/EXTERNAL_CASE_STUDIES.md`
-
-Use mature distributed-systems implementations as a source of invariants and adverse-test ideas, not as proof of ChatGPT Automation behavior.
-
-Before promoting a relay candidate, compare it against the benchmark principles for:
-- durable reconstruction;
-- at-least-once-safe wake handling;
-- stable work/effect identity;
-- exclusive authority;
-- authoritative completion evidence;
-- recovery-horizon coverage;
-- durable fallback.
-
-A candidate does not fail merely because it differs from an external system. It fails only when repository evidence shows weaker continuation, recovery, duplicate prevention, or useful-work efficiency.
-
-External case studies must never replace controlled experiments or become an additional primary variable in a trial.
-
+`docs/EXTERNAL_CASE_STUDIES.md` supplies invariants/adverse-test ideas, never proof of ChatGPT Automation behavior. Durable reconstruction, at-least-once-safe wake handling, stable identity, exclusive authority, authoritative completion, recovery horizon, and durable fallback remain benchmark principles.
 
 ## Canonical current pointer / cold-start fast path
+Routine clean-success recovery uses Issue #1 compact tail. Broaden to ledger/docs only for ambiguity, boundary, reconciliation, or when the active substantive package needs those artifacts. Do not maintain a second mutable current-state mirror by default.
 
-Routine clean-success recovery MUST NOT require scanning the full Issue #1 history and MUST NOT introduce a separately mutable `status/current.json` mirror by default.
+## E9 — Long useful-work / package capacity
 
-Canonical routine pointer:
-- fetch Issue #1 metadata to obtain the current comment count;
-- fetch only the final bounded comment page needed to recover the latest 1-3 evidence records;
-- derive `CURRENT_CANDIDATE`, `CURRENT_EXPERIMENT`, `LAST_RESULT`, and `NEXT_DISCRIMINATING_TEST` from that compact tail;
-- broaden to `EXPERIMENT_LEDGER.md` or other research documents only under the existing ambiguity/boundary/reconciliation rules.
+### Research question
+Is short WORKED primarily caused by a package acceptance boundary that is too small, such that a much larger package of independently useful work yields materially more semantic output before normal turn termination?
 
-Rationale:
-- the latest Issue evidence already carries the current experiment/result/next-test tuple;
-- a per-turn mutable mirror would add a second routine write, CAS/staleness risk, and repository-history churn;
-- bounded tail paging provides the cold-start read optimization without creating another authoritative state surface.
+### Historical small-package baseline
+Earlier LW trials used roughly 4-6 substantive units. They improved structure but remained short in wall-clock terms. Persist→fresh-fetch→review→revise chains increased useful persisted work, but the package itself still ended after one small coherent production cycle.
 
-The Issue body is a stable bootstrap/index only and MUST NOT contain a manually maintained experiment pointer that can silently become stale.
+### LW15 — Large package capacity
+Primary variable: `PACKAGE_SIZE`.
 
-A separate mutable current-state file may be reconsidered only if measured bootstrap cost remains material after bounded-tail retrieval and its benefit exceeds the added write/CAS/reconciliation overhead.
+Predeclare roughly 12-15 substantive units spanning TWO eligible downstream artifacts plus a cross-artifact synthesis. The package must contain:
+1. authority/NEXT verification;
+2. two artifact selections that independently pass the eligibility gate;
+3. Artifact A baseline criteria/evidence;
+4. A candidate persistence;
+5. A fresh-fetch adversarial review;
+6. A defect-caused revision;
+7. A fresh-fetch validation;
+8. A result-dependent choice of Artifact B question;
+9. B criteria/evidence;
+10. B candidate persistence;
+11. B fresh-fetch review;
+12. B defect-caused revision and validation;
+13. cross-artifact synthesis;
+14. capacity/efficiency comparison;
+15. durable baton and exact continuation pointer.
 
+### Acceptance
+A LW15 sample succeeds as a **large-package execution** only when all eligible units complete or a genuine runtime/blocker/safety boundary is reached and the exact remainder is persisted.
 
-## E9 — Long useful-work duration / Work Package Completion Gate
+A LW15 sample supports **CAPACITY_GAIN** only when:
+- semantic outputs/downstream value materially exceed the small-package baseline;
+- scheduler mutation policy and lead-time policy remain unchanged;
+- no padding, synthetic waiting, fake defects, redundant reads, or low-value artifacts are used;
+- added artifact I/O is attributable to useful package units and is reported separately.
 
-Status: ACTIVE under P5M1.
+Do not infer reasoning depth from elapsed time. Do not target a number of minutes by waiting.
 
-Research question:
-Can a pre-sized, multi-unit work package produce materially longer useful turns than an abstract duration instruction without harming relay reliability?
-
-### LW1 baseline
-Each wake receives exactly one concrete package with 4-6 substantive units and explicit acceptance criteria.
-
-Termination gate:
-- completing one subtask is not turn completion;
-- continue immediately into remaining package units;
-- end only on PACKAGE_COMPLETE, genuine BLOCKED, or execution/runtime safety constraint.
-
-Do not use model-reported elapsed time for evaluation.
+### Saturation
+If runtime/turn limits interrupt a still-useful large package, label `SATURATED`, record `UNITS_REMAINING` exactly, and make the next top-of-prompt TO-DO begin with that remainder. Saturation is evidence that package capacity exceeds one invocation; it is not package failure if durable continuation is correct.
 
 ### Measurements
-Use GitHub server START_MARKER/END_MARKER created_at when available:
-- WORKED
-- units planned/completed
-- useful artifacts/results produced
-- reason for early termination
-- scheduler write count
-- next-wake continuation result
+Use GitHub START_MARKER/END_MARKER `created_at` only for WORKED. Record:
+- units planned/done/remaining;
+- semantic outputs and downstream decisions;
+- artifacts changed;
+- artifact I/O raw and normalized per semantic output;
+- scheduler/control I/O;
+- package completion/early-stop reason;
+- next-wake continuation result.
 
 ### Comparison sequence
-1. LW1: sized package + early-stop gate.
-2. If LW1 still terminates early, test LW2: package decomposed into mandatory ordered checkpoints, without changing scheduler policy.
-3. If still short, test LW3: one mid-turn authoritative progress marker as a continuation trigger/measurement aid.
-4. Only after those fail, consider more complex mechanisms.
+1. LW15-A: first 12-15-unit large-package sample.
+2. LW15-B: repeat a similarly sized package on different eligible work while preserving scheduler/control policy.
+3. If both show capacity gain, promote large-package shaping as the default package-sizing rule, while separately optimizing per-unit I/O.
+4. If packages still collapse with no semantic gain, reject size alone and investigate a higher-level turn-termination/runtime constraint.
 
-Change only one long-work control variable at a time.
-
-### Simplification rule
-P4 anomaly/ABA findings remain cold-path references. They must not be reintroduced into the hot prompt unless a corresponding failure is observed in P5M1.
+## Hot-path execution pointer
+Use `TO-DO LIST FOR THIS TURN` near the top of the automation prompt. It is replace-only hot-path state; Issue #1 remains durable authority. End-of-turn scheduler update also replaces the next TO-DO in the same single automation mutation.
