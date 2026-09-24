@@ -5,16 +5,25 @@ Repository: `amzsdq/tEST`
 
 Purpose: version relay prompt semantics actually tested while keeping runtime identifiers out of this public repository.
 
+## P5M9 — Auto-refill finalization-reserve 260s directional step-down
+
+State: APPLIED / E12 260S DIRECTIONAL STEP-DOWN ACTIVE
+Parent: P5M8 controlled 250s step-down
+Primary variable: FINALIZATION_RESERVE_CUTOFF_STEPDOWN
+
+### Contract
+AUTO_REFILL remains promoted: `PACKAGE_COMPLETE != TURN_COMPLETE`. LW28 and LW29 independently tested the predeclared 250-second new-package admission cutoff and safely committed final baton + sole scheduler mutation + END. Normalized tails were LW28 A/B/C=11/26/37s and LW29=8/17/25s. Therefore 250s is a TESTED CUTOFF within current relay/finalization conditions, not a universal runtime ceiling or arbitrary-package guarantee.
+
+P5M9 changes only the admission cutoff to a separately predeclared 260 seconds. External time is checked at substantive package admission boundaries only. Packages admitted after +200s retain admission-to-next-validated-boundary telemetry. A package admitted before cutoff may complete after cutoff; `PACKAGE_OVERRUN` is not reserve failure unless continuation is lost. A safe 260s sample is directional and requires independent repeat before promotion. Adverse or ambiguous 260s finalization rolls back to the independently repeated 250s cutoff; 240s remains the older conservative fallback if a shared-mode defect invalidates the 250s evidence. Never tune cutoff within a live run.
+
 ## P5M8 — Auto-refill finalization-reserve controlled step-down
 
-State: APPLIED / E12 250S STEP-DOWN ACTIVE
+State: SUPERSEDED FOR ACTIVE TESTING / 250S TESTED CUTOFF
 Parent: P5M7 directional finalization reserve
 Primary variable: FINALIZATION_RESERVE_CUTOFF_STEPDOWN
 
 ### Contract
-AUTO_REFILL remains promoted: `PACKAGE_COMPLETE != TURN_COMPLETE`. LW26 and LW27 independently used the same predeclared 240-second new-package admission cutoff and safely committed final baton + sole scheduler mutation + END. Normalized tails were LW26 A/B/C=22/31/53s and LW27=13/21/34s, so 240s is `CONSERVATIVE_REPEAT_CONFIRMED` within observed conditions.
-
-P5M8 changes only the admission cutoff to a separately predeclared 250 seconds. External time is checked at substantive package admission boundaries only. A safe 250s sample is directional and requires repeat before promotion. Lost continuation, `RESERVE_TOO_SMALL`, or materially ambiguous finalization margin restores 240s on the next trial. `PACKAGE_OVERRUN` is tracked separately and does not equal reserve failure unless finalization is lost. Never infer a fixed runtime ceiling from one trace and never tune the cutoff within a live run.
+LW28 safely finalized at 250s with A/B/C=11/26/37s and package overrun. LW29 independently repeated 250s and safely finalized with A/B/C=8/17/25s, one scheduler write, and no continuation loss. This promotes 250s only within the tested relay/finalization conditions.
 
 ## P5M7 — Auto-refill with directional finalization reserve
 
@@ -23,7 +32,7 @@ Parent: promoted P5M6 same-invocation auto-refill
 Primary variable: FINALIZATION_RESERVE_POLICY
 
 ### Contract
-AUTO_REFILL remains default. Elapsed time is only a safety/finalization admission signal. LW26 and LW27 supplied the repeated 240-second evidence now consumed by P5M8. Normalized E12 telemetry is A=`RESERVE_ENTRY->FINAL_BATON`, B=`FINAL_BATON->END`, C=`RESERVE_ENTRY->END`.
+AUTO_REFILL remains default. LW26/LW27 supplied repeated 240-second evidence with normalized A/B/C=22/31/53s and 13/21/34s. 240s remains `CONSERVATIVE_REPEAT_CONFIRMED` within those samples.
 
 ## P5M6 — Same-invocation auto-refill
 
@@ -47,10 +56,10 @@ Valid turn-stop conditions are only PROGRAM_COMPLETE, genuine external blocker w
 ### Anti-gaming and recovery
 Fast completion means spare capacity. Refill with useful work; never sleep, pad, repeat converged analysis, fabricate defects, split bullets artificially, or create low-value artifacts merely to increase elapsed time or package count.
 
-`NEXT_PACKAGE` is a recovery pointer, not an unconditional cold-start command. Cold recovery revalidates current authoritative state before side effects. Generic per-package START markers are not required because attempted execution does not prove committed effects; unsafe replay targets require effect-level stable identity/receipt or an equivalently strong checkpoint.
+`NEXT_PACKAGE` is a recovery pointer, not an unconditional cold-start command. Cold recovery revalidates current authoritative state before side effects. Generic per-package START markers are not required; unsafe replay targets require effect-level stable identity/receipt or an equivalently strong checkpoint.
 
 ### Promotion evidence
-LW24 completed 11 substantive packages / 36 semantic outputs in one invocation with one final scheduler mutation. LW25 independently repeated 7 substantive packages / 25 semantic outputs and hardened stale-NEXT cold recovery. AUTO_REFILL is promoted within these tested conditions.
+LW24 completed 11 substantive packages / 36 semantic outputs in one invocation with one final scheduler mutation. LW25 independently repeated 7 substantive packages / 25 semantic outputs and hardened stale-NEXT cold recovery.
 
 ---
 
@@ -58,7 +67,7 @@ LW24 completed 11 substantive packages / 36 semantic outputs in one invocation w
 P5M5 promoted bounded thinning after LW21 and LW22 independent positive samples with zero omitted-boundary defects, while retaining FULL_CHAIN for authoritative mutation and representation-dependent validation.
 
 ## P5M4 — Scalable Large TO-DO package evidence
-P5M4 established that 30–36 eligible-unit packages can raise semantic capacity without extra scheduler mutations. LW18 promoted the range after 34/34, 16 outputs=4.71/10 under frozen counting. LW19/LW20 then promoted value-gated target selection at 5.29/10. Wall time remained non-monotonic; package size is not a duration guarantee.
+P5M4 established that 30–36 eligible-unit packages can raise semantic capacity without extra scheduler mutations. LW18 promoted the range after 34/34, 16 outputs=4.71/10. LW19/LW20 promoted value-gated target selection at 5.29/10. Wall time remained non-monotonic.
 
 ## P4V11 — GitHub server timestamp work-duration source of truth
 State: APPLIED
