@@ -1,17 +1,17 @@
-# Relay Research Program v0.4
+# Relay Research Program v0.5
 
-Status: ACTIVE — work-shaping defaults promoted; bounded persistence routing promoted; same-invocation auto-refill under test
+Status: ACTIVE — work-shaping, bounded persistence routing, and same-invocation auto-refill promoted within tested conditions
 Repository: `amzsdq/tEST`
 
 ## Research question
 What is the simplest relay mechanism that keeps a ChatGPT Automation workload progressing for long periods with high useful-work duty cycle, remains recoverable after missed wakes, and avoids duplicate execution?
 
 ## Experiment families
-E1 RRULE self-shift; E2 minimum lead-time; E3 mutation stress; E4 provisional/final relay; E5 missed-wake recovery; E6 cross-automation wake; E7 duplicate authority; E8 durable cold-resume; E9 useful-work/package shaping; E10 persistence-boundary optimization; E11 same-invocation auto-refill.
+E1 RRULE self-shift; E2 minimum lead-time; E3 mutation stress; E4 provisional/final relay; E5 missed-wake recovery; E6 cross-automation wake; E7 duplicate authority; E8 durable cold-resume; E9 useful-work/package shaping; E10 persistence-boundary optimization; E11 same-invocation auto-refill; E12 invocation-tail/finalization reserve.
 
 ## Metrics
 Primary: continuation success, missed intended wake rate, duplicate substantive execution, dispatch delay, useful-work duty cycle, recovery latency, semantic useful outputs per invocation.
-Secondary: scheduler mutations per useful-work minute, bootstrap/control overhead, artifact I/O per semantic output, stale-state reconciliation, packages completed per invocation, refill success rate.
+Secondary: scheduler mutations per useful-work minute, bootstrap/control overhead, artifact I/O per semantic output, stale-state reconciliation, packages completed per invocation, refill success rate, finalization success under long refill chains.
 
 ## Promotion principle
 Repeated evidence is required. One favorable trace is directional only. Claims must be scoped to the layer actually tested. Wall time is telemetry and never independently promotes a work-shaping mechanism.
@@ -48,19 +48,32 @@ THIN_ELIGIBLE is promoted as a bounded default for reconstructible audit/decisio
 - Any defect attributable specifically to an omitted candidate boundary immediately rolls back the affected thin class.
 
 ## E11 — Same-invocation auto-refill
+Status: PROMOTED DEFAULT within tested P5M6 conditions after independent LW24 and LW25 multi-package samples.
+
 Primary invariant: `PACKAGE_COMPLETE != TURN_COMPLETE`.
 
-A completed package is a refill trigger. Reassess the parent goal and unresolved durable state immediately. If useful goal-directed work remains, derive the next concrete substantive package and execute it in the same invocation. A refill boundary is a compact durable recovery checkpoint, not a scheduler mutation and not a turn ending.
+A completed package is a refill trigger. Reassess the parent goal and unresolved durable state immediately. If useful goal-directed work remains, derive the next concrete substantive package and execute it in the same invocation. The combined package-result/refill record is compact durable recovery state, not a scheduler mutation and not a turn ending.
 
 Valid turn-stop conditions are limited to: PROGRAM_COMPLETE; genuine external blocker with no useful independent work; runtime/tool/safety constraint; or evidence-based NO_USEFUL_WORK_REMAINS. Completing a TO-DO, artifact, package, checkpoint, semantic-output quota, or scheduler preparation is not a stop condition.
 
-### E11 anti-gaming / validation
+### E11 promoted invariants
 - Never sleep, pad, repeat converged analysis, fabricate defects, or create low-value artifacts to lengthen elapsed time.
-- Fast package completion is spare capacity and should cause refill.
+- Fast package completion is spare capacity and causes refill.
 - Exactly one scheduler mutation remains at actual invocation end; refill boundaries do not touch the schedule.
-- A valid first sample must show at least one completed package followed by a second substantive package in the same invocation when useful work remains.
+- One compact combined result/refill record per validated package is the current recovery lower bound under Issue #1 authority; do not add separate package END records.
+- `NEXT_PACKAGE` is a recovery pointer, not an unconditional cold-start command; revalidate it against current authority before side effects.
+- Generic per-package START markers are not replay protection; unsafe effects need effect-level stable identity/receipt.
 - Track packages completed, useful outputs, control I/O, refill-boundary I/O, and GitHub-server WORKED separately.
-- Promotion requires repeat evidence; one successful multi-package invocation is directional only.
+
+## E12 — Invocation-tail / finalization reserve
+Auto-refill increases useful work but creates a new failure mode: continuing useful packages too close to an unknown runtime ceiling could prevent the single required final scheduler mutation and END marker. E12 must find the simplest evidence-based finalization policy that preserves high duty cycle without converting elapsed time into a performance target.
+
+Research constraints:
+- GitHub-server timestamps remain the only WORKED clock.
+- Do not sleep or pad to hit a duration.
+- Tail policy must reserve enough execution opportunity for durable baton + one scheduler mutation + END marker.
+- Compare periodic clock/control overhead against continuation risk; avoid checking time after every trivial action if a cheaper package-boundary check suffices.
+- Do not promote a fixed cutoff from one trace. Test multiple long refill invocations or failure/recovery evidence.
 
 ## External benchmark layer
 `docs/EXTERNAL_CASE_STUDIES.md` supplies invariants/adverse-test ideas, never proof of ChatGPT Automation behavior.
