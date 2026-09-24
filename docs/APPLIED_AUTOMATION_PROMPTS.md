@@ -7,86 +7,56 @@ Purpose: version relay prompt semantics actually tested while keeping runtime id
 
 ## P5M4 — Scalable Large TO-DO package candidate
 
-State: EXPERIMENTAL / CAPACITY-PROMOTED THROUGH 22 ELIGIBLE UNITS
+State: EXPERIMENTAL / CAPACITY-PROMOTED THROUGH 22 ELIGIBLE UNITS / 34 SUPPORTED_WITH_DENSITY_WARNING
 Parent: P5M3 dynamic TO-DO pointer
 Primary variable: PACKAGE_SIZE
 Rollback: P5M3
 
 ### Intent
-P5M3 showed that a concrete top-of-prompt TO-DO pointer reduces startup reconstruction, but 5–6 unit packages remained highly compressible. P5M4 tests how far a materially larger package can increase semantic capacity per invocation without adding scheduler/control mutations. LW15-A/B completed 15 eligible units and LW16 completed 22/22 with no saturation; LW17 probes 30–36.
+P5M3 showed a concrete top-of-prompt TO-DO reduces startup reconstruction, but 5–6 unit packages remained compressible. P5M4 scales materially useful package work without adding scheduler/control mutations. LW15-A/B completed 15 eligible units, LW16 completed 22/22, and LW17 completed 34/34 with no saturation but density 4.12/10 versus frozen 4.13 guardrail. LW18 repeats 34 under frozen counting before any larger scale-up.
 
 ### Hot-path contract
 - Keep `TO-DO LIST FOR THIS TURN` near the top and replace it at each continuing turn.
-- Issue #1 remains authoritative durable state; the TO-DO is a hot-path execution pointer.
-- Normal continuation uses the same automation and exactly one final scheduler mutation.
-- Preserve recurring `RRULE:FREQ=HOURLY`; default next lead remains current Asia/Seoul time +3 minutes unless another lead trial is explicitly active.
-- START/END GitHub server timestamps remain the only WORKED clock.
+- Issue #1 remains authoritative durable state; TO-DO is a hot-path pointer.
+- Same automation, exactly one final scheduler mutation, recurring `RRULE:FREQ=HOURLY`, +3m default lead.
+- START/END GitHub server timestamps are the only WORKED clock.
 
 ### Unit eligibility gate
-A planned unit is eligible only if omitting it would remove at least one of:
-1. decision-required evidence;
-2. a material durable semantic change;
-3. an independent persisted validation boundary;
-4. a defect-caused correction with operational consequence;
-5. synthesis that changes a future experiment, prompt, recovery rule, or promotion/demotion decision.
+A unit is eligible only if omitting it removes decision-required evidence, a material durable semantic change, an independent persisted validation boundary, a defect-caused operational correction, or synthesis that changes a future experiment/prompt/recovery/promotion decision.
 
 Bullet splitting, stylistic rewrites, repeated summaries, redundant fetches, synthetic checkpoints, fabricated defects, and low-value artifacts never create eligible units.
 
 ### Result-dependent target rule
-Before START_MARKER, broad dependent stages may be named, but the substantive target of a declared result-dependent later artifact must remain unresolved until the preceding artifact is freshly validated. The baton must state `SELECTED_BY=<prior validated result> -> <later target>` for every claimed result-dependent transition. If that mapping cannot be recorded from observed evidence, the transition is precomputed/ambiguous and does not count toward dependent capacity.
+Broad dependent stages may be named before START, but a declared later substantive target remains unresolved until preceding validation. Record `SELECTED_BY=<prior validated result> -> <later target>`. Missing mapping means no dependency credit.
 
 ### Scalable package shapes
-- 12–15 units: normally two eligible artifact chains plus synthesis.
-- 20–24 units: normally three result-dependent artifact chains plus synthesis.
-- 30–36 units: normally four result-dependent artifact chains plus synthesis.
+- 12–15: normally two eligible artifact chains plus synthesis.
+- 20–24: normally three chains plus synthesis.
+- 30–36: normally four chains plus synthesis.
 
-These are experiment shapes, not quotas. Never manufacture work to reach the nominal count. If all eligible work converges early, record `NO_MORE_ELIGIBLE_WORK`; if runtime/blocker/safety interrupts while eligible work remains, record saturation and exact remainder.
+Shapes are not quotas. `NO_MORE_ELIGIBLE_WORK` is preferable to fabricated units. Runtime/blocker/safety interruption with eligible remainder is SATURATED and carries exact remainder.
 
 ### Persisted-output chain
-For each eligible artifact when persistence adds decision value:
-1. minimum evidence + explicit acceptance/failure criteria;
-2. material candidate persist;
-3. fresh fetch of the actual persisted candidate;
-4. criteria-first adversarial review;
-5. real defect record as TARGET / FAILURE_MODE / REQUIRED_CHANGE;
-6. defect-caused revision persist;
-7. fresh fetch of revision;
-8. PASS / RETEST / REJECT validation.
+When persistence adds decision value: evidence+criteria -> candidate persist -> fresh fetch -> criteria-first review -> real defect record -> defect-caused revision persist -> fresh fetch -> validation. Zero defects is valid; never invent defects.
 
-Zero defects is valid. A review quota never licenses invented defects. Direct evidence-to-decision work is preferred when persistence would not improve semantic reliability.
+### Frozen semantic-output contract for 30–36 repeat
+A semantic output is one validated durable rule/spec/decision with a named downstream consequence. Log `OUTPUT_ID`, `DURABLE_CHANGE`, `DOWNSTREAM_CONSEQUENCE`, and `VALIDATED_BY`. Duplicate formulations sharing the same downstream consequence count once unless they independently alter different named decisions. Aggregation prose counts only if it changes a new named decision.
+
+For LW18, density guardrail is frozen at 4.13 outputs per 10 actual eligible units. Raw count remains visible even if a value override is claimed. A value override must identify exact output(s), materially larger named consequence, dominated baseline output(s), and falsifiable dominance evidence; subjective quality claims are invalid.
 
 ### Saturation and exact handoff
-`SATURATED=YES` only when runtime, external blocker, or safety constraint interrupts while eligible units remain. Record:
-- UNITS_DONE / UNITS_REMAINING;
-- exact artifact and stage;
-- last validated result;
-- immediate next action.
-
-The next TO-DO begins with that exact remainder. A new package may not replace unfinished eligible work.
+`SATURATED=YES` only when runtime/external blocker/safety interrupts while eligible units remain. Record UNITS_DONE/REMAINING, exact artifact/stage, last validated result, and immediate next action. Next TO-DO begins with exact remainder.
 
 ### Measurement
-Record:
-- UNITS_PLANNED / DONE / REMAINING;
-- PACKAGE_COMPLETE / SATURATED;
-- SEMANTIC_OUTPUTS and SEMANTIC_OUTPUTS_PER_10_UNITS;
-- DOWNSTREAM_DECISIONS_CHANGED;
-- RESULT_DEPENDENT_TRANSITIONS with explicit SELECTED_BY mapping;
-- ARTIFACTS_CHANGED;
-- ARTIFACT_IO_RAW and ARTIFACT_IO_PER_SEMANTIC_OUTPUT;
-- CONTROL_IO;
-- WORKED from GitHub server markers.
+Record UNITS_PLANNED/DONE/REMAINING, PACKAGE_COMPLETE/SATURATED, SEMANTIC_OUTPUTS plus IDs, SEMANTIC_OUTPUTS_PER_10_UNITS, DOWNSTREAM_DECISIONS_CHANGED, RESULT_DEPENDENT_TRANSITIONS, ARTIFACTS_CHANGED, ARTIFACT_IO_RAW, ARTIFACT_IO_PER_SEMANTIC_OUTPUT, CONTROL_IO, WORKED, and any valid VALUE_OVERRIDE.
 
-A semantic output counts only if the baton can name the durable rule/spec/decision changed and its downstream consumer or decision consequence. Multiple prose bullets implementing one decision count as one semantic output. `SEMANTIC_OUTPUTS_PER_10_UNITS = 10 * SEMANTIC_OUTPUTS / UNITS_DONE` and must be compared across scale points; a package is `DENSITY_DEGRADED` when larger nominal capacity is obtained mainly by weaker units rather than additional downstream-value decisions.
+Interpret separately: semantic capacity, semantic-output density, and wall time. Wall time alone never promotes. PACKAGE_SIZE remains promoted only while larger packages add eligible downstream value without extra control cost/remainder loss and without unadjudicated density degradation.
 
-Interpretation separates three questions:
-1. semantic capacity — how much eligible downstream-value work completes in one invocation;
-2. semantic-output density — whether quality/value density degrades as package size grows;
-3. wall time — telemetry only, never a promotion criterion by itself.
-
-PACKAGE_SIZE remains promoted only while larger packages add eligible semantic/downstream output without extra scheduler/control cost or remainder loss. A larger nominal package that lowers semantic-output density through weak units is a regression, not capacity gain.
+### Evidence freshness
+Historical evidence remains evidence, but comparability is mechanism-specific. If materially relevant prompt/runtime/scheduler/eligibility/counting fields drift, record drift and require fresh comparable evidence before the historical result alone controls promotion/blocking.
 
 ### Recovery
-If prompt TO-DO and Issue #1 disagree, Issue #1 wins. If a large package cannot be completed, the durable baton names exact remaining units and immediate next action rather than a vague research topic.
+If prompt TO-DO and Issue #1 disagree, Issue #1 wins. Incomplete large packages hand off exact remaining units and immediate next action.
 
 ---
 
@@ -97,17 +67,16 @@ Parent: P4V10
 Primary variable: work-duration time source only
 Rollback: P4V10
 
-- Append unique START_MARKER immediately before substantive work and matching END_MARKER after all substantive work and the allowed final scheduler update.
+- Append unique START_MARKER immediately before substantive work and matching END_MARKER after all substantive work and allowed final scheduler update.
 - `WORKED = END_MARKER.created_at - START_MARKER.created_at` using GitHub server timestamps only.
 - Model/local time strings are display-only; missing/ambiguous marker pair means WORKED=UNKNOWN.
 
 ## Promoted P4 hot-path invariants retained by P5M4
 - Same automation identity; no new automation for normal continuation.
-- One final recurring RRULE scheduler write on the normal path.
-- Issue #1 compact tail is sufficient for routine bootstrap; broader documents are cold-path unless ambiguity, boundary, anomaly, prompt change, rollback, or substantive package evidence requires them.
+- One final recurring RRULE scheduler write on normal path.
+- Issue #1 compact tail is routine bootstrap; broader documents are cold-path unless substantive evidence/boundary/recovery requires them.
 - Wake, scheduler write/state, and useful work remain distinct observations.
-- Routine clean success may omit redundant positive fields when reconstructable; anomaly/recovery evidence remains explicit.
 - Simplicity is preferred only after recovery and duplicate-safety equivalence is established.
 
 ## Historical note
-Earlier P0–P4 variants established the single-final-write recurring path, compact Issue evidence, Issue-tail bootstrap, conditional verification, positive-field omission, jitter telemetry, and GitHub-server WORKED clock. Detailed historical evidence remains in Issue #1 and the experiment ledger.
+Earlier P0–P4 variants established the single-final-write recurring path, compact Issue evidence, Issue-tail bootstrap, conditional verification, positive-field omission, jitter telemetry, and GitHub-server WORKED clock. Detailed historical evidence remains in Issue #1 and experiment ledger.
