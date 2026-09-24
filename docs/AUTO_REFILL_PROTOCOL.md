@@ -1,6 +1,6 @@
 # Same-Invocation Auto-Refill Protocol
 
-Status: EXPERIMENTAL — P5M6 / E11 first multi-package sample
+Status: EXPERIMENTAL — P5M6 / E11 repeat validation active
 
 ## Purpose
 Use fast package completion as spare execution capacity. Increase useful work per invocation by continuing with another substantive package instead of ending merely because the current package is complete.
@@ -40,6 +40,8 @@ The promoted 30–36 range is a per-package semantic-capacity boundary. Auto-ref
 
 ## Crash/recovery semantics
 A boundary must distinguish `package N validated` from `package N+1 started/completed`. It records `PACKAGE_COMPLETE=YES` only for N and never pre-claims N+1. If runtime terminates after the boundary but before N+1 completes, `NEXT_PACKAGE` plus `SELECTED_BY` is the durable recovery pointer and cumulative counters provide the accounting baseline. If termination occurs mid-package, persist exact stage/remainder when possible; otherwise recover from the latest boundary plus durable artifact/effect state. On cold recovery, never increment completed-package or semantic-output counters for work lacking validation evidence.
+
+`NEXT_PACKAGE` is a recovery pointer, not an unconditional execution command. On cold recovery, revalidate the recorded next package against current authoritative state and the promoted value/persistence gates before causing substantive or external side effects. If intervening durable state already completed, invalidated, or superseded that target, record `RECOVERY_NEXT_STALE` and derive a new eligible package from the same parent goal without incrementing completion counters for the stale target. Same-invocation refill may rely on the immediately preceding validation when no intervening authority change is possible; cold recovery may not assume that freshness.
 
 A generic durable `PACKAGE_START` marker is NOT a correctness requirement. It proves only attempted execution, not committed side effects. Invocation-level START/END remain the WORKED clock. Targets whose replay can cause unsafe duplicate effects require target/effect-level stable identity plus authoritative receipt/status or an equivalently strong checkpoint.
 
