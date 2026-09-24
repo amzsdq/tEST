@@ -52,7 +52,9 @@ At substantive package boundaries only, compare an external clock against the in
 
 The first E12 baseline predeclared a 240-second new-package cutoff. LW26 safely finalized with normalized A=22s, B=31s, C=53s. LW27 repeated the same 240-second cutoff and safely finalized with A=13s, B=21s, C=34s. Both samples committed final baton, the sole scheduler mutation, and END. Therefore 240s is classified `CONSERVATIVE_REPEAT_CONFIRMED` within these samples, not as a required minimum.
 
-The next controlled step-down is 250 seconds, predeclared before LW28 substantive work. A safe 250s sample is directional only and requires repeat before promotion. Any lost continuation, `RESERVE_TOO_SMALL`, or materially ambiguous margin rolls the next trial back to 240s. Do not tune the cutoff within a live run.
+LW28 then tested the predeclared 250-second cutoff. It safely committed final baton, the sole scheduler mutation, and END with normalized A=11s, B=26s, C=37s. Its last package was admitted at +224s and completed after the cutoff, so `PACKAGE_OVERRUN=YES`; this did not cause continuation loss. Therefore 250s is `DIRECTIONAL_SAFE_WITH_PACKAGE_OVERRUN`, not yet promoted. LW29 repeats 250s unchanged before any further step-down.
+
+Any lost continuation, `RESERVE_TOO_SMALL`, or materially ambiguous margin rolls the next trial back to 240s. Do not tune the cutoff within a live run.
 
 Two earlier successful auto-refill turns provide B-like final-baton -> END envelopes of 23s (LW24) and 25s (LW25). They are sparse empirical tail samples and are not directly comparable with C.
 
