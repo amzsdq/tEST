@@ -1,6 +1,6 @@
-# Relay Research Program v0.5
+# Relay Research Program v0.6
 
-Status: ACTIVE — work-shaping, bounded persistence routing, and same-invocation auto-refill promoted within tested conditions
+Status: ACTIVE — work-shaping, bounded persistence routing, same-invocation auto-refill promoted; E12 finalization reserve optimizing
 Repository: `amzsdq/tEST`
 
 ## Research question
@@ -66,14 +66,21 @@ Valid turn-stop conditions are limited to: PROGRAM_COMPLETE; genuine external bl
 - Track packages completed, useful outputs, control I/O, refill-boundary I/O, and GitHub-server WORKED separately.
 
 ## E12 — Invocation-tail / finalization reserve
-Auto-refill increases useful work but creates a new failure mode: continuing useful packages too close to an unknown runtime ceiling could prevent the single required final scheduler mutation and END marker. E12 must find the simplest evidence-based finalization policy that preserves high duty cycle without converting elapsed time into a performance target.
+Auto-refill increases useful work but creates a new failure mode: continuing useful packages too close to an unknown runtime ceiling could prevent the single required final scheduler mutation and END marker. E12 seeks the smallest evidence-based reserve that protects continuation without turning elapsed time into a work target.
+
+LW26 and LW27 independently used a predeclared 240-second new-package admission cutoff and both safely committed final baton + sole scheduler mutation + END. Normalized tails were LW26 A/B/C=22/31/53s and LW27=13/21/34s. Therefore 240s is `CONSERVATIVE_REPEAT_CONFIRMED` within observed conditions, not a promoted minimum.
+
+LW28 is a separate predeclared 250-second controlled step-down. One safe 250s sample remains directional and requires repeat before promotion. Any lost continuation, `RESERVE_TOO_SMALL`, or materially ambiguous finalization margin restores 240s for the next trial.
 
 Research constraints:
 - GitHub-server timestamps remain the only WORKED clock.
+- Check elapsed time at substantive package admission boundaries, not every trivial action.
 - Do not sleep or pad to hit a duration.
-- Tail policy must reserve enough execution opportunity for durable baton + one scheduler mutation + END marker.
-- Compare periodic clock/control overhead against continuation risk; avoid checking time after every trivial action if a cheaper package-boundary check suffices.
-- Do not promote a fixed cutoff from one trace. Test multiple long refill invocations or failure/recovery evidence.
+- Tail policy reserves durable baton + one scheduler mutation + END marker.
+- Record normalized A=`RESERVE_ENTRY->FINAL_BATON`, B=`FINAL_BATON->END`, C=`RESERVE_ENTRY->END`.
+- `PACKAGE_OVERRUN` is recorded separately from reserve failure.
+- Do not infer a fixed runtime ceiling from one near-300-second trace.
+- Do not promote a smaller reserve from one favorable sample.
 
 ## External benchmark layer
 `docs/EXTERNAL_CASE_STUDIES.md` supplies invariants/adverse-test ideas, never proof of ChatGPT Automation behavior.
