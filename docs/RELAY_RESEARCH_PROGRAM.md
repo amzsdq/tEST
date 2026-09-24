@@ -1,17 +1,17 @@
-# Relay Research Program v0.3
+# Relay Research Program v0.4
 
-Status: ACTIVE — work-shaping defaults promoted through LW20; persistence-boundary optimization under repeat test
+Status: ACTIVE — work-shaping defaults promoted; bounded persistence routing promoted; same-invocation auto-refill under test
 Repository: `amzsdq/tEST`
 
 ## Research question
 What is the simplest relay mechanism that keeps a ChatGPT Automation workload progressing for long periods with high useful-work duty cycle, remains recoverable after missed wakes, and avoids duplicate execution?
 
 ## Experiment families
-E1 RRULE self-shift; E2 minimum lead-time; E3 mutation stress; E4 provisional/final relay; E5 missed-wake recovery; E6 cross-automation wake; E7 duplicate authority; E8 durable cold-resume; E9 useful-work/package shaping; E10 persistence-boundary optimization.
+E1 RRULE self-shift; E2 minimum lead-time; E3 mutation stress; E4 provisional/final relay; E5 missed-wake recovery; E6 cross-automation wake; E7 duplicate authority; E8 durable cold-resume; E9 useful-work/package shaping; E10 persistence-boundary optimization; E11 same-invocation auto-refill.
 
 ## Metrics
 Primary: continuation success, missed intended wake rate, duplicate substantive execution, dispatch delay, useful-work duty cycle, recovery latency, semantic useful outputs per invocation.
-Secondary: scheduler mutations per useful-work minute, bootstrap/control overhead, artifact I/O per semantic output, stale-state reconciliation.
+Secondary: scheduler mutations per useful-work minute, bootstrap/control overhead, artifact I/O per semantic output, stale-state reconciliation, packages completed per invocation, refill success rate.
 
 ## Promotion principle
 Repeated evidence is required. One favorable trace is directional only. Claims must be scoped to the layer actually tested. Wall time is telemetry and never independently promotes a work-shaping mechanism.
@@ -30,26 +30,40 @@ LW19 introduced a frozen value gate: decision reach, unresolved uncertainty, fal
 - Later substantive targets may be result-dependent and record SELECTED_BY.
 - Semantic output = validated durable rule/spec/decision with named downstream consequence; duplicate consequence counts once.
 - Preserve exact remainder on saturation.
-- Measure package capacity, semantic density, persistence I/O, and WORKED separately.
+- Measure package capacity, semantic density, persistence I/O, refill count, and WORKED separately.
 
 ## E10 — Persistence-boundary optimization
 Target value and persistence eligibility are separate decisions.
 
 FULL_CHAIN is mandatory when later decisions depend on newly persisted reality, policy/source-of-truth is being mutated, or representation drift is itself material: candidate persist → fresh fetch → criteria-first review → defect-caused revision persist → fresh fetch → validation.
 
-THIN_ELIGIBLE is a bounded candidate class for reconstructible audit/decision work when named durable inputs are already authoritative/freshly readable, exact decision fields can be reconstructed, candidate persistence adds no authority, and omission cannot hide relevant representation drift. Source reads remain artifact I/O and are not counted as thinning savings.
-
-LW21 supplied one positive bounded sample: two thin targets had OMITTED_BOUNDARY_DEFECT=0 while a FULL_CHAIN policy artifact fresh-fetch caught a real regression. LW22 repeats on different thin targets before broader default promotion. Any defect attributable to an omitted persistence boundary immediately restores FULL_CHAIN for that target class.
+THIN_ELIGIBLE is promoted as a bounded default for reconstructible audit/decision work when named durable inputs are authoritative/freshly readable, exact decision fields can be reconstructed, candidate persistence adds no authority, and omission cannot hide relevant representation drift. LW21 and LW22 provided independent positive samples with zero omitted-boundary defects. Source reads remain artifact I/O and are not counted as thinning savings.
 
 ### Persistence review invariants
-- `PERSISTENCE_MODE` freezes before substantive execution; only a mandatory rollback after a thinning failure may change it.
-- FULL_CHAIN fresh-fetch review must compare persisted representation against the predeclared acceptance contract, not merely confirm file existence.
-- THIN_ELIGIBLE review must name authoritative durable inputs, reconstruct the exact decision fields from them, and report `OMITTED_BOUNDARY_DEFECT` explicitly.
-- Candidate-boundary operations avoided and necessary source-read I/O are reported separately; source reads never count as savings.
-- A thin result cannot mutate the authoritative source it is auditing. If the decision requires source mutation, route that mutation through FULL_CHAIN.
+- `PERSISTENCE_MODE` freezes before substantive execution; only mandatory rollback after a thinning failure may change it.
+- FULL_CHAIN fresh-fetch review compares persisted representation against the predeclared acceptance contract, not merely file existence.
+- THIN_ELIGIBLE review names authoritative durable inputs, reconstructs exact decision fields, and reports `OMITTED_BOUNDARY_DEFECT` explicitly.
+- Thin audit may discover authoritative mutation is required; that mutation escalates to FULL_CHAIN and is correct routing.
+- Candidate-boundary operations avoided and necessary source-read I/O are reported separately.
+- Any defect attributable specifically to an omitted candidate boundary immediately rolls back the affected thin class.
+
+## E11 — Same-invocation auto-refill
+Primary invariant: `PACKAGE_COMPLETE != TURN_COMPLETE`.
+
+A completed package is a refill trigger. Reassess the parent goal and unresolved durable state immediately. If useful goal-directed work remains, derive the next concrete substantive package and execute it in the same invocation. A refill boundary is a compact durable recovery checkpoint, not a scheduler mutation and not a turn ending.
+
+Valid turn-stop conditions are limited to: PROGRAM_COMPLETE; genuine external blocker with no useful independent work; runtime/tool/safety constraint; or evidence-based NO_USEFUL_WORK_REMAINS. Completing a TO-DO, artifact, package, checkpoint, semantic-output quota, or scheduler preparation is not a stop condition.
+
+### E11 anti-gaming / validation
+- Never sleep, pad, repeat converged analysis, fabricate defects, or create low-value artifacts to lengthen elapsed time.
+- Fast package completion is spare capacity and should cause refill.
+- Exactly one scheduler mutation remains at actual invocation end; refill boundaries do not touch the schedule.
+- A valid first sample must show at least one completed package followed by a second substantive package in the same invocation when useful work remains.
+- Track packages completed, useful outputs, control I/O, refill-boundary I/O, and GitHub-server WORKED separately.
+- Promotion requires repeat evidence; one successful multi-package invocation is directional only.
 
 ## External benchmark layer
 `docs/EXTERNAL_CASE_STUDIES.md` supplies invariants/adverse-test ideas, never proof of ChatGPT Automation behavior.
 
 ## Hot-path execution pointer
-Use `TO-DO LIST FOR THIS TURN` near the top. It is replace-only hot-path execution state; Issue #1 remains durable authority. The single end-of-turn automation mutation writes both next schedule and next TO-DO.
+Use `TO-DO LIST FOR THIS TURN` near the top. It is the first queue head, not a cap on invocation work. Issue #1 remains durable authority. During a live invocation the in-memory queue may refill repeatedly; only the single actual end-of-turn automation mutation writes the next persisted TO-DO and schedule.
