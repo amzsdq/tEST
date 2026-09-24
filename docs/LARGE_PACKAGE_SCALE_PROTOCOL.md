@@ -34,10 +34,12 @@ Target score and persistence eligibility are separate gates. FULL_CHAIN remains 
 ## Long-duration interpretation
 Larger packages increased semantic capacity and produced some multi-minute samples, but elapsed time remains telemetry and is not monotonic with unit count. A 10-minute guarantee is unproven.
 
-## LW22 reconciliation review
-TARGET=target-selection maturity; FAILURE_MODE=prior protocol still said value-gated selection was unpromoted after LW19/LW20 repeated 5.29/10; REQUIRED_CHANGE=record promoted default and evidence. RESOLVED in candidate.
-TARGET=persistence maturity; FAILURE_MODE=prior text treated full persisted chains as undifferentiated baseline and omitted bounded thinning experiment; REQUIRED_CHANGE=separate persistence eligibility and bounded thin class. RESOLVED in candidate.
-TARGET=duration inference; FAILURE_MODE=prior wording could imply larger package directionally increases WORKED despite LW20 34-unit 80s sample; REQUIRED_CHANGE=state non-monotonic wall time and retain 10-minute OPEN status. RESOLVED in candidate.
+## LW22 reconciliation validation
+A THIN_ELIGIBLE audit of the prior durable source directly detected stale target-selection/persistence/duration boundaries; because correction required authoritative source mutation, execution correctly escalated to FULL_CHAIN rather than mutating under thin mode. Fresh-fetch review confirmed the persisted candidate contained all three corrections.
+- TARGET=target-selection maturity; FAILURE_MODE=prior protocol still said value-gated selection was unpromoted after LW19/LW20 repeated 5.29/10; REQUIRED_CHANGE=record promoted default and evidence. RESOLVED.
+- TARGET=persistence maturity; FAILURE_MODE=prior text treated full persisted chains as undifferentiated baseline and omitted bounded thinning experiment; REQUIRED_CHANGE=separate persistence eligibility and bounded thin class. RESOLVED.
+- TARGET=duration inference; FAILURE_MODE=prior wording could imply larger package directionally increases WORKED despite LW20 34-unit 80s sample; REQUIRED_CHANGE=state non-monotonic wall time and retain 10-minute OPEN status. RESOLVED.
+VALIDATION=PASS. This is not an omitted-boundary defect: the thin audit found the source defect; source mutation then used FULL_CHAIN as required.
 
 ## Required baton fields
 PACKAGE, UNITS_PLANNED/DONE/REMAINING, PACKAGE_COMPLETE, SATURATED, semantic outputs/output IDs, density, downstream decisions, SELECTED_BY, target-selection evidence if active, artifacts, artifact I/O, I/O/output, CONTROL_IO, COMPARABILITY, WORKED, RESULT, exact NEXT.
