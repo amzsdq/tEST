@@ -1,72 +1,46 @@
-# Relay Research Program v1.0
+# Relay Research Program v1.1
 
-Status: ACTIVE — work-shaping, bounded persistence, AUTO_REFILL, scoped 270s admission cutoff, bounded Issue #1 tail retrieval, and fixed-3 coalescing promoted within tested classes
+Status: ACTIVE — AUTO_REFILL, scoped 270s admission cutoff, bounded Issue #1 tail retrieval, fixed-3 coalescing, and scoped target-native idempotency exception promoted within tested classes
 Repository: `amzsdq/tEST`
 
 ## Research question
-What is the simplest relay mechanism that keeps a ChatGPT Automation workload progressing for long periods with high useful-work duty cycle, remains recoverable after missed wakes, and avoids duplicate execution?
-
-## Experiment families
-E1 RRULE self-shift; E2 minimum lead-time; E3 mutation stress; E4 provisional/final relay; E5 missed-wake recovery; E6 cross-automation wake; E7 duplicate authority; E8 durable cold-resume; E9 useful-work/package shaping; E10 persistence-boundary optimization; E11 same-invocation auto-refill; E12 invocation-tail/finalization reserve; E13 fixed-group package-boundary coalescing and effect-receipt recovery.
+What is the simplest relay mechanism that sustains high useful-work duty cycle, cold recovery, and duplicate safety while minimizing scheduler/control/persistence overhead?
 
 ## Promotion principle
-Repeated evidence is required. One favorable trace is directional only. Claims are scoped to the layer tested. Wall time is telemetry, never a work quota. Safety promotion and useful-value promotion are separate gates when a more aggressive setting increases risk/complexity.
+Repeated evidence is required; claims remain scoped to the tested layer. Safety and value are separate gates. Wall time is telemetry, never a work quota.
 
-## Canonical current pointer
-Routine recovery uses the bounded Issue #1 tail, not a second mutable CURRENT mirror. Start from prior-baton inclusive `since`, paginate saturated windows, and fall back to fresh count/final-page plus successive pages when completeness is ambiguous. Authority is determined by live lineage, created ordering, and explicit corrections; `since` is update-sensitive and `updated_at` alone is not authority. Full history is forensic fallback.
+## Authority and current-state recovery
+Routine recovery uses bounded Issue #1 tail retrieval, not a second mutable CURRENT mirror. Later explicit live correction/baton/evidence governs operational NEXT. Fresh narrow contracts govern their scope absent later live rollback. Broad summaries/program/registry docs require freshness and cannot roll back later evidence merely by omission/stale text. Ambiguous same-scope lineage => UNKNOWN/no semantic mutation. Blocked document repair leaves an exact Issue repair remainder.
 
-## Promoted work-shaping stack
-- E9: 30–36 eligible units is tested per-package capacity guidance, not invocation cap. VALUE_GATED_TARGET_SELECTION is default.
-- E10: THIN_ELIGIBLE is promoted for reconstructible audit/decision work; FULL_CHAIN remains mandatory for authoritative mutation or representation-dependent validation.
-- E11: AUTO_REFILL is promoted. `PACKAGE_COMPLETE != TURN_COMPLETE`; exactly one scheduler mutation occurs at actual invocation end; cold NEXT is revalidated before side effects.
-- Endpoint-only boundary-document reconciliation: live pending endpoint stays in Issue #1; boundary docs are reconciled after evidence-complete classification, not inside the finalization critical path.
+## Promoted stack
+- VALUE_GATED_TARGET_SELECTION and bounded persistence.
+- AUTO_REFILL: `PACKAGE_COMPLETE != TURN_COMPLETE`; one scheduler mutation only at actual invocation end.
+- GitHub START/END `created_at` is the WORKED clock.
+- 270s scoped TESTED new-package admission cutoff; 260s tested fallback. No cutoff chasing absent new value evidence.
+- Fixed n=3 reconstructible shared-recovery-fate coalescing with one boundary after all nodes validate.
+- Effectful fixed-3 coalescing under conservative receipt/retry contract in `docs/COALESCING_PROTOCOL.md`.
+- Bounded Issue #1 tail retrieval; no second mutable CURRENT pointer.
 
-## E12 — Invocation-tail / finalization reserve
-Elapsed time controls admission of NEW substantive packages only. It never justifies sleeping, padding, or interrupting an already-validating package.
-
-Evidence summary:
-- LW26/LW27 cutoff 240s safe; 240s conservative repeat-confirmed.
-- LW28/LW29 cutoff 250s safe; 250s promoted as scoped TESTED cutoff.
-- LW30/LW31 cutoff 260s safe; 260s promoted as scoped TESTED cutoff.
-- LW32/LW33 cutoff 270s repeated safe. LW33 uniquely admitted useful work from a +264s boundary that 260s would have rejected, satisfying the incremental-value gate. 270s is the current scoped TESTED admission cutoff.
-- Cutoff chasing stops at 270s absent new evidence that a further step-down has useful expected value. This is not a universal runtime ceiling.
-
-### E12 frozen constraints
-- GitHub server START/END timestamps are the WORKED clock.
-- Check external elapsed at substantive package admission boundaries, not every action.
-- Reserve protects exact remainder + final baton + one scheduler mutation + END.
-- Normalize A=`RESERVE_ENTRY->FINAL_BATON`, B=`FINAL_BATON->END`, C=`RESERVE_ENTRY->END`, D=`last admitted boundary->reserve entry`.
-- Cutoff controls admission, not interruption. PACKAGE_OVERRUN alone is non-adverse unless continuation is lost.
-- Do not add adaptive cutoff or class-specific guards from sparse tails.
-- 260s remains tested fallback if later 270s evidence becomes adverse.
-
-## E13 — Fixed-group package-boundary coalescing
-Goal: reduce durable package-boundary writes without weakening recovery/effect safety.
-
-Promoted scope:
-- fixed `n=3` shared-recovery-fate reconstructible groups: one coalesced package boundary after all nodes validate; cross-invocation cold recovery confirmed.
-- fixed `n=3` containing exactly one authoritative/idempotent mutation only under `docs/COALESCING_PROTOCOL.md`: stable effect identity + canonical payload, authoritative durable receipt/result over the replay horizon, FULL_CHAIN unchanged, and receipt reconciliation before retry.
-
-Evidence summary:
-- LW34 baseline 3 boundaries/3 audited outputs vs candidate 1/3; 66.7% package-boundary reduction with equivalent recovery/remainder.
-- LW35 cross-invocation reconstructible recovery with no persisted node outputs.
-- LW36 independently receipted mutation cold repeat.
-- LW37 unavailable receipt authority -> UNKNOWN/no replay/no COMPLETE.
-- LW38 UNKNOWN later resolved by COMMITTED -> no replay; remaining validation still required.
-- LW39 proof-bearing AUTHORITATIVE_NOT_FOUND -> retry eligibility only; ordinary/expired/incomplete negative evidence -> UNKNOWN.
-- LW40 cold-confirmed causal consumption: after an effect attempt, old negative proof cannot determine post-attempt commit status; absent fresh authority => UNKNOWN. Follow-up crash-window analysis requires a durable pre-effect attempt/intent boundary for the conservative retry contract unless target authority atomically supplies equivalent semantics.
+## E13 — fixed-group coalescing and effect recovery
+Evidence progression:
+- LW34-LW35: reconstructible fixed-3 boundary reduction 3->1 and cross-invocation recovery without persisted node outputs.
+- LW36-LW40: authoritative receipt recovery; UNKNOWN no-replay; proof-bearing negative evidence only as retry-eligibility; any effect attempt consumes pre-attempt negative proof; conservative real-effect retry requires durable pre-effect attempt/intent unless target authority supplies equivalent semantics.
+- LW41B: durable attempt-intent -> synthetic emission -> COMMITTED receipt cold-recovered with exact identity binding and no replay.
+- LW42-LW46: target-native idempotency promoted only as an adapter-level exception under exact fresh operation fingerprint; generic UNKNOWN retry remained forbidden. Duplicate suppression and authoritative original-result reconciliation are separate gates. The native exception reduces relay-controlled coalesced effect records from 3 to 2 only when stable key derives from preexisting durable identity without a new write.
+- LW47-LW48: pre-emission eligibility and post-emission recovery separated. Native write-elision additionally requires cold-reconstructible attempt-time fingerprint provenance across the legitimate reconciliation horizon; missing provenance or expired/ambiguous authority => no replay/no COMPLETE. Synthetic adapter permutation sub-line converged absent a concrete adapter/use-case/new discriminating failure.
+- LW49: document-authority precedence cold-confirmed against natural stale broad-document drift; stale summaries cannot roll back later scoped evidence.
 
 Scope limits:
-- fixed n=3 only; no adaptive/larger groups promoted.
-- unreceipted/non-idempotent and multiple-effect groups are not promoted.
-- mandatory effect receipt and any mandatory pre-effect attempt/intent evidence are effect-level durability, not removable package-boundary I/O.
-- a generic local emission marker is not authoritative evidence of external commit and is not added by default.
+- fixed n=3 only; no adaptive/larger/multiple-effect groups promoted.
+- provider-wide `idempotent=true` is insufficient.
+- target-native eligibility is derived from concrete fingerprint, not persisted as a second mutable cache.
+- generic UNKNOWN never authorizes replay.
+
+## E12 — finalization reserve
+270s is the current scoped TESTED new-package admission cutoff after repeated safe LW32/LW33 evidence and direct incremental value over 260s. 260s remains tested fallback. Cutoff controls admission only; active validation may overrun. Reserve protects exact remainder + final baton + sole scheduler mutation + END. No sleeping/padding.
 
 ## Metrics
-Primary: continuation success, duplicate substantive execution, useful-work duty cycle, recovery latency, audited semantic useful outputs per invocation (or UNKNOWN). Secondary: scheduler mutations per useful-work minute, control overhead, artifact I/O per audited semantic output, packages per invocation, refill success, finalization success, D and normalized A/B/C tails. For effectful coalescing report package-boundary writes separately from total durable writes including mandatory effect-level evidence.
+Continuation success, duplicate execution, useful-work duty cycle, recovery latency, audited outputs, package-boundary writes, relay-controlled durable writes, scheduler mutations, refill success, and GitHub-server WORKED. Provider-internal opaque persistence is not counted as relay-controlled I/O.
 
-## External benchmark layer
-`docs/EXTERNAL_CASE_STUDIES.md` supplies invariants/adverse-test ideas, never proof of ChatGPT Automation behavior.
-
-## Hot-path execution pointer
-Use `TO-DO LIST FOR THIS TURN` as first queue head, not invocation cap. Issue #1 remains durable authority. In-memory queue may refill repeatedly; only actual end-of-turn automation mutation writes next persisted TO-DO and schedule.
+## Hot-path pointer
+`TO-DO LIST FOR THIS TURN` is queue head, not invocation cap. Issue #1 remains durable live authority; boundary documents are reconciled at evidence-complete decision boundaries, with exact dirty remainder persisted if repair is blocked.
