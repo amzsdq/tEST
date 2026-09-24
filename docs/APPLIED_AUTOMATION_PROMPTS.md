@@ -16,13 +16,15 @@ Rollback: P5M3
 P5M3 reduced startup reconstruction, but 5–6 unit packages remained compressible. P5M4 scales materially useful package work without adding scheduler/control mutations. LW15-A/B completed 15 eligible units, LW16 completed 22/22, and LW17 completed 34/34 with no saturation but density 4.12/10 versus frozen 4.13 guardrail. LW18 repeats 34 under frozen counting before any larger scale-up.
 
 ### Hot-path contract
-- Keep `TO-DO LIST FOR THIS TURN` near the top and replace it at each continuing turn.
+- Keep `TO-DO LIST FOR THIS TURN` near the top and replace it each continuing turn.
 - Issue #1 is authoritative durable state; TO-DO is hot-path pointer.
 - Same automation, exactly one final scheduler mutation, recurring `RRULE:FREQ=HOURLY`, +3m default lead.
 - START/END GitHub server timestamps are the only WORKED clock.
 
 ### Unit eligibility gate
 A unit is eligible only if omitting it removes decision-required evidence, a material durable semantic change, an independent persisted validation boundary, a defect-caused operational correction, or synthesis that changes a future experiment/prompt/recovery/promotion decision. Bullet splitting, style rewrites, repeated summaries, redundant fetches, synthetic checkpoints, fabricated defects, and low-value artifacts never create units.
+
+Eligibility is judged before seeing the final density verdict where practicable. Do not delete legitimate completed units from the denominator or split outputs after the fact to cross the guardrail. If a planned unit proves ineligible, record why and remove it transparently from both planned/done accounting rather than silently reclassifying it.
 
 ### Result-dependent target rule
 Broad dependent stages may be named before START, but a later substantive target remains unresolved until preceding validation. Record `SELECTED_BY=<prior validated result> -> <later target>`. Missing mapping means no dependency credit.
@@ -40,16 +42,16 @@ When persistence adds decision value: evidence+criteria -> candidate persist -> 
 ### Frozen semantic-output contract for 30–36 repeat
 A semantic output is one validated durable rule/spec/decision with a named downstream consequence. Log `OUTPUT_ID`, `DURABLE_CHANGE`, `DOWNSTREAM_CONSEQUENCE`, `VALIDATED_BY`. Duplicate formulations sharing a consequence count once unless they independently alter different named decisions. Aggregation prose counts only if it changes a new named decision.
 
-For LW18, density guardrail is 4.13 outputs per 10 actual eligible units. Raw count remains visible even under value override. A value override identifies exact output(s), materially larger named consequence, dominated baseline output(s), and falsifiable dominance evidence; subjective quality claims are invalid.
+For LW18, density guardrail is 4.13 outputs per 10 actual eligible units. Raw count remains visible under value override. A value override identifies exact output(s), materially larger named consequence, dominated baseline output(s), and falsifiable dominance evidence; subjective quality claims are invalid.
 
 ### 30–36 promotion gate
-Promote the 30–36 scale only if the frozen repeat completes eligible work with `SATURATED=NO`, `UNITS_REMAINING=0`, unchanged one-write/+3m control policy, density >=4.13, and auditable output/dependency records. If density repeats below 4.13 without a valid value override, stop scale-up: retain 22 as promoted scale, treat 30–36 as tested capacity with density regression, and make target-selection quality the next variable instead of increasing package size. Do not average away two boundary failures.
+Promote 30–36 only if frozen repeat completes eligible work with `SATURATED=NO`, `UNITS_REMAINING=0`, unchanged one-write/+3m policy, density >=4.13, auditable output/dependency records, and no post-hoc denominator/numerator gaming. If density repeats below 4.13 without valid value override, stop scale-up: retain 22 as promoted scale, treat 30–36 as tested capacity with density regression, and make target-selection quality the next variable. Do not average away two boundary failures.
 
 ### Saturation and exact handoff
 `SATURATED=YES` only when runtime/external blocker/safety interrupts while eligible units remain. Record UNITS_DONE/REMAINING, exact artifact/stage, last validated result, immediate next action. Next TO-DO begins with exact remainder.
 
 ### Measurement
-Record UNITS_PLANNED/DONE/REMAINING, PACKAGE_COMPLETE/SATURATED, SEMANTIC_OUTPUTS plus IDs, SEMANTIC_OUTPUTS_PER_10_UNITS, DOWNSTREAM_DECISIONS_CHANGED, RESULT_DEPENDENT_TRANSITIONS, ARTIFACTS_CHANGED, ARTIFACT_IO_RAW, ARTIFACT_IO_PER_SEMANTIC_OUTPUT, CONTROL_IO, WORKED, and valid VALUE_OVERRIDE if any.
+Record UNITS_PLANNED/DONE/REMAINING, any INELIGIBLE_AFTER_REVIEW units with reasons, PACKAGE_COMPLETE/SATURATED, SEMANTIC_OUTPUTS plus IDs, SEMANTIC_OUTPUTS_PER_10_UNITS, DOWNSTREAM_DECISIONS_CHANGED, RESULT_DEPENDENT_TRANSITIONS, ARTIFACTS_CHANGED, ARTIFACT_IO_RAW, ARTIFACT_IO_PER_SEMANTIC_OUTPUT, CONTROL_IO, WORKED, and valid VALUE_OVERRIDE if any.
 
 Interpret semantic capacity, density, and wall time separately. Wall time alone never promotes.
 
