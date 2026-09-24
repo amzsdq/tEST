@@ -1,67 +1,50 @@
 # Persisted-Output Transformation Protocol
 
 ## Purpose
-Use persisted artifact boundaries when they make later work consume actual earlier outputs rather than imagined in-memory state. This is a semantic-quality primitive, not wall-clock padding and not a mandatory wrapper around every large-package unit.
-
-## Evidence baseline
-- LW9 top-of-prompt TO-DO improved hot-start continuity but remained short.
-- LW10 dependency language alone was compressible.
-- LW11/LW12 showed persist -> fresh fetch -> review -> defect-caused revision -> fresh-fetch validation can expose material defects.
-- LW15/LW16 showed larger pre-shaped packages increase semantic capacity when every added unit is independently valuable.
-- LW17 completed 34 eligible units but exposed a density boundary; semantic-output counting now needs auditable downstream consequences rather than free-form counts.
+Use persisted artifact boundaries when they make later work consume actual earlier outputs rather than imagined in-memory state. This is a semantic-quality primitive, not wall-clock padding and not a mandatory wrapper around every high-value target.
 
 ## Artifact eligibility gate
-Use a persisted chain only when all are true: downstream decision value, substantive uncertainty/plausible material defect, current-turn revisionability, and persistence value. If any fails, use direct evidence-to-decision work. Never manufacture a document or rewrite merely to satisfy a unit quota.
+Use a persisted chain only when all are true: downstream decision value, substantive uncertainty/plausible material defect, current-turn revisionability, and persistence value. A high target-selection score does NOT override this gate. If persistence value fails, perform direct evidence-to-decision work and count only validated semantic consequences; never create a document merely to satisfy package or persistence shape.
 
 ## Canonical full chain
 1. Evidence baseline + explicit acceptance/failure criteria.
 2. Candidate persistence.
-3. Fresh-fetch review of the exact persisted candidate.
+3. Fresh-fetch review of exact persisted candidate.
 4. Structured real defects: TARGET / FAILURE_MODE / REQUIRED_CHANGE.
 5. Defect-caused revision persistence.
 6. Fresh-fetch validation: PASS / RETEST / REJECT.
-
 Zero defects is valid. Weak style preferences without downstream consequence do not count.
 
 ## Semantic-output audit contract
-A counted semantic output must be durable, validated, and decision-bearing. Record:
-- `OUTPUT_ID=<stable local id>`
-- `DURABLE_CHANGE=<rule/spec/decision changed>`
-- `DOWNSTREAM_CONSEQUENCE=<named future experiment/prompt/recovery decision changed>`
-- `VALIDATED_BY=<fresh-fetch validation or named evidence boundary>`
+A counted output must be durable, validated, and decision-bearing:
+`OUTPUT_ID`, `DURABLE_CHANGE`, `DOWNSTREAM_CONSEQUENCE`, `VALIDATED_BY`.
+Duplicate downstream consequences count once. Summaries/evidence restatement/style/read-write bookkeeping count zero.
 
-Two formulations driving the same downstream consequence count once unless they independently change different named decisions. Summaries, evidence restatement, stylistic edits, reads/writes, and control bookkeeping count zero.
+## Value-gated target-selection interaction
+Target selection and persistence selection are separate gates:
+1. Score substantive candidate before selection using the frozen value gate (decision reach, unresolved uncertainty, falsifiability, downstream reuse).
+2. If target is selected, apply artifact eligibility independently.
+3. `HIGH_VALUE + PERSISTENCE_ELIGIBLE` -> full persisted-output chain baseline.
+4. `HIGH_VALUE + PERSISTENCE_INELIGIBLE` -> direct evidence-to-decision path; record `PERSISTENCE_SKIP_REASON`; this is not a failed target.
+5. `LOW_VALUE` -> reject target regardless of persistence convenience.
+6. Never increase a value score because a document is easy to edit, and never persist solely because the target score is high.
 
-A package synthesis counts only when it changes a named future decision not already counted by components.
-
-### Value adjudication is separate from count
-Raw semantic-output count is the default density numerator. A lower-count sample may claim higher-value adjudication only by recording `VALUE_OVERRIDE_ID`, the exact counted output(s), the materially larger named consequence, the baseline output(s) it dominates, and falsifiable evidence for that dominance. Vague claims such as "more important" or "higher quality" are invalid. Value override changes the verdict explanation, never the raw count.
+This separation prevents value gating from turning persistence into ceremony and prevents persistence convenience from biasing target selection.
 
 ## Adaptive persistence budget
-Persistence is justified by corrections or state-boundary risk, not ceremony. For each chain record MATERIAL_DEFECTS_FOUND/RESOLVED, ARTIFACT_IO_RAW, SEMANTIC_OUTPUTS, and `CORRECTION_YIELD = MATERIAL_DEFECTS_RESOLVED / ARTIFACT_IO_RAW`.
+Persistence is justified by corrections or state-boundary risk. Record MATERIAL_DEFECTS_FOUND/RESOLVED, ARTIFACT_IO_RAW, SEMANTIC_OUTPUTS, `CORRECTION_YIELD = MATERIAL_DEFECTS_RESOLVED / ARTIFACT_IO_RAW`. Thinning is a separate controlled non-inferiority variable; never silently vary it during target-selection comparison. Never thin authority, scheduler/recovery, or external-side-effect evidence merely to optimize document I/O.
 
-The full chain is the safe baseline for eligible artifact work. A thinner chain is a separate candidate variable. It may be tested only after comparable full-chain samples show low correction yield and low persisted-state mismatch risk. A thinning trial holds package size, scheduler/control policy, acceptance criteria, and substantive target class constant and requires repeated non-inferiority.
+## Result dependency
+Each claimed transition records `SELECTED_BY=<prior validated result> -> <later target/focus>`. Pre-scoring a candidate identity does not invalidate dependency if its substantive focus remains unresolved until prior validation; precomputing the later edit does.
 
-Never thin authority, scheduler/recovery, or external-side-effect evidence merely to optimize document I/O.
-
-## Large-package composition
-Multiple artifact chains may be composed when later targets genuinely depend on earlier validated results. Each claimed transition records `SELECTED_BY=<prior validated result> -> <later target>`. The later substantive target must remain unresolved until prior validation. A preselected target does not count as dependency evidence.
-
-## Density guardrail
-For frozen LW18, guardrail = 4.13 counted semantic outputs per 10 actual eligible units. Below-guardrail is DENSITY_DEGRADED unless a valid value override is recorded. Wall time cannot override density.
+## Value adjudication
+Raw semantic-output count is the default density numerator. A lower-count sample may claim value override only by recording the exact baseline output dominated, materially larger named downstream consequence, and observable future evidence that would falsify dominance. Value override never changes raw count.
 
 ## Measurement decomposition
-Record SEMANTIC_OUTPUTS and output IDs, SEMANTIC_OUTPUTS_PER_10_UNITS, DOWNSTREAM_DECISIONS_CHANGED, valid VALUE_OVERRIDE if any, DEFECTS_FOUND/RESOLVED, ARTIFACT_IO_RAW, ARTIFACT_IO_PER_SEMANTIC_OUTPUT, CORRECTION_YIELD, CONTROL_IO, WORKED, UNITS_PLANNED/DONE/REMAINING, and SATURATED.
-
-## Interpretation rules
-- More WORKED with weak semantic gain is not promotion.
-- More semantic outputs with unchanged control policy is capacity evidence.
-- Package-size scaling and persisted-output transformation are separate variables.
-- Rising artifact I/O/output suggests a future controlled thinning experiment; it does not authorize skipping validation boundaries.
-- Falling density stops scale-up until weak units are removed or better targets exist, absent a valid value override.
+Record SEMANTIC_OUTPUTS/output IDs, SEMANTIC_OUTPUTS_PER_10_UNITS, DOWNSTREAM_DECISIONS_CHANGED, valid VALUE_OVERRIDE if any, DEFECTS_FOUND/RESOLVED, ARTIFACT_IO_RAW, ARTIFACT_IO_PER_SEMANTIC_OUTPUT, CORRECTION_YIELD, CONTROL_IO, WORKED, UNITS_PLANNED/DONE/REMAINING, SATURATED, TARGET_SCORE, and PERSISTENCE_SKIP_REASON where applicable.
 
 ## Failure criteria
-REJECT/NON_COMPARABLE when review uses unpublished state while claiming persisted review; a result-dependent target was preselected; defects are fabricated; revision does not correct target semantics; validation skips persisted revision; semantic outputs lack named downstream consequences; value override is subjective/unfalsifiable; redundant I/O/low-value artifacts are added for elapsed time; or eligible remainder is lost at handoff.
+REJECT/NON_COMPARABLE when review uses unpublished state while claiming persisted review; result-dependent focus was precomputed; defects are fabricated; semantic outputs lack named consequences; scores are changed after results; value override is subjective/unfalsifiable; high scores force ceremonial persistence; redundant I/O/low-value artifacts are added for elapsed time; or eligible remainder is lost.
 
-## Promotion and demotion
-Promote the full protocol for a work class when repeated samples show semantic/downstream-value or correction-yield gain worth its I/O. Demote/thin only through controlled non-inferiority, never from intuition or a single zero-defect sample.
+## Promotion/demotion
+Promote full persistence for a work class only when repeated samples show semantic/downstream-value or correction-yield gain worth its I/O. Promote value-gated target selection separately through controlled density/value comparison. Neither mechanism's success implies the other is mandatory.
