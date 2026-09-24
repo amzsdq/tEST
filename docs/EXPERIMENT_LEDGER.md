@@ -8,6 +8,7 @@ Issue #1 is the canonical append-only raw experiment stream. Git history preserv
 - Practical +3m lead remains current; 2m has mixed evidence.
 - Bounded Issue #1 tail is routine recovery authority; broader docs are cold-path.
 - GitHub START/END `created_at` is the WORKED clock.
+- Shared-automation early-wake/pre-arm is rejected under current primitives: observed runtime spread permits successor-before-release, while safe near continuation cannot be guaranteed without weakening single-owner/one-mutation invariants.
 
 ## Work-shaping / persistence boundary
 | Trial | Result |
@@ -32,6 +33,12 @@ Issue #1 is the canonical append-only raw experiment stream. Git history preserv
 | LW46 | two emission policies cold-confirmed; native eligible path models 3->2 relay-controlled durable records when no new key write is needed |
 | LW47 | pre-emission eligibility separated from post-emission recovery; attempt-time fingerprint provenance must be cold-reconstructible |
 | LW48 | provenance five-case cold repeat PASS; native 3->2 retained only when key and attempt-time provenance need no new dedicated relay write; synthetic adapter sub-line converged |
+| LW49 | authority/freshness precedence cold PASS; stale broad docs cannot roll back later scoped live evidence; no second CURRENT pointer |
+| LW50 | shadow pre-arm timing found value but unsafe fixed start-relative offsets under observed runtime spread; live scheduler unchanged |
+| LW51 | shared-automation early-wake/pre-arm formally REJECTED under current primitives; FINAL_ONLY_PLUS3 retained |
+| LW52 | wrong propagated LW50 START reference recovered to unique semantic START; GitHub created_at pair corrected LW50 WORKED to 134s |
+| LW53 | marker-reference integrity five-case cold PASS; exact-ID fast path plus conservative bounded semantic recovery promoted; marker ID is hint, validated GitHub identity/created_at is authority |
+| LW54 | producer-boundary marker-reference validation five-case cold PASS; cheap direct identity read promoted as prevention while LW53 consumer fallback remains mandatory |
 
 ## E12 finalization-reserve ledger
 | Trial | Cutoff | D | A/B/C | Scheduler writes | Result |
@@ -55,6 +62,7 @@ Issue #1 is the canonical append-only raw experiment stream. Git history preserv
 - Required effect receipt and any mandatory pre-effect attempt/intent evidence are effect-level durability, not removable package-boundary I/O.
 - Target-native exception is adapter-scoped only: exact fresh operation/version fingerprint, stable cold-recoverable key, canonical payload, valid protection horizon, authoritative result reconciliation, and cold-reconstructible attempt-time fingerprint provenance. Generic UNKNOWN retry remains forbidden.
 - Native write-elision value is one relay-controlled durable record (3->2) only when neither key nor attempt-time provenance requires a new dedicated per-attempt relay write.
+- Cross-invocation marker references use direct identity fetch as fast path/prevention and bounded semantic recovery on 404/mismatch. Zero/multiple candidates or START/END lineage mismatch leave WORKED UNKNOWN. No model-authored timestamp and no second marker pointer/cache.
 
 ## E12 telemetry contract
 A=`RESERVE_ENTRY->FINAL_BATON`; B=`FINAL_BATON->END`; C=`RESERVE_ENTRY->END`; D=`last admitted boundary->reserve entry`. Cutoff controls admission, not interruption. PACKAGE_OVERRUN alone is non-adverse unless continuation is lost. Do not poll per action or sleep/pad.
