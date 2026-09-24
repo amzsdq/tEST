@@ -33,7 +33,7 @@ A planned unit is eligible only if omitting it would remove at least one of:
 Bullet splitting, stylistic rewrites, repeated summaries, redundant fetches, synthetic checkpoints, fabricated defects, and low-value artifacts never create eligible units.
 
 ### Result-dependent target rule
-Before START_MARKER, broad dependent stages may be named, but the substantive target of a declared result-dependent later artifact must remain unresolved until the preceding artifact is freshly validated. The baton must be able to explain which prior result selected the later target. If that mapping cannot be stated, the transition is not genuinely result-dependent.
+Before START_MARKER, broad dependent stages may be named, but the substantive target of a declared result-dependent later artifact must remain unresolved until the preceding artifact is freshly validated. The baton must state `SELECTED_BY=<prior validated result> -> <later target>` for every claimed result-dependent transition. If that mapping cannot be recorded from observed evidence, the transition is precomputed/ambiguous and does not count toward dependent capacity.
 
 ### Scalable package shapes
 - 12–15 units: normally two eligible artifact chains plus synthesis.
@@ -70,10 +70,13 @@ Record:
 - PACKAGE_COMPLETE / SATURATED;
 - SEMANTIC_OUTPUTS and SEMANTIC_OUTPUTS_PER_10_UNITS;
 - DOWNSTREAM_DECISIONS_CHANGED;
+- RESULT_DEPENDENT_TRANSITIONS with explicit SELECTED_BY mapping;
 - ARTIFACTS_CHANGED;
 - ARTIFACT_IO_RAW and ARTIFACT_IO_PER_SEMANTIC_OUTPUT;
 - CONTROL_IO;
 - WORKED from GitHub server markers.
+
+A semantic output counts only if the baton can name the durable rule/spec/decision changed and its downstream consumer or decision consequence. Multiple prose bullets implementing one decision count as one semantic output. `SEMANTIC_OUTPUTS_PER_10_UNITS = 10 * SEMANTIC_OUTPUTS / UNITS_DONE` and must be compared across scale points; a package is `DENSITY_DEGRADED` when larger nominal capacity is obtained mainly by weaker units rather than additional downstream-value decisions.
 
 Interpretation separates three questions:
 1. semantic capacity — how much eligible downstream-value work completes in one invocation;
