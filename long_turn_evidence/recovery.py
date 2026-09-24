@@ -1,0 +1,14 @@
+"""Cold-recovery decision helper. No network access; explicit evidence only."""
+
+def decide(record, live):
+ if record.get('end') is not None:
+  return {'action':'DO_NOT_RESUME_FINALIZED','reason':'matching END already present'}
+ if record.get('last_durable_boundary') is None:
+  return {'action':'RECONSTRUCT_BEFORE_RESUME','reason':'no durable post-START boundary'}
+ if live.get('automation_id') != record.get('automation_id'):
+  return {'action':'AUTHORITY_BLOCK','reason':'automation identity mismatch'}
+ if live.get('enabled') is not True:
+  return {'action':'RECURRENCE_DEGRADED','reason':'canonical automation disabled'}
+ if live.get('rrule') != 'FREQ=HOURLY':
+  return {'action':'RECURRENCE_DEGRADED','reason':'hourly fallback not preserved'}
+ return {'action':'RESUME_CENSORED','reason':'missing END with durable boundary; do not preclaim exact duration or prior package completion'}
