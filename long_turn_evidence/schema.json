@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/long-turn-invocation-evidence.schema.json",
+  "title": "Long-turn invocation evidence record",
+  "type": "object",
+  "required": ["invocation_id", "automation_id", "start", "scheduler_mutation_count"],
+  "properties": {
+    "invocation_id": {"type": "string", "minLength": 1},
+    "automation_id": {"type": "string", "minLength": 1},
+    "start": {"$ref": "#/$defs/marker"},
+    "end": {"oneOf": [{"$ref": "#/$defs/marker"}, {"type": "null"}]},
+    "last_durable_boundary": {"oneOf": [{"$ref": "#/$defs/marker"}, {"type": "null"}]},
+    "final_baton": {"oneOf": [{"$ref": "#/$defs/marker"}, {"type": "null"}]},
+    "finalization_signature": {"type": "boolean"},
+    "scheduler_mutation_count": {"type": "integer", "minimum": 0},
+    "target_seconds": {"type": "integer", "minimum": 1},
+    "termination_evidence": {"enum": ["toolpath_loss", "platform_runtime_kill", null]},
+    "claimed_exact_seconds": {"type": ["integer", "null"], "minimum": 0},
+    "claimed_target_crossed": {"type": "boolean"}
+  },
+  "$defs": {
+    "marker": {
+      "type": "object",
+      "required": ["id", "created_at"],
+      "properties": {
+        "id": {"type": "integer", "minimum": 1},
+        "created_at": {"type": "string", "format": "date-time"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}
