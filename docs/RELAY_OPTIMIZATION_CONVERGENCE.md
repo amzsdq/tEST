@@ -1,65 +1,60 @@
-# Relay Optimization Convergence Protocol v0.5
+# Relay Optimization Convergence Protocol v0.6
 
-Status: P5M6 AUTO-REFILL ACTIVE
+Status: P5M9 AUTO-REFILL + E12 FINALIZATION-RESERVE OPTIMIZATION ACTIVE
 
 ## Objective
-Converge to the smallest relay policy that maximizes semantic useful work while preserving continuation reliability, crash recovery, duplicate prevention, recurring fallback, and inspectable durable state. Longer wall-clock time is diagnostic only; fast completion should expose spare capacity for more useful work.
+Converge to the smallest relay policy that maximizes semantic useful work while preserving continuation reliability, crash recovery, duplicate prevention, recurring fallback, and inspectable durable state. Longer wall-clock time is diagnostic only; fast completion exposes spare capacity for more useful work.
 
 ## Evidence classes
-- SEMANTIC_OUTPUT — validated rule/spec/decision with named downstream consequence.
-- ARTIFACT_IO — persistence/fetch required by a real dependency or review boundary.
-- CONTROL_IO — scheduler mutations, markers, baton/checkpoint writes, verification-only control reads.
-- REFILL_IO — compact same-invocation recovery checkpoints between substantive packages; tracked separately from scheduler mutations.
-- WALL_TIME — GitHub-server END_MARKER.created_at - START_MARKER.created_at.
-
-## Comparable-sample contract
-A comparison is valid only when samples hold constant, or explicitly normalize, scheduler mutation count, marker/baton shape, materially relevant artifact I/O, lead-time policy, and acceptance semantics. Package-size trials may intentionally increase useful units and resulting artifact I/O, but claims are then limited to capacity/useful-output gain. Auto-refill trials additionally change packages-per-invocation; compare invocation-level useful output and control overhead rather than pretending package-level wall time is unchanged.
+- SEMANTIC_OUTPUT: validated rule/spec/decision with named downstream consequence.
+- ARTIFACT_IO: persistence/fetch required by real dependency or review boundary.
+- CONTROL_IO: scheduler mutations, markers, baton/checkpoint writes, verification-only control reads.
+- REFILL_IO: compact same-invocation recovery checkpoints between substantive packages.
+- WALL_TIME: GitHub-server END_MARKER.created_at - START_MARKER.created_at.
+- RESERVE_TAIL: D=last admitted boundary->reserve entry; A=reserve entry->final baton; B=final baton->END; C=reserve entry->END.
 
 ## Controlled convergence
-Freeze baseline; change one primary variable; repeat samples; separate WRITE_OK/STATE_OK/WAKE_OK/WORK_OK; measure semantic outputs independently from artifact/control/refill I/O and WALL_TIME.
+Freeze baseline; change one primary variable; repeat samples; separate WRITE_OK/STATE_OK/WAKE_OK/WORK_OK; measure semantic outputs independently from artifact/control/refill I/O and WALL_TIME. A claim about one layer is NON_COMPARABLE if another causal layer changes without normalization.
 
-## Experiment eligibility gate
-Every added work unit must have downstream value, substantive uncertainty/real correction need, and a discriminating result. Reject units created only to enlarge a package or keep an invocation alive.
+Causal layers include package size, packages-per-invocation/refill, target ranking, persistence mode, semantic counting, scheduler/control, lead time, and finalization-reserve admission cutoff.
 
-## Causal layers
-Treat package size, packages-per-invocation/refill, target ranking, persistence mode, semantic counting, scheduler/control, and lead-time as distinct variables. A claim about one layer is NON_COMPARABLE if another layer changes without explicit normalization.
+## Eligibility / anti-gaming
+Every added work unit needs downstream value, substantive uncertainty or real correction need, and a discriminating result. Reject filler, sleep, redundant summaries/reads, fake defects, or units created only to enlarge elapsed time/package count.
 
-## Persist-review-revise baseline
-For an eligible durable artifact: build/revise -> persist -> fresh fetch -> criteria-first review -> record real defects as TARGET / FAILURE_MODE / REQUIRED_CHANGE -> defect-mapped revision -> persist/fresh fetch -> PASS/RETEST/REJECT. Review may legitimately return zero defects.
+## Persistence gate
+FULL_CHAIN applies when newly persisted representation is decision-relevant, source-of-truth mutation occurs, or representation drift is material. THIN_ELIGIBLE applies only to reconstructible audit/decision work with named durable evidence and no omitted-boundary defect. Source reads remain ARTIFACT_IO.
 
-## Persistence-mode gate
-Target value and persistence eligibility are separate. FULL_CHAIN applies when later decisions depend on a newly persisted representation, source-of-truth mutation is being made, or persisted reality is itself under test. THIN_ELIGIBLE is a promoted bounded default only when named durable source evidence is authoritative/freshly readable, the exact decision can be reconstructed from named fields, candidate persistence adds no authority, and omission cannot hide relevant representation drift.
+## Package / auto-refill rules
+30–36 eligible units is promoted per-package semantic-capacity guidance, not invocation cap or wall-time guarantee. `PACKAGE_COMPLETE != TURN_COMPLETE`: package completion triggers immediate parent-goal reassessment and same-invocation refill while useful work remains. Exactly one scheduler mutation occurs at actual invocation end. Cold `NEXT_PACKAGE` is revalidated before side effects.
 
-FULL_CHAIN candidate boundary: candidate persist -> fresh fetch -> criteria-first review -> defect-caused revision persist -> fresh fetch -> validation.
-THIN_ELIGIBLE: fresh durable-source evidence -> semantic review/decision -> explicit reconstructibility validation; no ceremonial candidate copy. Necessary source reads remain ARTIFACT_IO and never count as savings.
+## E12 finalization-reserve convergence
+A cutoff controls admission of a NEW substantive package only. It is not a hard interruption deadline and does not bound D after admission. `PACKAGE_OVERRUN` is evidence, not failure unless continuation is lost.
 
-A thin audit may conclude that authoritative mutation is required; mutation then escalates to FULL_CHAIN. Any material defect attributable specifically to an omitted candidate boundary rolls back thinning for that target class.
+Frozen method:
+1. predeclare cutoff before live substantive work;
+2. check external time at package admission boundaries only;
+3. do not tune cutoff during the run;
+4. on reserve entry preserve exact remainder, write final baton, perform sole scheduler mutation, append END;
+5. normalize D/A/B/C from GitHub-server evidence;
+6. one safe step-down is DIRECTIONAL only;
+7. promotion requires an independent repeat at the same frozen cutoff with safe continuation;
+8. adverse/ambiguous step-down rolls back to the latest independently repeated safe cutoff;
+9. add class-specific admission guards only after repeated same-class long-tail evidence; do not globally poll per action absent demonstrated need;
+10. never infer a universal runtime ceiling from sparse near-limit traces.
 
-## Package-capacity experiment
-Large-package trials pre-shape independently valuable work, preserve actual result dependencies, keep scheduler policy unchanged, and prohibit sleep/redundant summaries/redundant reads/fake defects/low-value artifacts. Record UNITS_PLANNED/DONE/REMAINING, semantic outputs/downstream consequences, artifacts changed, ARTIFACT_IO, CONTROL_IO, server-clock WORKED, PACKAGE_COMPLETE, SATURATED, and exact remainder.
-
-30–36 eligible-unit scale is promoted for semantic capacity+density under tested conditions. This is a package-shape result, not an invocation-end rule and not a wall-time guarantee.
-
-## Same-invocation auto-refill experiment
-`PACKAGE_COMPLETE != TURN_COMPLETE`.
-
-A completed package triggers immediate parent-goal reassessment. If useful non-redundant work remains, derive and execute the next substantive package in the SAME invocation. Persist a compact REFILL_BOUNDARY containing package result, cumulative useful outputs, and next package; do not touch the scheduler at refill boundaries.
-
-Valid invocation stop: PROGRAM_COMPLETE, genuine external blocker with no useful independent work, runtime/tool/safety limit, or evidence-based NO_USEFUL_WORK_REMAINS. TO-DO exhaustion, package completion, artifact completion, checkpoint creation, semantic-output quota, or scheduler preparation are not stop conditions.
-
-Auto-refill outcomes: REFILL_GAIN, REFILL_NO_GAIN, REFILL_SATURATED_RUNTIME, REFILL_INVALID_PADDING, NON_COMPARABLE. First-sample validity requires package N completion followed by substantive package N+1 in the same invocation when useful work remains. Promotion requires repeated multi-package evidence under one final scheduler mutation.
+Current evidence: 240s repeated safe in LW26/LW27; 250s repeated safe in LW28/LW29 and is TESTED within current conditions; 260s is active directional LW30 and requires repeat before promotion.
 
 ## Promotion / rollback
 - Scheduler/control: repeated WAKE_OK/WORK_OK, no duplicate-authority violation, relevant recovery evidence.
-- Work shaping: repeated semantic/downstream-value gain under unchanged scheduler/control policy.
-- Persistence thinning: repeated thin-eligible targets with no omitted-boundary defect, non-inferior semantic/downstream quality, and lower candidate-boundary I/O.
-- Auto-refill: repeated invocations with >=2 substantive packages when work remains, no padding, one final scheduler mutation, and increased invocation-level useful output without safety/recovery regression.
-- WALL_TIME alone never promotes. One adverse test may reject; one success never establishes a general rule.
+- Work shaping: repeated semantic/downstream-value gain under unchanged scheduler/control.
+- Persistence thinning: repeated thin-eligible targets, no omitted-boundary defect, non-inferior quality, lower candidate-boundary I/O.
+- Auto-refill: repeated >=2 substantive packages/invocation when work remains, no padding, one final scheduler mutation, useful-output gain without recovery regression.
+- Reserve cutoff: repeated safe continuation at frozen cutoff; wall time alone never promotes.
 
-Rollback immediately on duplicate substantive side effects, lost recurring fallback, stale authority overwrite, unrecoverable durable state, a material defect hidden by omitted persistence boundary, or refill behavior that manufactures low-value work instead of following the parent goal.
+Rollback immediately on duplicate substantive side effects, lost recurring fallback, stale-authority overwrite, unrecoverable durable state, omitted-boundary defect, manufactured low-value refill work, or reserve policy that loses continuation.
 
 ## Decision record
-Record CURRENT_CANDIDATE, PRIMARY_VARIABLE, COMPARABILITY, LEAD_TIME, SCHEDULER_WRITES, PACKAGES_COMPLETED, REFILL_BOUNDARIES, UNITS, SEMANTIC_OUTPUTS, ARTIFACTS_CHANGED, PERSISTENCE_MODE/REASON, MATERIAL_CORRECTIONS, OMITTED_BOUNDARY_DEFECT, ARTIFACT_IO, REFILL_IO, CONTROL_IO, WORKED, EVIDENCE, DECISION, STOP_REASON, NEXT.
+Record PRIMARY_VARIABLE, COMPARABILITY, LEAD_TIME, CUTOFF when active, SCHEDULER_WRITES, PACKAGES_COMPLETED, UNITS, SEMANTIC_OUTPUTS, ARTIFACT_IO, REFILL_IO, CONTROL_IO, WORKED, D/A/B/C when active, PACKAGE_OVERRUN, EVIDENCE, DECISION, STOP_REASON, NEXT.
 
-## Current long-work research rule
-Dynamic top-of-prompt TO-DO is the first queue head, not an invocation cap; Issue #1 remains durable authority. Value-gated target selection ranks eligible work. Persistence mode is separately gated. Package completion causes refill while useful work remains. Judge package size by semantic capacity/downstream value, persistence thinning by quality-preserving candidate-boundary I/O reduction, and auto-refill by invocation-level useful output/control overhead. Do not infer reasoning depth from elapsed time.
+## Current long-work rule
+Dynamic top-of-prompt TO-DO is first queue head, not invocation cap. Issue #1 remains durable authority. Value gate ranks eligible work; persistence mode is separately gated; package completion refills while useful work remains; reserve admission protects final continuation. Do not infer reasoning depth from elapsed time.
