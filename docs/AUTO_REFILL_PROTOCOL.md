@@ -45,6 +45,15 @@ A boundary must distinguish `package N validated` from `package N+1 started/comp
 
 A generic durable `PACKAGE_START` marker is NOT a correctness requirement. It proves only attempted execution, not committed side effects. Invocation-level START/END remain the WORKED clock. Targets whose replay can cause unsafe duplicate effects require target/effect-level stable identity plus authoritative receipt/status or an equivalently strong checkpoint.
 
+## E12 directional finalization reserve
+Auto-refill must preserve enough execution opportunity to commit continuation state. Elapsed time is a safety signal, never a work quota.
+
+At substantive package boundaries only, compare an external clock against the invocation START marker. A predeclared reserve threshold may stop admission of a NEW substantive package; it does not interrupt an already-validating package merely to hit a timestamp. On reserve entry, preserve exact unfinished useful work, write the final baton, perform the sole scheduler mutation, and append END.
+
+First E12 baseline predeclares a conservative 240-second new-package cutoff before observing its endpoint. This cutoff is directional evidence only: it is not promoted until repeated safe-finalization samples show that continuation safety improves without material useful-work loss. Runtime ending before finalization is `RESERVE_TOO_SMALL`; a large unused margin in one sample is `RESERVE_CONSERVATIVE`, not permission for post-hoc shrinking.
+
+Package-boundary clock checks are preferred over per-action polling because finalization risk changes meaningfully at package admission boundaries while per-action checks add control overhead without a demonstrated safety gain.
+
 ## Required combined package-result/refill fields
 - `PACKAGE`
 - `PACKAGE_COMPLETE=YES`
