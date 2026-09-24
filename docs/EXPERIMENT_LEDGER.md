@@ -26,29 +26,23 @@ Never interpret absence from a compact view as a failed or deleted trial.
 | LW15-A | 15 | 15 | NO | >=5 | >=3.33 | 2 | Issue baton | disclosed | 1 | CAPACITY_GAIN_DIRECTIONAL_RETEST |
 | LW15-B | 15 | 15 | NO | 8 | 5.33 | 2 | 8 | 1.00 | 1 | PROMOTE_FOR_SEMANTIC_CAPACITY |
 | LW16 | 22 | 22 | NO | 11 | 5.00 | 3 | 12 | 1.09 | 1 | CAPACITY_GAIN_22_OF_22_NO_SATURATION |
-| LW17 | 34 | 34 | NO | 14 | 4.12 | 4 | disclosed in Issue | disclosed | 1 | CAPACITY_GAIN_WITH_DENSITY_WARNING |
-| LW18 | 34 target | ACTIVE | PENDING | PENDING | guardrail 4.13 | 4 target | full baseline | PENDING | 1 target | FROZEN_REPEAT |
+| LW17 | 34 | 34 | NO | 14 | 4.12 | 4 | full baseline/disclosed | disclosed | 1 | CAPACITY_GAIN_WITH_DENSITY_WARNING |
+| LW18 | 34 | 34 | NO | 16 | 4.71 | 4 | full baseline | disclosed | 1 | PROMOTE_30_36_SCALE_FOR_SEMANTIC_CAPACITY_AND_DENSITY |
+| LW19 | 34 target | ACTIVE | PENDING | PENDING | compare >4.71 | 4 target | full baseline | PENDING | 1 target | VALUE_GATED_TARGET_SELECTION |
 
-## Frozen LW18 measurement contract
-
-### Counting
+## Frozen semantic-output contract
 A semantic output is exactly one validated durable rule, specification, or decision with a named downstream consequence. Summaries, stylistic edits, raw reads/writes, and merely restated evidence count zero. Two statements with the same downstream consequence count once unless they independently change different named decisions.
 
-Each counted output must be logged as `OUTPUT_ID`, `DURABLE_CHANGE`, and `DOWNSTREAM_CONSEQUENCE`. This prevents retrospective inflation of the numerator.
+Each counted output is logged as `OUTPUT_ID`, `DURABLE_CHANGE`, `DOWNSTREAM_CONSEQUENCE`, `VALIDATED_BY`. Result dependency requires `SELECTED_BY=<prior validated result> -> <later substantive target>`.
 
-### Dependency
-A result-dependent transition is auditable only when recorded as `SELECTED_BY=<prior validated result> -> <later substantive target>`. The later target must not have been substantively fixed before the prior validation. A transition lacking this mapping is not counted as dependency evidence.
+## LW18 promotion boundary
+LW18 repeated 34/34 eligible units with SATURATED=NO and 16 audited outputs = 4.71/10 under the frozen contract, one scheduler mutation, +3m lead, and full persisted-output baseline. This clears the 4.13 guardrail and promotes 30–36 units for semantic capacity+density under tested P5M4 conditions. It does not establish a 10-minute wall-time guarantee or arbitrary larger-scale safety.
 
-### Persistence baseline
-LW18 freezes the LW17 persistence baseline: candidate persist -> fresh fetch -> criteria-first review -> defect-caused revision persist -> fresh fetch -> validation for each eligible artifact. Persistence thinning is explicitly out of scope. If a candidate has no real review defect, record `NO_DEFECT` and do not manufacture a revision; mark the artifact chain non-comparable to the full revision baseline rather than fabricating work.
+## LW19 target-selection comparison
+Primary variable is target-selection quality, not package size. Package target remains 34 and full persistence/control policy is frozen. Candidate scoring dimensions/minimum/tie-break are predeclared in `docs/VALUE_GATED_TARGET_SELECTION.md`; rejected candidates remain auditable. Promotion requires raw density >4.71/10 at unchanged control cost, or a rigorously falsifiable value override at non-inferior density.
 
-### Density verdict
-Density guardrail is frozen at 4.13 semantic outputs per 10 eligible units. With exactly 34 units, 14 outputs yields 4.12 and 15 yields 4.41; ordinary `CAPACITY_GAIN` therefore requires >=15 counted outputs, `SATURATED=NO`, `UNITS_REMAINING=0`, and unchanged scheduler/control policy.
-
-If completed units differ from 34 but remain in the allowed 30-36 range, calculate density from actual eligible `UNITS_DONE`; do not use a fixed output-count shortcut. A result below 4.13 is `DENSITY_DEGRADED` unless higher-value adjudication identifies the specific lower-count output(s), their materially larger downstream consequence, and why raw count is misleading.
-
-### Telemetry separation
-Capacity and density are separate. WORKED is GitHub START->END telemetry only. Raw artifact I/O is reported separately as `ARTIFACT_IO_RAW` and `ARTIFACT_IO_PER_SEMANTIC_OUTPUT`. Scheduler policy remains exactly one final recurring mutation with +3m lead. Any extra scheduler mutation makes the sample control-non-comparable.
+## Telemetry separation
+Capacity, density, and WORKED are separate. WORKED is GitHub START->END telemetry only. Raw artifact I/O is reported separately. Any extra scheduler mutation makes a sample control-non-comparable.
 
 ## Reconciliation contract
 Routine non-boundary evidence lives in Issue #1. Reconcile this index at sample-set completion, promotion/rejection/rollback, prompt-version boundary, or explicit evidence audit. The ledger must not become a mandatory hot-path read.
