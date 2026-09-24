@@ -22,10 +22,13 @@ P5M3 showed that a concrete top-of-prompt TO-DO pointer reduces startup reconstr
 - Preserve recurring `RRULE:FREQ=HOURLY`; default next lead remains current Asia/Seoul time +3 minutes unless another lead trial is explicitly active.
 - START/END GitHub server timestamps remain the only WORKED clock.
 
-### Large-package contract
-A large package normally contains 12–15 independently valuable substantive units and must not be shrunk merely because an early unit completes. Eligible units must contribute at least one of: evidence acquisition required by a later decision, material artifact production/revision, adversarial validation, defect-caused correction, or cross-artifact synthesis that changes a future decision.
+### Large-package eligibility gate
+A planned unit is eligible only if omitting it would remove evidence needed by a later decision, a material durable change, an independent validation boundary, a defect-caused correction, or a synthesis that changes a future experiment/prompt decision. Merely splitting one reasoning step into smaller prose bullets does not create additional units.
 
-A qualifying two-artifact package uses this shape when appropriate:
+Before START_MARKER, the package may name broad dependent stages, but any later target whose substance depends on an earlier result must remain unresolved until that result exists. This prevents a nominally serial 15-item checklist from being precomputed as one batch.
+
+### Large-package contract
+A large package normally contains 12–15 eligible substantive units and must not be shrunk merely because an early unit completes. A qualifying two-artifact package uses this shape when appropriate:
 1. choose Artifact C with downstream value and real semantic uncertainty;
 2. define C acceptance/failure criteria from necessary evidence;
 3. materially revise/build C and persist candidate;
@@ -42,24 +45,26 @@ A qualifying two-artifact package uses this shape when appropriate:
 14. persist exact baton/NEXT;
 15. replace next TO-DO and perform the one final scheduler update.
 
-### Non-padding rule
-Never increase package size with sleep, repeated summaries, redundant fetches, fabricated defects, synthetic checkpoints, or low-value artifacts. If runtime/blocker/safety stops execution while eligible useful units remain, record SATURATED plus exact UNITS_REMAINING and carry them first into the next TO-DO.
+### Review independence and defect rule
+Review consumes a freshly fetched persisted candidate rather than the in-memory draft. Defect quotas are ceilings/targets for evidence collection, not permission to invent defects: zero real defects is valid. Each accepted defect must identify TARGET, FAILURE_MODE, and REQUIRED_CHANGE, and every revision claimed as review-caused must map back to such a defect.
+
+### Saturation and non-padding
+Never increase package size with sleep, repeated summaries, redundant fetches, fabricated defects, synthetic checkpoints, or low-value artifacts. If runtime/blocker/safety stops execution while eligible useful units remain, record `PACKAGE_COMPLETE=NO`, `SATURATED=YES`, exact `UNITS_REMAINING`, and immediate next action. The next TO-DO begins with those units. If all eligible work is genuinely exhausted before the nominal count, record `NO_MORE_ELIGIBLE_WORK` rather than manufacturing units.
 
 ### Measurement
 Record:
 - UNITS_PLANNED / UNITS_DONE / UNITS_REMAINING
-- PACKAGE_COMPLETE
-- SEMANTIC_OUTPUTS
+- PACKAGE_COMPLETE / SATURATED
+- SEMANTIC_OUTPUTS and downstream decisions changed
 - ARTIFACTS_CHANGED
-- ARTIFACT_IO_RAW
-- ARTIFACT_IO_PER_SEMANTIC_OUTPUT
+- ARTIFACT_IO_RAW and ARTIFACT_IO_PER_SEMANTIC_OUTPUT
 - CONTROL_IO
 - WORKED from GitHub server markers
 
-PACKAGE_SIZE is a semantic-capacity variable, not a claim about reasoning depth. Wall time alone never promotes it. Promotion requires repeated large-package samples showing materially greater useful/downstream output while scheduler/control policy stays unchanged.
+PACKAGE_SIZE is a semantic-capacity variable, not a claim about reasoning depth. Wall time alone never promotes it. Promotion requires at least two independent large-package samples with materially greater useful/downstream output than the small-package baseline while scheduler/control policy and lead-time policy stay unchanged. If artifact-I/O shape differs materially, capacity may still be compared, but per-unit efficiency attribution must be marked contaminated or normalized.
 
 ### Recovery
-If prompt TO-DO and Issue #1 disagree, Issue #1 wins. If a large package cannot be completed, the durable baton must name exact remaining units and immediate next action rather than a vague research topic.
+If prompt TO-DO and Issue #1 disagree, Issue #1 wins. If a large package cannot be completed, the durable baton names exact remaining units and immediate next action rather than a vague research topic.
 
 ---
 
@@ -75,13 +80,12 @@ Rollback: P4V10
 - Model/local time strings are display-only; missing/ambiguous marker pair means WORKED=UNKNOWN.
 
 ## Promoted P4 hot-path invariants retained by P5M4
-
 - Same automation identity; no new automation for normal continuation.
 - One final recurring RRULE scheduler write on the normal path.
 - Issue #1 compact tail is sufficient for routine bootstrap; broader documents are cold-path unless ambiguity, boundary, anomaly, prompt change, rollback, or substantive package evidence requires them.
 - Wake, scheduler write/state, and useful work remain distinct observations.
-- Routine clean success may omit redundant positive fields when their meaning is reconstructable; anomaly/recovery evidence remains explicit.
+- Routine clean success may omit redundant positive fields when reconstructable; anomaly/recovery evidence remains explicit.
 - Simplicity is preferred only after recovery and duplicate-safety equivalence is established.
 
 ## Historical note
-Earlier P0–P4 variants established the single-final-write recurring path, compact Issue evidence, Issue-tail bootstrap, conditional verification, positive-field omission, jitter telemetry, and GitHub-server WORKED clock. Their detailed historical evidence remains in Issue #1 and the experiment ledger; this registry keeps the currently relevant prompt semantics compact.
+Earlier P0–P4 variants established the single-final-write recurring path, compact Issue evidence, Issue-tail bootstrap, conditional verification, positive-field omission, jitter telemetry, and GitHub-server WORKED clock. Detailed historical evidence remains in Issue #1 and the experiment ledger.
