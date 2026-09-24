@@ -41,6 +41,9 @@ Issue #1 is the canonical append-only raw experiment stream. Git history preserv
 | LW54 | producer-boundary marker-reference validation five-case cold PASS; cheap direct identity read promoted as prevention while LW53 consumer fallback remains mandatory |
 | LW55 | END-by-FINAL_BATON causal-backlink five-case cold PASS; minimal cross-invocation clock reference set promoted to PRIOR_START_ID + PRIOR_FINAL_BATON_ID; no propagated END ID required |
 | LW56 | independent cold repeat PASS; recovered LW55 END from exact recognized baton backlink with no END ID, reconstructed GitHub-only WORKED=61s, one scheduler mutation and hourly recurrence intact |
+| LW57 | hot-path audit PASS_NO_SAFE_CONTROL_WRITE_ELISION; fixed relay-control write floor remains START + FINAL_BATON + END |
+| LW58 | frozen crash matrix PASS_ELIGIBLE_SCOPED; first real final-package audit tuple coalesced into FINAL_BATON, eligible durable-write delta 2->1 |
+| LW59 | independent next-invocation cold reconstruction PASS; scoped final-admitted-package/FINAL_BATON coalescing PROMOTED |
 
 ## E12 finalization-reserve ledger
 | Trial | Cutoff | D | A/B/C | Scheduler writes | Result |
@@ -66,6 +69,7 @@ Issue #1 is the canonical append-only raw experiment stream. Git history preserv
 - Native write-elision value is one relay-controlled durable record (3->2) only when neither key nor attempt-time provenance requires a new dedicated per-attempt relay write.
 - Cross-invocation marker references use direct identity fetch as fast path/prevention and bounded semantic recovery on 404/mismatch. Zero/multiple candidates or START/END lineage mismatch leave WORKED UNKNOWN. No model-authored timestamp and no second marker pointer/cache.
 - Minimal normal clock handoff is `PRIOR_START_ID + PRIOR_FINAL_BATON_ID`. Because END is created after the sole scheduler mutation, its ID is not propagated; the next invocation discovers exactly one recognized-schema END by exact FINAL_BATON backlink and validates START/automation/invocation lineage before using GitHub `created_at`. LW53 fallback remains available for damaged references.
+- Final-package/FINAL_BATON coalescing is promoted only for the final admitted package immediately adjacent to finalization when the baton can carry the complete lossless audit tuple `OUTPUT_ID/DURABLE_CHANGE/DOWNSTREAM_CONSEQUENCE/VALIDATED_BY` plus authoritative NEXT. Earlier packages retain boundary persistence. A real external effect without independent complete attempt/receipt authority is ineligible. Oversize or lossy baton payload is ineligible. Crash before baton leaves the package incomplete/unknown; completion is never inferred from absence.
 
 ## E12 telemetry contract
 A=`RESERVE_ENTRY->FINAL_BATON`; B=`FINAL_BATON->END`; C=`RESERVE_ENTRY->END`; D=`last admitted boundary->reserve entry`. Cutoff controls admission, not interruption. PACKAGE_OVERRUN alone is non-adverse unless continuation is lost. Do not poll per action or sleep/pad.
