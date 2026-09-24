@@ -1,7 +1,7 @@
 # Relay Findings — Evidence Maturity Map
 
 Status: LIVING EVIDENCE MAP
-Origin: 2026-09-22 preliminary findings; updated through LW16 evidence and LW17 scale-test design.
+Origin: 2026-09-22 preliminary findings; updated through LW17 and LW18 frozen-repeat design.
 
 ## Purpose
 Map hypotheses to current evidence maturity so later workers neither reopen settled questions nor turn bounded observations into universal laws. Evidence states: PROMOTED, SUPPORTED, REJECTED_AS_DEFAULT, OPEN. Every promotion is relay-local and scope-bound.
@@ -29,15 +29,20 @@ Routine clean continuation reconstructs execution state from compact Issue #1 ta
 Demotion: clean routine turn cannot reconstruct an execution-critical field.
 
 ### Large pre-shaped TO-DO packages — PROMOTED FOR SEMANTIC CAPACITY THROUGH TESTED 22-UNIT SCALE
-LW15-A/B independently completed 15 eligible units and LW16 completed 22/22 without saturation while preserving one scheduler mutation and +3m lead. LW16 produced 11 semantic outputs (5.0 per 10 units) with artifact I/O/output 1.09 versus LW15-B 5.33 outputs/10 and 1.00 I/O/output. This supports capacity scaling through 22 eligible units without observed density collapse.
+LW15-A/B completed 15 eligible units and LW16 completed 22/22 without saturation under one scheduler mutation/+3m lead. LW16 produced 11 semantic outputs (5.0/10 units), supporting capacity scaling through 22 without observed density collapse.
+
+LW17 extended capacity evidence to 34/34 units with SATURATED=NO, but produced 14 outputs = 4.12/10, 0.01 below the frozen 4.13 guardrail. Therefore 34-unit capacity is SUPPORTED_WITH_DENSITY_WARNING, not promoted scale. LW18 repeats 34 under frozen counting before any larger scale-up.
 
 Scope: semantic capacity only; no guaranteed wall-clock duration, greater reasoning depth, or arbitrary scaling beyond tested range.
+Demotion: repeated larger packages fail eligibility, lose exact remainder, increase control I/O, or cross density guardrail without compensating auditable downstream value.
 
-Density guardrail for the next scale point: use LW15-B/LW16 mean density ≈5.17 semantic outputs per 10 units as the reference. Mark `DENSITY_DEGRADED` if a larger package falls below 80% of that reference (<4.13 outputs/10) unless the lower count is explained by demonstrably higher-value outputs and explicitly adjudicated. Mark `CAPACITY_REGRESSION` if density degradation accompanies weak/low-value units or lost remainder. This threshold is an experimental guardrail, not a universal law; revise it with more samples.
-
-Demotion: repeated larger packages fail eligibility, lose exact remainder, increase control I/O, or cross the density guardrail without compensating downstream value.
+## Evidence freshness rule
+A promotion is not timeless. Before a historical adverse sample or promotion controls a materially changed prompt/runtime/scheduler configuration, compare the fields relevant to that mechanism. If configuration drift is material, retain the evidence as historical but require fresh comparable evidence before blocking or promoting the changed candidate. Never silently discard old adverse evidence; mark its comparability.
 
 ## Supported but bounded findings
+
+### 34-unit large-package capacity — SUPPORTED WITH DENSITY WARNING
+LW17 completed 34/34 eligible units with no saturation and one scheduler mutation, proving tested execution capacity at that scale. Density 4.12/10 missed the experimental 4.13 guardrail. LW18 is the frozen repeat; >=4.13 with no saturation/remainder loss promotes the 30–36 scale, repeated <4.13 stops scale-up pending target-selection improvement unless a falsifiable value override is recorded.
 
 ### Recurrence as cold recovery — SUPPORTED
 A missed near-term occurrence can leave recurrence intact and a later recurring wake can restore work; no precise fallback-latency guarantee is established.
@@ -55,11 +60,11 @@ Fresh-fetch review can expose material defects and force later work to consume a
 - Wall-clock padding through sleep/repetition/redundant I/O.
 
 ## Open questions
-1. PACKAGE_SIZE saturation beyond 22: LW17 probes 30–36 eligible units, exact remainder, and the density guardrail.
-2. Long useful-work duration: larger packages increased WORKED directionally, but no evidence establishes a 10-minute guarantee.
-3. Persistence-boundary density: can artifact I/O be safely reduced after repeated zero-correction comparable full-chain samples?
+1. 30–36 scale density: LW18 frozen repeat decides promotion vs stop-and-improve-target-selection.
+2. Long useful-work duration: larger packages increased WORKED directionally, but no 10-minute guarantee exists.
+3. Persistence-boundary density: can artifact I/O be safely reduced after repeated comparable low-correction full chains?
 4. Dispatch timing semantics remain insufficient for deterministic scheduler law.
 5. Cross-runtime generality remains untested.
 
 ## Promotion/edit contract
-Every promoted mechanism records failure/cost addressed, comparative/adverse relay-local evidence, added control cost, operational scope, and explicit demotion trigger. A plausible mechanism without these fields stays OPEN or SUPPORTED.
+Every promoted mechanism records failure/cost addressed, comparative/adverse relay-local evidence, added control cost, operational scope, explicit demotion trigger, and evidence comparability/freshness. A plausible mechanism without these fields stays OPEN or SUPPORTED.
