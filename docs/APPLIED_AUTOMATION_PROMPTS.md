@@ -482,3 +482,57 @@ LONG_WORK_EXPERIMENT=LW1
 PRIMARY_VARIABLE=pre-sized multi-unit WORK_PACKAGE + early-stop gate.
 Do not add extra scheduler writes, watchdogs, leases, queues, ABA machinery, or new durable state unless an observed failure specifically requires them.
 ```
+
+
+---
+
+## P5M3 — Native terminal-aware relay / Parrot replacement target
+
+State: ACTIVE CANDIDATE
+Parent: P5M2 candidate
+
+### Problem
+
+A UI-driven loop that sends another "continue" message whenever generation stops cannot distinguish:
+- response completion,
+- package completion,
+- program completion.
+
+That creates token/control overhead after useful work is already complete.
+
+### P5M3 change
+
+The hot path now has an explicit durable state machine:
+- CONTINUE
+- PROGRAM_COMPLETE
+- RECOVERABLE
+- PAUSED
+
+Continuation is permitted only when durable state contains a concrete useful NEXT action.
+UI inactivity, response completion, or a vague possibility of more research are not continuation evidence.
+
+### Terminal guard
+
+If active program acceptance criteria are satisfied and no useful NEXT remains:
+1. append final completion evidence to Issue #1;
+2. set the same automation is_enabled=false;
+3. do not schedule another wake.
+
+Package completion alone does not imply program completion.
+
+### No-op suppression
+
+Do not keep the relay alive by:
+- inventing new experiments after convergence,
+- repeating redundant validation for sample-count aesthetics,
+- synthetic checkpoints,
+- filler summaries,
+- waiting/padding.
+
+### Success criterion
+
+The native relay replaces the Parrot-style UI loop when one start is sufficient to:
+1. continue through exact durable NEXT pointers,
+2. recover from ordinary failures,
+3. stop itself on PROGRAM_COMPLETE,
+4. avoid any external UI agent repeatedly injecting "continue".
