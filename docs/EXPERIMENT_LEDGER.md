@@ -26,7 +26,8 @@ Issue #1 is the canonical append-only raw experiment stream. Git history preserv
 | LW18 | 34 | 34 | NO | 16 | 4.71 | frozen 34-unit repeat | full baseline | 1 | PROMOTE_30_36_SCALE_FOR_SEMANTIC_CAPACITY_AND_DENSITY |
 | LW19 | 34 | 34 | NO | 18 | 5.29 | value-gated target selection | full baseline | 1 | DIRECTIONAL_PROMOTION_RETEST |
 | LW20 | 34 | 34 | NO | 18 | 5.29 | value-gate repeatability | full baseline | 1 | PROMOTE_AS_DEFAULT_VALUE_GATED_TARGET_SELECTION |
-| LW21 | ~34 | completed eligible package | NO | audited | non-inferior | persistence thinning | FULL=8; THIN=0; source reads=2 | 1 | BOUNDED_THINNING_POSITIVE_RETEST |
+| LW21 | ~34 | 30 eligible | NO | 10 | audited non-inferior | persistence thinning | FULL=8; THIN=0; source reads=2 | 1 | BOUNDED_THINNING_POSITIVE_RETEST |
+| LW22 | 30-36 | 30 | NO | 15 | 5.00 | persistence thinning repeat | FULL candidate-boundary=16; THIN=0; source reads=4 | 1 | PROMOTE_BOUNDED_THINNING_DEFAULT |
 
 ## Frozen semantic-output contract
 A semantic output is exactly one validated durable rule, specification, or decision with a named downstream consequence. Summaries, stylistic edits, raw reads/writes, and merely restated evidence count zero. Two statements with the same downstream consequence count once unless they independently change different named decisions. Each counted output is logged as `OUTPUT_ID`, `DURABLE_CHANGE`, `DOWNSTREAM_CONSEQUENCE`, `VALIDATED_BY`. Result dependency requires `SELECTED_BY=<prior validated result> -> <later substantive target>`.
@@ -34,20 +35,16 @@ A semantic output is exactly one validated durable rule, specification, or decis
 ## Promoted boundaries
 - 30–36 eligible-unit pre-shaped packages are promoted for semantic capacity+density under tested conditions; this is not a 10-minute wall-time guarantee.
 - VALUE_GATED_TARGET_SELECTION is the default target selector under tested conditions: LW19 and LW20 independently produced 18/34 = 5.29 outputs/10 on different candidate pools versus LW18 4.71/10.
+- BOUNDED THIN_ELIGIBLE routing is promoted for reconstructible audit/decision work after LW21 and LW22 independent positive samples. FULL_CHAIN remains mandatory for authoritative mutation, newly persisted decision evidence, and representation-dependent validation.
+- Thin audit may discover that mutation is required; the mutation then escalates to FULL_CHAIN. This is correct routing, not a thinning failure.
+- Source reads remain artifact I/O and never count as thinning savings. Any defect attributable specifically to an omitted candidate boundary rolls back the affected thin class.
 - Single final scheduler mutation remains the control baseline.
 
-## Persistence boundary under test
-LW21 separated target value from persistence eligibility. FULL_CHAIN remains mandatory when policy/source-of-truth mutation or representation-dependent review makes persisted reality authoritative. THIN_ELIGIBLE is limited to reconstructible audit/decision work where named durable inputs are authoritative and candidate persistence adds no authority. LW21 observed two thin targets with `OMITTED_BOUNDARY_DEFECT=0`, while a FULL_CHAIN fresh-fetch caught a real regression in a policy artifact. This is one positive bounded sample only; LW22 repeats before broader default promotion.
-
-### LW22 carried-forward reconciliation validation
-The stale ledger defect is repaired under FULL_CHAIN. Candidate persistence and fresh fetch exposed three material boundary defects and all are resolved:
-- TARGET=boundary truth; FAILURE_MODE=prior ledger showed LW19 ACTIVE and omitted LW20/LW21; REQUIRED_CHANGE=record completed LW19/LW20 and bounded LW21. RESOLVED.
-- TARGET=promotion truth; FAILURE_MODE=prior index omitted repeated 5.29/10 evidence and default promotion; REQUIRED_CHANGE=record VALUE_GATED_TARGET_SELECTION promotion. RESOLVED.
-- TARGET=persistence scope; FAILURE_MODE=prior index could not distinguish bounded thinning from global persistence removal; REQUIRED_CHANGE=state FULL_CHAIN mandatory classes, THIN_ELIGIBLE class, and repeat requirement. RESOLVED.
-VALIDATION=PASS. This source is now suitable as a durable boundary input for LW22 thin audits. Candidate-boundary I/O for this reconciliation=4 (persist, fresh fetch, revision persist, fresh fetch).
+## Active boundary: P5M6 AUTO-REFILL
+The next work-shaping variable is same-invocation auto-refill. `PACKAGE_COMPLETE != TURN_COMPLETE`: package completion triggers parent-goal reassessment and another substantive package in the same invocation when useful work remains. Refill boundaries are durable checkpoints, not scheduler mutations. Turn stop is reserved for PROGRAM_COMPLETE, genuine external blocker, runtime/safety constraint, or evidence-based exhaustion of useful work. Fast package completion is spare capacity, not a reason to stop.
 
 ## Telemetry separation
-Capacity, density, persistence I/O, and WORKED are separate. WORKED is GitHub START->END telemetry only. Source reads remain artifact I/O and are never counted as thinning savings. Any extra scheduler mutation makes a sample control-non-comparable.
+Capacity, density, persistence I/O, refill count, and WORKED are separate. WORKED is GitHub START->END telemetry only. Source reads remain artifact I/O and are never counted as thinning savings. Any extra scheduler mutation makes a sample control-non-comparable.
 
 ## Reconciliation contract
 Routine non-boundary evidence lives in Issue #1. Reconcile this index at sample-set completion, promotion/rejection/rollback, prompt-version boundary, or explicit evidence audit. The ledger must not become a mandatory hot-path read.
