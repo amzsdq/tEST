@@ -6,26 +6,22 @@
 | exact vs censored + five classes | fixtures + validator | PASS |
 | F1-F7 / S1-S6 | `fixtures.json` | PASS |
 | malformed/boolean/timestamp/contradiction hardening | `test_hardening.py` | PASS: 14 tests |
-| missing/multiple/ambiguous END | lineage fixtures/tests | PASS: 4 tests |
+| missing/multiple/ambiguous END | lineage tests | PASS: 4 tests |
 | cross-invocation no-sum | S5 + validator | PASS |
 | 899/900 crossing | S6/A1 + admission | PASS |
 | exactly-one final mutation | S1-S4 | PASS |
 | active censored != abrupt | observations + hardening | PASS |
-| observed LT02 exact 411s / LT03 censored 521s | `validate_observations.py` | PASS |
-| fixture integration | `validator.py` direct run | PASS: 15 fixture results |
-| unittest fixture harness | `test_validator.py` | PASS: 3 tests |
-| deterministic report | `report.py` | PASS: 15 fixtures; class counts persisted in `generated_report_summary.json` |
+| LT02 exact 411s / LT03 censored evidence | observations validator | PASS |
+| fixture integration | validator direct run | PASS: 15 fixtures |
+| fixture unittest harness | test_validator | PASS: 3 tests |
+| deterministic report | report.py | PASS: 15 fixtures; summary persisted |
 | scheduler +180/readback | scheduler tests | PASS: 4 tests |
 | cold recovery authority/fallback | recovery tests | PASS: 7 tests |
-| long-turn admission/reserve | admission tests | PASS: 6 tests |
+| long-turn admission/reserve + strict gate booleans | admission tests | PASS: 8 tests; latest blobs `6703e5b26344e306fd277924a341fa21cfcac630` / `d7a968c5bbd53cbc8697fdfb9240028d7b880417` |
 | broader acceptance bundles | bundle + bundle_v2 | PASS: 6 + 13 checks |
 
-## Exact-byte execution proof
+Exact-byte execution used Git-blob SHA equality between locally executed bytes and GitHub readback. Core identities: validator `e6861c9f940f8a0529b8f93dd546ebcd42c852a7`; fixtures `bc269b52a866b377e52813edb9395f1a7225d881`; report `15895ec4a2b86e9e6c7680323d6ecf419c1faaec`; hardening `2268ecddb6c78c570c715114c248113a0b4429a1`; lineage/test `b7c656c8a838a32d4544ba1079fe6235b35f7c9c` / `c5f832bcaa7cce8d814674ee98e3b88295f6a724`.
 
-The no-network checkout problem was bypassed without GitHub Actions by reconstructing files from connector readback and verifying local Git-blob SHA against GitHub blob SHA before treating execution as authoritative. Key exact matches: validator `e6861c9f940f8a0529b8f93dd546ebcd42c852a7`; fixtures `bc269b52a866b377e52813edb9395f1a7225d881`; report `15895ec4a2b86e9e6c7680323d6ecf419c1faaec`; hardening tests `2268ecddb6c78c570c715114c248113a0b4429a1`; lineage/test `b7c656c8a838a32d4544ba1079fe6235b35f7c9c` / `c5f832bcaa7cce8d814674ee98e3b88295f6a724`; observations/validator `f7b937e76e56a9f546db555bbef604be5c6492c4` / `bea8e55683bd050c5fa92853fab845ba8c5a1e01`.
+Dogfood defects repaired: report rejection matching; missing timestamp/bool-as-int; active-censored conflation; malformed enum/claim booleans; contradictory state evidence; unverified END recovery suppression; truthy non-boolean admission gates.
 
-## Defects found and repaired during dogfood
-
-The workload exposed real defects: permissive report rejection matching; missing timestamp/bool-as-int edges; active censored misclassified as abrupt; malformed enum/boolean claims; contradictory active/closed/termination evidence; unverified END suppressing cold resume. All received regression coverage.
-
-Artifact acceptance is now evidence-complete for the specified LT03 deterministic workload. Remaining work in this invocation is the long-turn runtime target itself: continue only genuinely useful integration/audit work until raw GitHub elapsed reaches 900s, then enter reserve immediately.
+Artifact acceptance is evidence-complete. Runtime experiment rule: at first raw GitHub boundary >=900s, enter reserve immediately; do not chase 1200s at risk of losing the first verified 900s success.
