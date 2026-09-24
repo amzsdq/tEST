@@ -4,20 +4,19 @@ Repository: `amzsdq/tEST`
 
 Purpose: isolated research on ChatGPT Automation relay/continuation mechanisms without mutating production repositories.
 
-## Scope
+## Current scope
 
-Research targets:
-- same-automation self-update with recurring RRULE
-- minimum safe lead time between self-update and next wake
-- scheduler dispatch jitter / missed-near-term occurrence behavior
-- one-shot vs recurring RRULE continuity
-- final-writer semantics for schedule mutation
-- provisional crash-insurance wake vs final fast continuation
-- cross-automation wake behavior
-- UI **Run now** semantics vs schedule mutation
-- duplicate/overlap prevention and authority fencing
-- durable checkpoint + cold-resume behavior
-- failure recovery when a scheduled occurrence is missed
+Research targets include:
+- same-automation self-update with recurring RRULE and one final scheduler mutation
+- practical lead-time and scheduler dispatch jitter / missed-near-term behavior
+- duplicate/overlap prevention, authority fencing, durable checkpointing, and cold recovery
+- useful-work/package shaping and value-gated target selection
+- bounded persistence routing (`FULL_CHAIN` vs reconstructible `THIN_ELIGIBLE`)
+- same-invocation auto-refill where `PACKAGE_COMPLETE != TURN_COMPLETE`
+- invocation-tail/finalization reserve so refill does not consume the opportunity to persist continuation
+- semantic useful-output density, artifact/control I/O, packages per invocation, and GitHub-server WORKED telemetry as separate metrics
+
+Historical one-shot/provisional/cross-automation/UI experiments remain evidence in Issue #1 and git history; they are not automatically current defaults.
 
 ## Safety boundaries
 
@@ -29,14 +28,6 @@ Research targets:
 
 ## Evidence rule
 
-Every experiment should record:
-1. hypothesis
-2. exact schedule form
-3. intended due time
-4. actual update time
-5. actual invocation time when observed
-6. automation enabled/recurrence state
-7. result: PASS / FAIL / INCONCLUSIVE
-8. interpretation and next experiment
+Every experiment records the evidence appropriate to its tested layer. Scheduler trials separate write/state/wake/work evidence. Work-shaping trials separate semantic outputs from wall time. Persistence trials separate source-read I/O from candidate-boundary I/O. Auto-refill trials preserve exact recovery state. Finalization-reserve trials use GitHub server timestamps and normalized A/B/C tail telemetry.
 
-The goal is not to make a relay appear reliable; the goal is to find the smallest mechanism that remains reliable under repeated empirical tests.
+Promotion requires repeated evidence. One favorable trace is directional only, and a result may only promote the layer actually tested. The goal is not to make a relay appear reliable; the goal is to find the smallest mechanism that remains reliable under repeated empirical tests.
