@@ -9,6 +9,7 @@
     "finalization_signature": true,
     "scheduler_mutation_count": 1,
     "target_seconds": 900,
+    "observation_state": "closed",
     "provenance": "raw GitHub Issue #1 comments; START and END created_at are exact clock authority"
   },
   {
@@ -20,6 +21,7 @@
     "finalization_signature": false,
     "scheduler_mutation_count": 0,
     "target_seconds": 900,
+    "observation_state": "active",
     "provenance": "live LT03 raw GitHub boundary; censored lower bound only until matching END exists"
   }
 ]
