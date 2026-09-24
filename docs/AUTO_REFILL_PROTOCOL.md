@@ -29,15 +29,16 @@ Normalize telemetry:
 - B = final baton -> END, including scheduler mutation
 - C = reserve entry -> END
 
-Cutoff controls admission; it cannot bound D after admission. `PACKAGE_OVERRUN` is not reserve failure unless continuation is lost.
+Cutoff controls admission; it cannot bound D after admission. `PACKAGE_OVERRUN` is not reserve failure unless continuation is lost. Future step-down decisions evaluate D and C jointly: C measures finalization tail after reserve entry, while D measures post-admission exposure before reserve entry.
 
 ### E12 evidence
 - LW26 cutoff 240s: A/B/C=22/31/53s, safe.
 - LW27 cutoff 240s: A/B/C=13/21/34s, safe. 240s=`CONSERVATIVE_REPEAT_CONFIRMED`.
 - LW28 cutoff 250s: A/B/C=11/26/37s, safe with overrun; last admission +224 -> reserve boundary +267 (43s exposure).
-- LW29 cutoff 250s: A/B/C=8/17/25s, WORKED=282s, 33 packages / 156 conservative semantic outputs, one scheduler write, safe. Late exposures after +200s included 13s,6s,8s; edge admission +249 -> reserve +257.
+- LW29 cutoff 250s: A/B/C=8/17/25s, WORKED=282s, 33 packages, one scheduler write, safe. Late exposures after +200s included 13s,6s,8s; edge admission +249 -> reserve +257. Earlier running semantic-output cumulative labels from this run are not treated as audited throughput evidence.
 - Therefore 250s is a TESTED CUTOFF within current relay/finalization conditions after independent LW28+LW29 samples. This is not a universal runtime ceiling or arbitrary-package guarantee.
-- LW30 predeclares 260s as a separate directional step-down. One safe 260s sample remains directional and requires independent repeat before promotion.
+- LW30 cutoff 260s: D=8s, A/B/C=9/13/22s, WORKED=286s, one scheduler write, continuation safe. Semantic outputs remain `UNKNOWN_PENDING_AUDIT`. This is one directional-safe 260s sample only.
+- LW31 repeats the same predeclared 260s cutoff independently; 260s is not promoted before this repeat safely finalizes.
 
 ### Frozen E12 rules
 1. predeclare cutoff before live work;
@@ -53,10 +54,13 @@ Cutoff controls admission; it cannot bound D after admission. `PACKAGE_OVERRUN` 
 `PACKAGE`, `PACKAGE_COMPLETE=YES`, `RESULT`, `LAST_VALIDATION`, cumulative semantic/unit accounting when active, `NEXT_PACKAGE`, `SELECTED_BY`, `TURN_COMPLETE=NO`. Optional fields only when material.
 
 ## Invocation metrics
-Record PACKAGES_COMPLETED, cumulative SEMANTIC_OUTPUTS, ARTIFACT_IO, REFILL_IO, CONTROL_IO, GitHub-server WORKED, STOP_REASON, exact NEXT/REMAINDER. E12 adds cutoff, last admission elapsed, reserve entry, D/A/B/C, PACKAGE_OVERRUN, continuation safety.
+Record PACKAGES_COMPLETED, cumulative SEMANTIC_OUTPUTS when audited (otherwise `UNKNOWN`), ARTIFACT_IO, REFILL_IO, CONTROL_IO, GitHub-server WORKED, STOP_REASON, exact NEXT/REMAINDER. E12 adds cutoff, last admission elapsed, reserve entry, D/A/B/C, PACKAGE_OVERRUN, continuation safety.
+
+## Semantic-output accounting
+Count an output only when `OUTPUT_ID`, `DURABLE_CHANGE`, `DOWNSTREAM_CONSEQUENCE`, and `VALIDATED_BY` are present and the consequence is not a duplicate. Summary/style/read-write bookkeeping counts zero. Package/refill count is throughput telemetry, not a semantic-quality proxy. If an invocation was not audited under this contract, report `SEMANTIC_OUTPUTS=UNKNOWN` rather than reconstructing a favorable cumulative number post hoc.
 
 ## Promotion evidence
-LW24 demonstrated 11 substantive packages in one invocation; LW25 independently repeated multi-package refill and hardened cold stale-NEXT handling. AUTO_REFILL is therefore default within tested relay conditions. LW28+LW29 independently establish scoped 250s finalization-reserve admission evidence.
+LW24 demonstrated 11 substantive packages in one invocation; LW25 independently repeated multi-package refill and hardened cold stale-NEXT handling. AUTO_REFILL is therefore default within tested relay conditions. LW28+LW29 independently establish scoped 250s finalization-reserve admission evidence. LW30 provides one directional-safe 260s sample; repeat evidence remains required.
 
 ## Rollback / adverse evidence
 Narrow or reject auto-refill on duplicate side effects, stale-authority overwrite, lost recovery state, extra scheduler mutations, material quality regression, counter inflation, or systematic low-value work. Runtime saturation itself is not failure if exact recovery state is preserved.
