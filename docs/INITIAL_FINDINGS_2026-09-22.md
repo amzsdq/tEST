@@ -1,88 +1,70 @@
-# Initial Relay Findings — 2026-09-22
+# Relay Findings — Evidence Maturity Map
 
-Status: PRELIMINARY
-Scope: observations from the current interactive test session, before independent sandbox replication.
+Status: LIVING EVIDENCE MAP
+Origin: 2026-09-22 preliminary findings; revised during LW16 after later controlled evidence accumulated.
 
-## What is already strongly supported
+## Purpose
 
-### 1. RRULE schedule mutation can preserve recurrence
-Repeated schedule updates accepted a complete VEVENT containing both a new DTSTART and `RRULE:FREQ=HOURLY`, while the automation remained enabled.
+This document no longer acts as a frozen snapshot. It maps early hypotheses to their current evidence maturity so later workers do not repeatedly treat settled questions as open or provisional observations as laws.
 
-This distinguishes:
-- **schedule persistence**: the new recurring schedule is stored
-from
-- **wake delivery**: the intended occurrence actually invokes the automation
+Evidence states:
+- PROMOTED: repeated relay-local evidence supports operational use.
+- SUPPORTED: positive evidence exists but promotion scope is narrower than a general law.
+- REJECTED_AS_DEFAULT: tested but inferior to the promoted alternative.
+- OPEN: still requires discriminating evidence.
 
-They must be measured separately.
+## Current promoted operating facts
 
-### 2. Multiple writes inside one wake need an explicit final-writer rule
-A test turn can write several future DTSTART values successfully and then overwrite them with a final close-relative DTSTART.
+### Same-automation recurring mutation — PROMOTED
+A complete VEVENT preserving `RRULE:FREQ=HOURLY` can be written back to the same automation while it remains enabled. Repeated end-to-end samples established that stored schedule state and actual wake delivery must remain separate measurements.
 
-Therefore durable state must treat the **last verified scheduler write** as authoritative for that turn. Earlier provisional due values must never be replayed over it.
+Operational consequence: preserve recurrence on every normal final scheduler write; never infer WAKE_OK from WRITE_OK alone.
 
-### 3. A recurring schedule can survive a missed near-term occurrence
-At least one observed test stored an enabled hourly RRULE with a near-term DTSTART, but no invocation was observed at that intended near-term instant. The recurring schedule itself remained present.
+### Single final scheduler mutation — PROMOTED
+Early architecture considered a provisional fallback write plus a final fast write. Controlled comparison showed the extra provisional mutation increased control overhead without demonstrated correctness/recovery gain; existing hourly recurrence already supplies cold recovery.
 
-This supports using recurrence as cold fallback, but does **not** yet establish the exact fallback-delivery reliability.
+Operational consequence: normal path uses exactly one final scheduler mutation. Additional scheduler writes require anomaly/recovery evidence, not precaution alone.
 
-## Important uncertainty
+### +3 minute continuation class — PROMOTED PRACTICAL DEFAULT
+Repeated +3m samples continued end-to-end. +2m produced mixed evidence including a missed near occurrence followed by recurring recovery. Therefore +3m is the leading practical default under the tested runtime, while dispatch offset itself remains non-authoritative telemetry.
 
-### Near-term dispatch is not explained by one simple rule yet
-Early +1m-style final writes appeared to miss at least some intended occurrences. Later interactive traces also show repeated short-gap executions.
+Operational consequence: do not collapse scheduler eligibility, dispatch jitter, and continuation reliability into one timing number.
 
-Therefore the current evidence does **not** justify a claim such as:
-- “+1 minute always fails”, or
-- “+1 minute is reliable”.
+### Update-return validation — PROMOTED NORMAL PATH
+Routine live read-after-write verification was removed in repeated samples without loss of continuation/state reconstruction. Live verification remains an exception path for malformed returns, ambiguity, anomaly, reconciliation, or rollback.
 
-Possible causes still needing isolation:
-- actual lead time after the final scheduler write is much shorter than nominal +1m
-- scheduler propagation delay
-- in-flight run completion vs eligibility of the next occurrence
-- provider jitter
-- UI refresh/observation lag
-- hidden coalescing/de-duplication of closely spaced wakes
-- schedule write timing relative to current run lifecycle
+### Issue-tail routine bootstrap — PROMOTED
+Routine clean-success continuation can reconstruct active state from the compact Issue #1 tail. Ledger/canonical documents are boundary and recovery sources, not mandatory hot-path reads.
 
-E2 must measure these variables directly.
+### Large pre-shaped TO-DO packages — PROMOTED FOR SEMANTIC CAPACITY
+LW15-A and LW15-B independently completed 15 eligible substantive units on different artifacts while preserving one normal scheduler mutation. This establishes increased semantic capacity, not a guaranteed wall-clock duration or greater reasoning depth.
 
-## Mechanisms that must remain distinct
+## Supported but bounded findings
 
-1. **Self schedule mutation** — same automation changes its own DTSTART/RRULE.
-2. **Cross-automation schedule mutation** — automation A changes B's schedule.
-3. **Enable/disable** — changes liveness state but is not an immediate invocation primitive.
-4. **UI Run now** — operator-triggered immediate execution.
+### Recurrence as cold recovery — SUPPORTED
+A missed near-term occurrence can leave the recurring schedule intact and a later recurring wake can restore work. This supports recurrence as a cold fallback. It does not imply a precise fallback latency guarantee.
 
-Do not treat (2) as proof of (4). A schedule update is not the same operation as pressing **Run now**.
+### Durable authority — SUPPORTED WITH CONSTRAINT
+Immutable epoch/fence plus atomic create-if-absent claim protects authority decisions. External side effects still require idempotency/reconciliation; authority alone does not make arbitrary effects exactly-once.
 
-## Current candidate architecture
+## Rejected defaults
 
-The strongest candidate to test is:
+### Provisional scheduler pre-arm on every wake — REJECTED_AS_DEFAULT
+It adds a scheduler mutation without measured normal-path benefit over preserved hourly recurrence plus one final write.
 
-1. wake
-2. read fresh durable state
-3. claim/fence authority
-4. arm a recurring provisional fallback beyond the expected work envelope
-5. perform useful work in bounded units
-6. persist checkpoint/evidence
-7. as the **last scheduler mutation**, write a close-relative recurring fast continuation
-8. live-verify same automation + enabled + recurrence + intended DTSTART
-9. copy the verified due into durable state
-10. exit without another scheduler mutation
+### Unconditional live scheduler reread — REJECTED_AS_DEFAULT
+Update-return validation is sufficient on clean normal-path samples; reread is reserved for exception/boundary cases.
 
-This architecture should be compared against simpler alternatives, not assumed correct.
+### Broad repository reconstruction every wake — REJECTED_AS_DEFAULT
+Compact Issue tail plus top-of-prompt TO-DO gives a cheaper hot path. Broader reads are evidence-driven.
 
-## Next empirical work
+## Open questions
 
-E1:
-- establish a clean same-automation RRULE baseline with a generous lead time
+1. PACKAGE_SIZE saturation: does scaling from 15 to 20–24 eligible units continue increasing semantic capacity, or does runtime saturation force exact remainder handoff?
+2. Long useful-work duration: larger packages have increased measured WORKED directionally, but no evidence yet establishes a 10-minute useful-work guarantee.
+3. Dispatch timing semantics: observed early/late offsets are not authoritative enough to model as a deterministic scheduler law.
+4. Cross-runtime generality: findings are relay-local until reproduced under materially different runtime/provider conditions.
 
-E2:
-- compare +1m, +2m, +3m, +5m, +10m using repeated samples
-- record scheduler-write timestamp and actual invocation timestamp
-- classify each sample PASS / MISSED_NEAR_OCCURRENCE / INCONCLUSIVE
+## Decision rule for future edits
 
-E3:
-- deliberately perform several provisional writes followed by one final write
-- verify no stale due is restored afterward
-
-No default should be promoted until these are reproduced inside the sandbox.
+Do not add a new mechanism merely because it is plausible. Every promoted mechanism must identify the failure it prevents, the adverse or comparative evidence supporting it, its control cost, and the condition that would demote it.
