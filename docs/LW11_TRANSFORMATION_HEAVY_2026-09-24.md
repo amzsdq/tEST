@@ -40,5 +40,20 @@ Compare experiments on two axes rather than WORKED alone:
 
 A longer turn is not an improvement if the added duration is control overhead. A shorter turn can still win if it produces more reusable output; the long-work project should seek increases in both useful output and contiguous WORKED where possible.
 
-## Output 3 — Next discriminating test design
-If LW11 remains short despite durable transformation, test a **single coherent production task** that requires editing one substantial artifact through sequential stages: evidence extraction → model/spec construction → adversarial review → revision → validation. Hold TODO pointer, scheduler lead time, and one-write rule fixed.
+## Output 3 — Adversarial review
+The first mechanism still has a loophole: declaring several headings or decisions does not prove substantial transformation. A model can generate a matrix, criteria, and conclusions in one compressed reasoning burst. Therefore `number of units` and `number of sections` are weak proxies for work depth.
+
+A stronger package must have **revision pressure**. A later stage must inspect an earlier durable output, identify concrete defects against explicit criteria, and modify that same artifact. This creates a dependency that cannot be satisfied merely by relabeling parallel thoughts as sequential units.
+
+## Output 4 — Validated production protocol
+Use one coherent artifact and move it through five stages:
+1. **Evidence extraction:** collect only evidence required for the artifact.
+2. **Construction:** build a substantive model/specification from that evidence.
+3. **Adversarial review:** identify at least three concrete defects, unsupported assumptions, or missing cases in the constructed artifact.
+4. **Revision:** materially edit the artifact to resolve the review findings.
+5. **Validation:** test the revised artifact against explicit acceptance criteria and record unresolved failures.
+
+Required dependency: stages 3-5 must operate on the actual persisted output of the preceding stage. Merely predicting what the preceding stage would say does not satisfy the protocol.
+
+## Output 5 — Next discriminating test design
+Run **LW12-COHERENT-ARTIFACT-REVISION-01**. Keep the promoted dynamic TODO pointer, scheduler lead-time policy, and one-final-write rule fixed. Choose one existing relay research artifact that is useful enough to improve. Execute evidence extraction → construction/revision baseline → adversarial review → revision → validation in one invocation. Acceptance requires >=3 review defects, >=2 material revisions caused by those defects, a final validation verdict, no filler/waits, and GitHub-server WORKED measurement. Compare both durable-output quality and WORKED with LW9-LW11.
