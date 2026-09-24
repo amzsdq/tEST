@@ -5,20 +5,26 @@ Status: PROMOTED as a control-I/O optimization after independent live repeats in
 ## Default path
 1. Take the prior authoritative baton `created_at` as an inclusive `since` lower bound.
 2. Fetch a bounded recent window from Issue #1.
-3. Verify that the expected anchor/lineage is present and identify the latest relevant live evidence.
-4. If the returned window saturates its page size, paginate until the window is complete before deciding authority.
-5. If anchor presence, lineage, ordering, or tail completeness is ambiguous, fall back to Issue #1 comment count and the calculated final page (and broaden further if required).
+3. Verify expected anchor/lineage and identify latest relevant live evidence.
+4. If the returned window saturates its page size, paginate until the bounded window is complete before deciding authority.
+5. If anchor presence, lineage, ordering, or completeness is ambiguous, fetch Issue #1 comment count and calculate the current final page.
+6. Fetch that calculated page, then probe successive next pages until the first empty page. This closes the simple count->page rollover race where concurrent appends cross a page boundary after count was observed.
+7. If authority lineage is still ambiguous, broaden/re-read. An empty page is a completeness observation for that read moment, not a permanent no-new-work guarantee.
 
 ## Authority guard
 `since` is only a retrieval lower bound. It is update-sensitive: an older comment edited after the lower bound can be re-included. Therefore `updated_at` or response recency must never by itself supersede later append-only live evidence. Resolve authority from relevant live lineage, created ordering, and explicit later correction/supersession semantics. SHADOW/SYNTHETIC records never advance live NEXT.
 
 ## Evidence
-LW36 directional probe showed exact-timestamp inclusion and that busy recent windows can require pagination. LW37 independently repeated exact-anchor inclusion from the prior baton. Issue #1 reported 1499 comments; `ceil(1499/100)=15`, and page 15 returned the current tail range, validating the count/final-page fallback without a full-history scan.
+LW36 directional probe showed exact-timestamp inclusion and that busy recent windows can require pagination. LW37 independently repeated exact-anchor inclusion from the prior baton.
+
+During LW37, Issue #1 grew from 1499 to 1503 comments, crossing the 1500-comment / 100-per-page boundary. `ceil(1503/100)=16`; page 16 recovered the current tail and page 17 was empty. This both validates count/final-page recovery and demonstrates why a stale count at 1500 could otherwise miss a concurrently created page 16. The hardened fallback therefore probes beyond the calculated page until first empty.
 
 LW37 edit-order differential created shadow A, then later-created B, then edited A. A bounded `since=A.created_at` read included edited A and B, but retained A before B in response order. This proves the lower-bound query can re-include edits and must not be treated as an updated-at authority ordering.
 
+A deliberately invalid/future `since` returned an empty set; the protocol treated that as an anchor/completeness failure and recovered through fresh count + final-page probing rather than concluding NOOP.
+
 ## Failure behavior
-If the bounded read cannot prove tail completeness or relevant authority lineage, do not guess. Broaden the read or use count/final-page fallback. The optimization fails open to more retrieval, never to weaker authority validation.
+If the bounded read cannot prove tail completeness or relevant authority lineage, do not guess. Broaden the read or use the hardened count/final-page-plus-next-page fallback. The optimization fails open to more retrieval, never to weaker authority validation.
 
 ## Non-goals
 This protocol does not maintain a second mutable current-state pointer, does not alter scheduler behavior, and does not change the compact live baton format.
