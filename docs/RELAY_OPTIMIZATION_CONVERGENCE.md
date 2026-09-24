@@ -1,138 +1,89 @@
-# Relay Optimization Convergence Protocol v0.1
+# Relay Optimization Convergence Protocol v0.2-candidate
 
-Status: ACTIVE
+Status: ACTIVE / LW13 REVIEW CANDIDATE
 
 ## Objective
+Converge to the smallest relay policy that maximizes **semantic useful work** while preserving continuation reliability, crash recovery, duplicate prevention, recurring fallback, and inspectable durable state.
 
-Converge from a diagnostic/stress relay prompt to the smallest production relay policy that maximizes useful work while preserving:
-- continuation reliability
-- crash recovery
-- duplicate prevention
-- recurring fallback
-- inspectable durable state
+The target is not fewest instructions or longest wall-clock time. A change wins only when evidence shows better useful output/reliability for equal or lower control cost.
 
-The optimization target is not "fewest instructions". It is the best measured tradeoff between liveness, correctness, overhead, and recoverability.
+## Evidence classes
+Every experiment must separate:
+- **SEMANTIC_OUTPUT** — a new decision, validated finding, corrected artifact, discriminating test, or operational rule that changes what should happen next.
+- **ARTIFACT_IO** — persistence/fetch required to make a real dependency or review boundary observable.
+- **CONTROL_IO** — scheduler mutations, markers, baton/checkpoint writes, verification-only reads.
+- **WALL_TIME** — GitHub-server END_MARKER.created_at - START_MARKER.created_at; telemetry only.
 
-## Core method: controlled convergence
+Longer WALL_TIME without additional SEMANTIC_OUTPUT is not improvement. ARTIFACT_IO is justified only when it creates a real dependency/review boundary, not to inflate duration.
 
-### 1. Freeze a baseline
-Start from one exact prompt version (P0).
+## Controlled convergence
+1. **Freeze a baseline.** Record exact prompt/protocol version and current candidate.
+2. **Change one primary variable.** Keep scheduler lead time, mutation count, and unrelated prompt controls constant unless they are the variable under test.
+3. **Use repeated samples.** One PASS is weak evidence. Repeat the candidate and include an adverse/boundary test before promotion when practical.
+4. **Separate end-to-end success layers:**
+   - WRITE_OK — update accepted.
+   - STATE_OK — intended recurrence/enabled state persisted.
+   - WAKE_OK — intended invocation occurred.
+   - WORK_OK — correct authority/checkpoint resumed without duplicate substantive side effects.
+5. **Separate useful-work quality from duration.** Record semantic outputs and their downstream decision value independently from artifact/control I/O and WALL_TIME.
 
-### 2. Change one primary variable at a time
-Examples:
-- final lead time
-- number of schedule writes
-- verification frequency
-- provisional fallback presence
-- checkpoint ordering
-- log volume
+## Experiment eligibility gate
+Before running a work-amplification experiment, require all three:
+1. **Downstream value:** its output can change a later decision, prompt, test, or operational artifact.
+2. **Substantive uncertainty:** a real defect/question exists; do not invent defects or low-value documents to create stages.
+3. **Discriminating comparison:** success/failure can distinguish the candidate mechanism from the current baseline.
 
-Do not simultaneously simplify the prompt and change the lead time, because a success/failure would be uninterpretable.
+If any gate fails, do not run the experiment merely to collect duration.
 
-### 3. Use repeated samples
-A single PASS is weak evidence.
-A candidate should receive multiple identical trials and at least one adverse test.
+## Persist-review-revise protocol
+Use this only when an eligible durable artifact already matters downstream.
+1. Build/materially revise candidate from necessary evidence.
+2. Persist candidate.
+3. Freshly fetch the persisted candidate before review; review the fetched representation, not the pre-write draft.
+4. Record each real defect as `TARGET / FAILURE_MODE / REQUIRED_CHANGE`.
+5. Map each material revision to one or more defects.
+6. Persist and freshly fetch the revision.
+7. Validate against explicit acceptance criteria and issue PASS/RETEST/REJECT.
 
-### 4. Separate four layers of success
-A relay turn is not "successful" just because update returned success.
+## Optimization order
+### Phase A — Scheduler reliability
+Find minimum lead time with acceptable repeated wake delivery.
+### Phase B — Mutation count
+Compare control-plane write counts; if reliability is equivalent, fewer writes win.
+### Phase C — Recovery
+Inject missed wake, stale durable due, premature turn end, and duplicate actor attempts. Reject candidates that cannot recover from durable state.
+### Phase D — Useful-work duty cycle
+Reduce diagnostic messages, redundant metadata checks, repeated policy text, scheduler mutations, and unnecessary repository I/O. Then test work-shaping mechanisms by semantic output, not elapsed time alone.
 
-Measure independently:
-1. **WRITE_OK** — update API accepted the schedule
-2. **STATE_OK** — live metadata contains intended DTSTART + RRULE + enabled state
-3. **WAKE_OK** — the intended invocation actually occurred
-4. **WORK_OK** — resumed work used the correct checkpoint/authority and did not duplicate side effects
+## Promotion rule
+Promote only when the candidate has:
+- repeated WORK_OK/WAKE_OK appropriate to the tested layer;
+- no duplicate-authority violation;
+- recovery evidence where the candidate affects recovery;
+- semantic output/reliability gain or lower overhead versus baseline;
+- no duration gain attributable only to extra ARTIFACT_IO or CONTROL_IO.
 
-Only WORK_OK proves an end-to-end continuation.
+For work-shaping mechanisms, at least two comparable samples are required before promotion unless a single adverse test falsifies the candidate.
 
-### 5. Optimize in this order
+## Rollback rule
+Rollback immediately when duplicate substantive side effects occur, recurring fallback is lost, stale state can overwrite newer authority, or failure cannot be recovered from durable state.
 
-#### Phase A — Scheduler reliability
-Find the minimum lead time with acceptable repeated wake delivery.
-
-#### Phase B — Mutation count
-Compare:
-- 6 writes (P0)
-- 2 writes (P2)
-- 1 write (P1)
-
-If reliability is equivalent, fewer writes win.
-
-#### Phase C — Recovery
-Inject:
-- missed near-term wake
-- turn ending before final rearm
-- stale durable due
-- duplicate actor attempt
-
-A candidate that is fast but cannot recover is rejected.
-
-#### Phase D — Useful-work duty cycle
-Once correctness is stable, reduce:
-- diagnostic messages
-- redundant metadata checks
-- repeated policy text
-- scheduler mutations
-- unnecessary repository I/O
-
-### 6. Promotion / rollback
-
-Promote only when:
-- repeated WAKE_OK
-- no duplicate-authority violation
-- recovery path demonstrated
-- lower overhead than current baseline or materially higher reliability
-
-Rollback immediately when:
-- duplicate substantive side effects occur
-- recurring fallback is lost
-- stale state can overwrite a newer final due
-- failure is not recoverable from durable state
-
-## Current optimization hypotheses
-
-H1. P0 is over-instrumented for production.
-Expected direction: reduce six scheduler writes to one or two.
-
-H2. Final lead time should be based on the timestamp of the **final scheduler write**, not an earlier "work complete" timestamp.
-Reason: otherwise effective scheduler lead time is shorter than the nominal interval.
-
-H3. The final schedule write should be the last control-plane mutation of the turn.
-Reason: prevents stale/provisional state from becoming authoritative after close.
-
-H4. A recurring RRULE can serve as a slow cold fallback while DTSTART is shifted for the next fast wake.
-This must be proven with actual wake evidence, not metadata alone.
-
-H5. UI **Run now** is an operator wake primitive and should be researched separately from autonomous relay.
-It may be useful for rescue/manual override, but should not be assumed available to automation itself.
-
-## Recommended immediate test sequence
-
-1. P1 with +10m × repeated baseline
-2. P1 with +5m
-3. P1 with +3m
-4. P1 with +2m
-5. P1 with +1m
-6. Repeat the threshold boundary enough times to estimate reliability
-7. Compare P1 vs P2 at the chosen lead time
-8. Inject a missed-wake/recovery test
-9. Only then remove logging/verification overhead
-
-This sequence isolates scheduler eligibility before architecture complexity is reintroduced.
-
-## Decision output
-
-At any point, the current best candidate should be expressible as:
-
+## Decision record
 ```text
-CURRENT_CANDIDATE=<prompt version>
+CURRENT_CANDIDATE=<prompt/protocol version>
+PRIMARY_VARIABLE=<one variable>
 LEAD_TIME=<duration>
 SCHEDULER_WRITES_PER_WAKE=<n>
-RECURRENCE=<rule>
-CHECKPOINT_ORDER=<summary>
-VERIFICATION=<summary>
+SEMANTIC_OUTPUTS=<count + downstream value>
+ARTIFACT_IO=<reads/writes required by substantive dependency>
+CONTROL_IO=<scheduler/marker/baton operations>
+WORKED=<GitHub server delta>
+WORK_OK=<yes/no>
 KNOWN_FAILURES=<list>
-EVIDENCE=<trial count / results>
+EVIDENCE=<comparable samples/results>
+DECISION=<PROMOTE/RETEST/REJECT>
 NEXT_DISCRIMINATING_TEST=<single test>
 ```
 
-The research is converged only when the next plausible simplification either reduces reliability/recovery or yields negligible benefit.
+## Current long-work research rule
+Dynamic top-of-prompt TODO is a hot-path execution pointer; Issue #1 remains durable authority. Pre-shaped packages may increase useful work only when stages have genuine result dependencies. Persist-review-revise is a candidate mechanism, not yet a universal requirement: it must demonstrate repeatable semantic gain under comparable artifact/control I/O before promotion.
