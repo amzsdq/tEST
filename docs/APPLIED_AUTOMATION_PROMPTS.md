@@ -5,42 +5,43 @@ Repository: `amzsdq/tEST`
 
 Purpose: version relay prompt semantics actually tested while keeping runtime identifiers out of this public repository.
 
+## P5M7 — Auto-refill with directional finalization reserve
+
+State: APPLIED / E12 BASELINE ACTIVE
+Parent: promoted P5M6 same-invocation auto-refill
+Primary variable: FINALIZATION_RESERVE_POLICY
+
+### Contract
+AUTO_REFILL remains default: `PACKAGE_COMPLETE != TURN_COMPLETE`. Elapsed time is used only as a safety/finalization admission signal. At substantive package boundaries, compare an external clock with GitHub START server time. The first E12 baseline predeclares a conservative 240-second cutoff for starting a NEW substantive package. Once reached, preserve exact remainder, write final baton, perform the sole scheduler mutation, and append END. Do not sleep, pad, or interrupt an active validation merely to hit the cutoff.
+
+Prior successful final-baton -> END envelopes are 23s (LW24) and 25s (LW25), measured from GitHub server timestamps. They are sparse evidence, not a safe minimum. One E12 sample cannot promote or shrink the reserve.
+
 ## P5M6 — Same-invocation auto-refill
 
-State: APPLIED / FIRST MULTI-PACKAGE SAMPLE ACTIVE
+State: PROMOTED DEFAULT after independent LW24 + LW25 multi-package repeats
 Parent: P5M5 value-gated work shaping with bounded persistence routing
 Primary variable: AUTO_REFILL_WITHIN_SAME_TURN
 Core invariant: `PACKAGE_COMPLETE != TURN_COMPLETE`
 
 ### Promoted defaults retained
-- 30–36 eligible-unit pre-shaped packages for semantic capacity+density within tested conditions; no wall-time guarantee.
-- VALUE_GATED_TARGET_SELECTION as default target selector.
-- BOUNDED THIN_ELIGIBLE routing for reconstructible audit/decision work; FULL_CHAIN for authoritative mutation, newly persisted decision evidence, or representation-dependent validation.
+- 30–36 eligible-unit pre-shaped packages are per-package capacity guidance, not an invocation cap or wall-time guarantee.
+- VALUE_GATED_TARGET_SELECTION is the default target selector.
+- BOUNDED THIN_ELIGIBLE routing applies to reconstructible audit/decision work; FULL_CHAIN applies to authoritative mutation, newly persisted decision evidence, or representation-dependent validation.
 - Exactly one final recurring scheduler mutation and practical +3m lead.
 - GitHub START/END server timestamps are the only WORKED clock.
 
 ### Auto-refill contract
-A current TO-DO/package is the queue head, not an invocation cap. When a substantive package completes, immediately reassess the parent GOAL and unresolved durable state. If useful goal-directed work remains, derive the next concrete package and execute it in the SAME invocation. Persist a compact `REFILL_BOUNDARY` for recovery, but do not mutate the scheduler at refill boundaries.
+A current TO-DO/package is the queue head, not an invocation cap. When a substantive package completes, immediately reassess the parent GOAL and unresolved durable state. If useful goal-directed work remains, derive the next concrete package and execute it in the SAME invocation. Persist one compact combined package-result/refill record for recovery; do not write redundant package END + refill records and do not mutate the scheduler at refill boundaries.
 
-Valid turn-stop conditions are only:
-1. PROGRAM_COMPLETE — parent goal actually completed and validated.
-2. GENUINE_EXTERNAL_BLOCKER — no useful independent goal-directed work can proceed.
-3. RUNTIME_OR_SAFETY_LIMIT — runtime/tool/safety constraint prevents safe continuation.
-4. NO_USEFUL_WORK_REMAINS — evidence-based reassessment finds no non-redundant goal-directed work.
+Valid turn-stop conditions are only PROGRAM_COMPLETE, genuine external blocker with no useful independent work, runtime/safety limit, or evidence-based exhaustion of useful work. Package completion, TO-DO exhaustion, artifact/test completion, checkpoint creation, semantic-output quota, or scheduler preparation are not stop conditions.
 
-Package completion, TO-DO exhaustion, one artifact/test completion, checkpoint creation, semantic-output quota, or scheduler preparation are explicitly not turn-stop conditions.
-
-### Anti-gaming
+### Anti-gaming and recovery
 Fast completion means spare capacity. Refill with useful work; never sleep, pad, repeat converged analysis, fabricate defects, split bullets artificially, or create low-value artifacts merely to increase elapsed time or package count.
 
-### Refill durability
-Each refill boundary records completed package, key result, cumulative useful outputs, and next substantive package. It is a recovery checkpoint only. The in-memory TO-DO may refill repeatedly. The persisted automation prompt/schedule changes exactly once at actual invocation end.
+`NEXT_PACKAGE` is a recovery pointer, not an unconditional cold-start command. Cold recovery revalidates current authoritative state before side effects. Generic per-package START markers are not required because attempted execution does not prove committed effects; unsafe replay targets require effect-level stable identity/receipt or an equivalently strong checkpoint.
 
-### Persistence router retained
-Target value and persistence mode are separate gates. FULL_CHAIN fresh-fetch review tests persisted representation against predeclared criteria. THIN_ELIGIBLE requires authoritative named durable inputs, exact reconstructibility, semantic review, explicit `OMITTED_BOUNDARY_DEFECT`, and source reads counted as artifact I/O. Thin audit may decide a mutation is required; mutation then escalates to FULL_CHAIN. Any defect attributable to an omitted candidate boundary rolls back that thin class.
-
-### First-sample validation
-A valid first P5M6 sample must demonstrate at least one completed substantive package followed by a second substantive package in the same invocation while useful work remains. Track `PACKAGES_COMPLETED`, cumulative semantic outputs, refill-boundary I/O, artifact I/O, control I/O, and GitHub-server WORKED separately. One successful sample is directional only; repeat before promotion.
+### Promotion evidence
+LW24 completed 11 substantive packages / 36 semantic outputs in one invocation with one final scheduler mutation. LW25 independently repeated 7 substantive packages / 25 semantic outputs and hardened stale-NEXT cold recovery. AUTO_REFILL is promoted within these tested conditions.
 
 ---
 
@@ -60,7 +61,7 @@ State: APPLIED
 - Same automation identity; no new automation for normal continuation.
 - One final recurring RRULE scheduler write on normal path.
 - Issue #1 compact tail is routine bootstrap; broader documents are cold-path unless substantive evidence/boundary/recovery requires them.
-- Wake, scheduler write/state, useful work, semantic density, persistence cost, refill count, and WORKED remain distinct observations.
+- Wake, scheduler write/state, useful work, semantic density, persistence cost, refill count, reserve timing, and WORKED remain distinct observations.
 - Simplicity is preferred only after recovery and duplicate-safety equivalence is established.
 
 ## Historical note
