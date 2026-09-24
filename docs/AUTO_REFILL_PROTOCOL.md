@@ -50,11 +50,13 @@ Auto-refill must preserve enough execution opportunity to commit continuation st
 
 At substantive package boundaries only, compare an external clock against the invocation START marker. A predeclared reserve threshold may stop admission of a NEW substantive package; it does not interrupt an already-validating package merely to hit a timestamp. On reserve entry, preserve exact unfinished useful work, write the final baton, perform the sole scheduler mutation, and append END.
 
-First E12 baseline predeclares a conservative 240-second new-package cutoff before observing its endpoint. This cutoff is directional evidence only: it is not promoted until repeated safe-finalization samples show that continuation safety improves without material useful-work loss. Runtime ending before finalization is `RESERVE_TOO_SMALL`; a large unused margin in one sample is `RESERVE_CONSERVATIVE`, not permission for post-hoc shrinking.
+The first E12 baseline predeclared a 240-second new-package cutoff. LW26 safely finalized with normalized A=22s, B=31s, C=53s. LW27 repeated the same 240-second cutoff and safely finalized with A=13s, B=21s, C=34s. Both samples committed final baton, the sole scheduler mutation, and END. Therefore 240s is classified `CONSERVATIVE_REPEAT_CONFIRMED` within these samples, not as a required minimum.
 
-Two prior successful auto-refill turns provide observed final-baton -> scheduler-update -> END envelopes of 23s (LW24) and 25s (LW25), measured from GitHub comment `created_at`. Treat these as sparse empirical tail samples, not a safe minimum. The 240s first cutoff intentionally reserves much more than 25s.
+The next controlled step-down is 250 seconds, predeclared before LW28 substantive work. A safe 250s sample is directional only and requires repeat before promotion. Any lost continuation, `RESERVE_TOO_SMALL`, or materially ambiguous margin rolls the next trial back to 240s. Do not tune the cutoff within a live run.
 
-Normalize E12 tail telemetry before comparing samples: record (A) `RESERVE_ENTRY -> FINAL_BATON`, (B) `FINAL_BATON -> END`, and (C) `RESERVE_ENTRY -> END` separately. Do not compare a C-duration against an older B-duration as if they were the same metric. For LW26 the authoritative timestamps yield A=22s, B=31s, C=53s. This is evidence about the 240s baseline, not proof of a fixed runtime ceiling.
+Two earlier successful auto-refill turns provide B-like final-baton -> END envelopes of 23s (LW24) and 25s (LW25). They are sparse empirical tail samples and are not directly comparable with C.
+
+Normalize E12 tail telemetry before comparing samples: record (A) `RESERVE_ENTRY -> FINAL_BATON`, (B) `FINAL_BATON -> END`, and (C) `RESERVE_ENTRY -> END` separately. Do not infer a fixed runtime ceiling from a near-300-second trace.
 
 Interpret a live reserve sample using the following frozen rule:
 - `SAFE_FINALIZATION`: final baton, sole scheduler mutation, and END all commit after reserve entry.
@@ -80,7 +82,7 @@ Optional package-local metrics may be added only when material. The record must 
 ## Metrics
 Per invocation record: `PACKAGES_COMPLETED`, `REFILL_BOUNDARIES`, cumulative `UNITS_DONE`, cumulative `SEMANTIC_OUTPUTS`, `ARTIFACT_IO`, `REFILL_IO`, `CONTROL_IO`, GitHub-server `WORKED`, `STOP_REASON`, exact `NEXT/REMAINDER`.
 
-For E12 reserve trials additionally record: `RESERVE_CUTOFF_SECONDS`, last admitted package boundary elapsed, reserve-entry elapsed, final-baton server time when available, END server time, observed finalization-tail seconds, `PACKAGE_OVERRUN`, and whether exact unfinished useful work was preserved.
+For E12 reserve trials additionally record: `RESERVE_CUTOFF_SECONDS`, last admitted package boundary elapsed, reserve-entry elapsed, final-baton server time when available, END server time, observed normalized A/B/C tail, `PACKAGE_OVERRUN`, and whether exact unfinished useful work was preserved.
 
 Per package retain package units when meaningful, density, downstream consequences, SELECTED_BY, persistence mode, and validation result.
 
