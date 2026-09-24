@@ -37,7 +37,6 @@ Demotion: repeated 30–36 packages lose exact remainder, add control I/O, fail 
 A promotion is not timeless. Before historical evidence controls a changed candidate, compare only fields capable of changing the mechanism's causal interpretation. Record `COMPARABILITY=CURRENT/DRIFTED` plus named drift fields. Drifted evidence remains historical and can guide tests, but cannot alone block/promote the changed candidate. Never silently discard adverse evidence.
 
 ## Supported but bounded findings
-
 ### Recurrence as cold recovery — SUPPORTED
 A missed near-term occurrence can leave recurrence intact and a later recurring wake can restore work; no precise fallback-latency guarantee is established.
 
@@ -48,12 +47,19 @@ Immutable epoch/fence plus atomic create-if-absent claim protects authority deci
 Fresh-fetch review can expose material defects and force later work to consume actual persisted state. I/O cost is separate from package-size capacity; thinning requires controlled non-inferiority evidence.
 
 ## Open mechanisms
-
 ### Value-gated target selection — OPEN / LW19 ACTIVE
 Hypothesis: at fixed ~34-unit package scale and unchanged persistence/control policy, predeclared scoring for decision reach, unresolved uncertainty, falsifiability, and downstream reuse can improve semantic-output density over LW18's 4.71/10 without post-hoc cherry-picking. Promotion requires controlled LW19 evidence; no current promotion is implied by plausibility.
 
 ### Long useful-work duration — OPEN
 Larger packages increased useful work and reached multi-minute WORKED samples, but no 10-minute useful-work guarantee exists. Do not infer duration from unit count alone.
+
+## R fresh-fetch review
+TARGET=promotion truth; FAILURE_MODE=prior map still labeled 34-unit scale SUPPORTED_WITH_DENSITY_WARNING after LW18 had promoted it; REQUIRED_CHANGE=promote 30–36 with explicit scope/demotion. RESOLVED.
+TARGET=target-selection causality; FAILURE_MODE=adding a scoring gate could be mistaken for already-proven improvement; REQUIRED_CHANGE=keep VALUE_GATED_TARGET_SELECTION OPEN until LW19 comparison completes. RESOLVED.
+TARGET=duration inference; FAILURE_MODE=larger semantic capacity could be misread as a 10-minute guarantee; REQUIRED_CHANGE=retain duration as OPEN and explicitly forbid unit-count inference. RESOLVED.
+
+R_VALIDATION=PASS. Evidence maturity now matches the canonical boundary while keeping the active target-selection mechanism and 10-minute duration question unpromoted.
+SELECTED_BY=R_VALIDATION(target-selection remains open; persistence is a supported quality boundary and major I/O component) -> S focus: define how value-gated target selection interacts with persisted-output eligibility without letting high scores force ceremonial persistence.
 
 ## Rejected defaults
 - Provisional scheduler pre-arm every wake.
