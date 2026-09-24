@@ -1,12 +1,12 @@
-# Relay Optimization Convergence Protocol v0.6
+# Relay Optimization Convergence Protocol v0.7
 
-Status: P5M9 AUTO-REFILL + E12 FINALIZATION-RESERVE OPTIMIZATION ACTIVE
+Status: P5M9 AUTO-REFILL + E12 260S REPEAT ACTIVE
 
 ## Objective
 Converge to the smallest relay policy that maximizes semantic useful work while preserving continuation reliability, crash recovery, duplicate prevention, recurring fallback, and inspectable durable state. Longer wall-clock time is diagnostic only; fast completion exposes spare capacity for more useful work.
 
 ## Evidence classes
-- SEMANTIC_OUTPUT: validated rule/spec/decision with named downstream consequence.
+- SEMANTIC_OUTPUT: validated rule/spec/decision with named downstream consequence and auditable OUTPUT_ID / DURABLE_CHANGE / DOWNSTREAM_CONSEQUENCE / VALIDATED_BY; otherwise report UNKNOWN rather than reconstructing a favorable count.
 - ARTIFACT_IO: persistence/fetch required by real dependency or review boundary.
 - CONTROL_IO: scheduler mutations, markers, baton/checkpoint writes, verification-only control reads.
 - REFILL_IO: compact same-invocation recovery checkpoints between substantive packages.
@@ -28,7 +28,7 @@ FULL_CHAIN applies when newly persisted representation is decision-relevant, sou
 30–36 eligible units is promoted per-package semantic-capacity guidance, not invocation cap or wall-time guarantee. `PACKAGE_COMPLETE != TURN_COMPLETE`: package completion triggers immediate parent-goal reassessment and same-invocation refill while useful work remains. Exactly one scheduler mutation occurs at actual invocation end. Cold `NEXT_PACKAGE` is revalidated before side effects.
 
 ## E12 finalization-reserve convergence
-A cutoff controls admission of a NEW substantive package only. It is not a hard interruption deadline and does not bound D after admission. `PACKAGE_OVERRUN` is evidence, not failure unless continuation is lost.
+A cutoff controls admission of a NEW substantive package only. It is not a hard interruption deadline and does not bound D after admission. `PACKAGE_OVERRUN` is evidence, not failure unless continuation is lost. Future step-down decisions review D and C jointly so package exposure is not hidden by a short finalization tail.
 
 Frozen method:
 1. predeclare cutoff before live substantive work;
@@ -42,7 +42,7 @@ Frozen method:
 9. add class-specific admission guards only after repeated same-class long-tail evidence; do not globally poll per action absent demonstrated need;
 10. never infer a universal runtime ceiling from sparse near-limit traces.
 
-Current evidence: 240s repeated safe in LW26/LW27; 250s repeated safe in LW28/LW29 and is TESTED within current conditions; 260s is active directional LW30 and requires repeat before promotion.
+Current evidence: 240s repeated safe in LW26/LW27; 250s repeated safe in LW28/LW29 and is TESTED within current conditions; LW30 supplied one directional-safe 260s endpoint with D=8s, A/B/C=9/13/22s, WORKED=286s and one scheduler write. LW31 is the independent frozen-260s repeat. 260s remains unpromoted until LW31 safely commits final baton+scheduler+END.
 
 ## Promotion / rollback
 - Scheduler/control: repeated WAKE_OK/WORK_OK, no duplicate-authority violation, relevant recovery evidence.
@@ -54,7 +54,7 @@ Current evidence: 240s repeated safe in LW26/LW27; 250s repeated safe in LW28/LW
 Rollback immediately on duplicate substantive side effects, lost recurring fallback, stale-authority overwrite, unrecoverable durable state, omitted-boundary defect, manufactured low-value refill work, or reserve policy that loses continuation.
 
 ## Decision record
-Record PRIMARY_VARIABLE, COMPARABILITY, LEAD_TIME, CUTOFF when active, SCHEDULER_WRITES, PACKAGES_COMPLETED, UNITS, SEMANTIC_OUTPUTS, ARTIFACT_IO, REFILL_IO, CONTROL_IO, WORKED, D/A/B/C when active, PACKAGE_OVERRUN, EVIDENCE, DECISION, STOP_REASON, NEXT.
+Record PRIMARY_VARIABLE, COMPARABILITY, LEAD_TIME, CUTOFF when active, SCHEDULER_WRITES, PACKAGES_COMPLETED, UNITS, SEMANTIC_OUTPUTS (audited or UNKNOWN), ARTIFACT_IO, REFILL_IO, CONTROL_IO, WORKED, D/A/B/C when active, PACKAGE_OVERRUN, EVIDENCE, DECISION, STOP_REASON, NEXT.
 
 ## Current long-work rule
 Dynamic top-of-prompt TO-DO is first queue head, not invocation cap. Issue #1 remains durable authority. Value gate ranks eligible work; persistence mode is separately gated; package completion refills while useful work remains; reserve admission protects final continuation. Do not infer reasoning depth from elapsed time.
