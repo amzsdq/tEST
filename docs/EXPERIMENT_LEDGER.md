@@ -32,25 +32,25 @@ Issue #1 is the canonical append-only raw experiment stream. Git history preserv
 | LW25 | multi-package | 7 packages | runtime-margin stop | 25 | invocation metric | auto-refill repeatability | combined refill boundaries | 1 | PROMOTE_AUTO_REFILL_DEFAULT |
 | LW26 | multi-package | 8 packages | 240s reserve | 42 | invocation metric | finalization reserve baseline | A/B/C=22/31/53s | 1 | SAFE_FINALIZATION_DIRECTIONAL |
 | LW27 | multi-package | 16 packages | 240s reserve | 46 | invocation metric | reserve repeatability | A/B/C=13/21/34s | 1 | 240S_CONSERVATIVE_REPEAT_CONFIRMED |
+| LW28 | multi-package | 12 packages | 250s reserve; package overrun | 50 | invocation metric | reserve cutoff step-down | A/B/C=11/26/37s | 1 | 250S_DIRECTIONAL_SAFE_WITH_PACKAGE_OVERRUN |
 
 ## Frozen semantic-output contract
 A semantic output is exactly one validated durable rule, specification, or decision with a named downstream consequence. Summaries, stylistic edits, raw reads/writes, and merely restated evidence count zero. Two statements with the same downstream consequence count once unless they independently change different named decisions. Each counted output is logged as `OUTPUT_ID`, `DURABLE_CHANGE`, `DOWNSTREAM_CONSEQUENCE`, `VALIDATED_BY`. Result dependency requires `SELECTED_BY=<prior validated result> -> <later substantive target>`.
 
 ## Promoted boundaries
 - 30–36 eligible-unit pre-shaped packages are promoted for semantic capacity+density under tested conditions; this is a per-package boundary, not an invocation cap or wall-time guarantee.
-- VALUE_GATED_TARGET_SELECTION is the default target selector under tested conditions: LW19 and LW20 independently produced 18/34 = 5.29 outputs/10 on different candidate pools versus LW18 4.71/10.
-- BOUNDED THIN_ELIGIBLE routing is promoted for reconstructible audit/decision work after LW21 and LW22 independent positive samples. FULL_CHAIN remains mandatory for authoritative mutation, newly persisted decision evidence, and representation-dependent validation.
-- Thin audit may discover that mutation is required; the mutation then escalates to FULL_CHAIN. This is correct routing, not a thinning failure.
-- AUTO_REFILL is the default invocation work-loop after LW24 and independent LW25 repeat: `PACKAGE_COMPLETE != TURN_COMPLETE`; validated package completion triggers immediate same-invocation refill while useful work remains.
+- VALUE_GATED_TARGET_SELECTION is the default target selector under tested conditions.
+- BOUNDED THIN_ELIGIBLE routing is promoted for reconstructible audit/decision work; FULL_CHAIN remains mandatory for authoritative mutation, newly persisted decision evidence, and representation-dependent validation.
+- AUTO_REFILL is the default invocation work-loop after LW24 and LW25: `PACKAGE_COMPLETE != TURN_COMPLETE`.
 - `NEXT_PACKAGE` is a recovery pointer, not an unconditional cold-start command; revalidate current authority before side effects.
-- Source reads remain artifact I/O and never count as thinning savings. Any defect attributable specifically to an omitted candidate boundary rolls back the affected thin class.
+- Source reads remain artifact I/O and never count as thinning savings.
 - Single final scheduler mutation remains the control baseline.
 
 ## Active boundary: P5M8 / E12 FINALIZATION RESERVE STEP-DOWN
-AUTO_REFILL remains promoted. LW26 and LW27 independently used a predeclared 240-second new-package admission cutoff and both safely committed final baton + sole scheduler mutation + END. Their normalized A/B/C tails were 22/31/53s and 13/21/34s respectively. The 240s cutoff is therefore `CONSERVATIVE_REPEAT_CONFIRMED` within observed conditions, not a required minimum. LW28 separately tests a predeclared 250-second cutoff. One safe 250s sample is directional only and requires repeat; adverse evidence restores 240s.
+AUTO_REFILL remains promoted. LW26 and LW27 independently used a predeclared 240-second new-package admission cutoff and safely committed final baton + sole scheduler mutation + END, with normalized A/B/C tails 22/31/53s and 13/21/34s. The 240s cutoff is `CONSERVATIVE_REPEAT_CONFIRMED` within observed conditions. LW28 tested 250s and safely finalized with A/B/C=11/26/37s despite a package admitted at +224s completing after cutoff; classify `DIRECTIONAL_SAFE_WITH_PACKAGE_OVERRUN`. LW29 repeats 250s unchanged before promotion. Adverse or ambiguous finalization restores 240s.
 
 ## Telemetry separation
-Capacity, density, persistence I/O, refill count, reserve timing, and WORKED are separate. WORKED is GitHub START->END telemetry only. Source reads remain artifact I/O and are never counted as thinning savings. Any extra scheduler mutation makes a sample control-non-comparable. E12 reports A=`RESERVE_ENTRY->FINAL_BATON`, B=`FINAL_BATON->END`, C=`RESERVE_ENTRY->END`; B-like and C-like historical tails are not compared as equivalent.
+Capacity, density, persistence I/O, refill count, reserve timing, and WORKED are separate. WORKED is GitHub START->END telemetry only. E12 reports A=`RESERVE_ENTRY->FINAL_BATON`, B=`FINAL_BATON->END`, C=`RESERVE_ENTRY->END`; B-like and C-like historical tails are not compared as equivalent. A package admitted before cutoff may overrun it; record admission and completion/boundary exposure rather than treating cutoff as a hard interruption deadline.
 
 ## Reconciliation contract
 Routine non-boundary evidence lives in Issue #1. Reconcile this index at sample-set completion, promotion/rejection/rollback, prompt-version boundary, or explicit evidence audit. The ledger must not become a mandatory hot-path read.
