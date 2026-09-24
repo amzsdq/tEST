@@ -23,7 +23,15 @@ Issue #1 is the canonical append-only raw experiment stream. Git history preserv
 | LW37 | unavailable receipt authority -> UNKNOWN/no replay/no COMPLETE |
 | LW38 | UNKNOWN->COMMITTED cold recovery PASS; remaining validation still required |
 | LW39 | proof-bearing AUTHORITATIVE_NOT_FOUND -> retry eligibility only; weak/expired/incomplete negative evidence -> UNKNOWN |
-| LW40 | pre-attempt negative proof causally consumed after attempt; absent fresh post-attempt receipt -> UNKNOWN/no replay/no COMPLETE. Real-effect conservative retry narrowed to durable pre-effect attempt/intent unless target authority atomically supplies equivalent semantics. |
+| LW40 | pre-attempt negative proof causally consumed after attempt; absent fresh post-attempt receipt -> UNKNOWN/no replay/no COMPLETE; conservative real-effect retry requires durable pre-effect attempt/intent unless target authority supplies equivalent semantics |
+| LW41B | durable attempt-intent -> emission -> COMMITTED cold recovery PASS; intent must precede effect emission on conservative path |
+| LW42 | PROMOTE adapter-level TARGET_NATIVE_IDEMPOTENCY_ELIGIBLE under exact target contract; generic UNKNOWN retry remains forbidden |
+| LW43 | adverse cold repeat retained capability; horizon/scope/key/payload negatives fail closed |
+| LW44 | contract freshness and authoritative result-reconciliation domain made independent gates |
+| LW45 | exact operation/version fingerprint invalidation repeat PASS; provider-wide capability rejected |
+| LW46 | two emission policies cold-confirmed; native eligible path models 3->2 relay-controlled durable records when no new key write is needed |
+| LW47 | pre-emission eligibility separated from post-emission recovery; attempt-time fingerprint provenance must be cold-reconstructible |
+| LW48 | provenance five-case cold repeat PASS; native 3->2 retained only when key and attempt-time provenance need no new dedicated relay write; synthetic adapter sub-line converged |
 
 ## E12 finalization-reserve ledger
 | Trial | Cutoff | D | A/B/C | Scheduler writes | Result |
@@ -34,17 +42,19 @@ Issue #1 is the canonical append-only raw experiment stream. Git history preserv
 | LW29 | 250s | 8s edge | 8/17/25s | 1 | PROMOTE_250S_TESTED |
 | LW30 | 260s | 8s | 9/13/22s | 1 | 260S_DIRECTIONAL_SAFE |
 | LW31 | 260s | 16s | 20/19/39s | 1 | PROMOTE_260S_TESTED |
-| LW32 | 270s | 20s | 11/19/30s | 1 | 270S_DIRECTIONAL_SAFE; no unique incremental admission |
+| LW32 | 270s | 20s | 11/19/30s | 1 | 270S_DIRECTIONAL_SAFE |
 | LW33 | 270s | 11s | 10/26/36s | 1 | PROMOTE_270S_SCOPED_TESTED; unique useful admission from +264s boundary |
 
 ## Current promoted boundaries
 - 30–36 is per-package guidance, not invocation cap or wall-time guarantee.
 - `PACKAGE_COMPLETE != TURN_COMPLETE`; same-invocation AUTO_REFILL is default while useful work remains.
 - `NEXT_PACKAGE` is a recovery pointer, not an unconditional cold-start command.
-- 270s is the scoped TESTED new-package admission cutoff after repeated safety plus direct incremental-value evidence. 260s remains tested fallback. Do not infer a universal runtime ceiling or continue cutoff chasing without new value evidence.
+- 270s is the scoped TESTED new-package admission cutoff; 260s remains tested fallback. Do not infer a universal runtime ceiling or continue cutoff chasing without new value evidence.
 - Fixed n=3 coalescing is promoted only for shared-recovery-fate reconstructible groups and the narrow one-authoritative/idempotent-mutation receipt contract in `docs/COALESCING_PROTOCOL.md`.
 - Unreceipted/non-idempotent, multiple-effect, larger/adaptive groups remain unpromoted.
 - Required effect receipt and any mandatory pre-effect attempt/intent evidence are effect-level durability, not removable package-boundary I/O.
+- Target-native exception is adapter-scoped only: exact fresh operation/version fingerprint, stable cold-recoverable key, canonical payload, valid protection horizon, authoritative result reconciliation, and cold-reconstructible attempt-time fingerprint provenance. Generic UNKNOWN retry remains forbidden.
+- Native write-elision value is one relay-controlled durable record (3->2) only when neither key nor attempt-time provenance requires a new dedicated per-attempt relay write.
 
 ## E12 telemetry contract
 A=`RESERVE_ENTRY->FINAL_BATON`; B=`FINAL_BATON->END`; C=`RESERVE_ENTRY->END`; D=`last admitted boundary->reserve entry`. Cutoff controls admission, not interruption. PACKAGE_OVERRUN alone is non-adverse unless continuation is lost. Do not poll per action or sleep/pad.
