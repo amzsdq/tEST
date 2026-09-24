@@ -1,83 +1,88 @@
 # Persisted-Output Transformation Protocol
 
 ## Purpose
-Use persisted artifact boundaries to force later work to consume actual earlier outputs rather than an imagined in-memory draft. The mechanism is valuable when it improves semantic quality or decision reliability; it is not a wall-clock padding technique.
+Use persisted artifact boundaries when they make later work consume actual earlier outputs rather than an imagined in-memory draft. This is a semantic-quality primitive, not a wall-clock padding technique and not a mandatory wrapper around every large-package unit.
 
 ## Evidence baseline
 - LW9 top-of-prompt TO-DO improved hot-start continuity but remained short.
-- LW10 result-dependent lookup showed that dependency language alone is compressible.
-- LW11/LW12 showed that persist → fresh fetch → review → defect-caused revision → fresh fetch validation produces useful sequential boundaries.
-- LW15 showed larger pre-shaped packages can increase semantic capacity when every added unit is independently valuable.
-
-Therefore this protocol is a **quality/dependency primitive inside eligible packages**, not a requirement that every task manufacture an artifact.
+- LW10 dependency language alone was compressible.
+- LW11/LW12 showed persist → fresh fetch → review → defect-caused revision → fresh fetch validation can expose material defects.
+- LW15/LW16 showed larger pre-shaped packages increase semantic capacity when every added unit is independently valuable.
+- At larger scales, unconditional persistence chains can dominate artifact I/O; therefore package size and persistence-boundary density must be measured separately.
 
 ## Artifact eligibility gate
-Use the chain only when all are true:
-1. downstream decision value — the artifact can change a later experiment, prompt, recovery rule, or operational decision;
-2. substantive uncertainty — at least one real semantic question or plausible defect exists before review;
-3. revisionability — a material correction can be made in the current turn;
-4. persistence value — reviewing persisted reality is meaningfully safer than reviewing an intended draft.
+Use a persisted chain only when all are true:
+1. downstream decision value;
+2. substantive uncertainty or plausible material defect;
+3. revisionability in the current turn;
+4. persistence value — reviewing persisted reality is meaningfully safer than reviewing intended state.
 
-If any condition fails, use direct evidence-to-decision work. Never create a document merely to consume time or satisfy a unit quota.
+If any condition fails, use direct evidence-to-decision work. Never create or rewrite a document merely to consume time or satisfy a unit quota.
 
 ## Canonical chain
-1. Evidence baseline: state decision purpose, acceptance/failure criteria, and minimum necessary evidence.
-2. Candidate persistence: materially construct/revise and persist the artifact.
-3. Fresh-fetch review: fetch the persisted candidate; review that exact version against criteria.
-4. Defect-caused revision: revise only material findings, with explicit defect→edit mapping.
-5. Revision persistence: persist the corrected artifact.
-6. Fresh-fetch validation: validate the actual persisted revision and issue PASS / RETEST / REJECT.
+1. Evidence baseline + explicit acceptance/failure criteria.
+2. Candidate persistence.
+3. Fresh-fetch review of the exact persisted candidate.
+4. Structured real defects: TARGET / FAILURE_MODE / REQUIRED_CHANGE.
+5. Defect-caused revision persistence.
+6. Fresh-fetch validation: PASS / RETEST / REJECT.
 
-A stage is an eligibility-gated semantic boundary, not a quota. Zero review defects is valid when the artifact genuinely passes criteria; do not fabricate findings.
+Zero defects is valid. Weak style preferences without downstream consequence do not count.
 
-## Structured review contract
-For each real defect record:
-- TARGET — exact rule, claim, section, or omission;
-- FAILURE_MODE — concrete operational/measurement consequence;
-- REQUIRED_CHANGE — observable semantic correction.
+## Adaptive persistence budget
+Persistence is justified by corrections, not by ceremony.
 
-Weak style preferences without downstream consequence do not count.
+For each artifact chain record:
+- MATERIAL_DEFECTS_FOUND;
+- MATERIAL_DEFECTS_RESOLVED;
+- ARTIFACT_IO_RAW;
+- SEMANTIC_OUTPUTS;
+- `CORRECTION_YIELD = MATERIAL_DEFECTS_RESOLVED / ARTIFACT_IO_RAW`;
+- whether a direct evidence-to-decision path plausibly would have produced the same validated decision.
+
+Decision rule:
+- RETAIN full persist/fetch/review/revise/fetch when it repeatedly catches material defects or protects a state boundary whose mismatch would change downstream action.
+- THIN the chain when fresh-fetch review repeatedly produces zero material corrections and persisted-state mismatch risk is low; use one persisted validation boundary instead of two where safe.
+- DEMOTE for a work class when direct evidence-to-decision produces equal semantic quality/reliability with lower artifact I/O.
+
+Do not thin scheduler/recovery evidence merely to optimize document I/O; this rule applies to semantic artifact production, not to evidence needed for authority or external side-effect safety.
 
 ## Large-package composition
-Multiple artifact chains may be composed when later targets depend on earlier validated results:
+Multiple artifact chains may be composed when later targets genuinely depend on earlier validated results. Each claimed transition records:
+`SELECTED_BY=<prior validated result> -> <later target>`.
 
-`E validation → select F question → F validation → select G question → synthesis`
-
-Rules:
-- do not precompute the substantive target of a declared result-dependent later artifact;
-- every artifact independently passes the eligibility gate;
-- synthesis counts only when it changes a future decision, not when it restates preceding sections;
-- if runtime interrupts while eligible work remains, persist exact remaining units and resume there; do not replace them with a newly invented package.
+A later target that was substantively preselected does not count as result-dependent capacity. Synthesis counts only when it changes a future decision.
 
 ## Measurement decomposition
 Record separately:
-- SEMANTIC_OUTPUTS — durable rules/decisions/spec changes surviving validation;
+- SEMANTIC_OUTPUTS and downstream consumers;
+- SEMANTIC_OUTPUTS_PER_10_UNITS;
 - DOWNSTREAM_DECISIONS_CHANGED;
 - DEFECTS_FOUND / MATERIAL_DEFECTS_RESOLVED;
-- ARTIFACT_IO_RAW — writes + fresh fetches;
+- ARTIFACT_IO_RAW;
 - ARTIFACT_IO_PER_SEMANTIC_OUTPUT;
-- CONTROL_IO — markers/baton/scheduler mutations;
-- WORKED — GitHub START_MARKER→END_MARKER only;
+- CORRECTION_YIELD;
+- CONTROL_IO;
+- WORKED from GitHub markers;
 - UNITS_PLANNED / DONE / REMAINING;
-- SATURATED — YES only when runtime/blocker/safety interrupts while eligible units remain.
+- SATURATED.
 
 ## Interpretation rules
 - More WORKED with weak semantic gain is not promotion.
-- More semantic outputs with unchanged control policy is evidence of capacity gain even if duration remains far below a desired wall-clock target.
-- Artifact-I/O differences contaminate per-unit efficiency comparisons unless disclosed/normalized; they do not invalidate semantic-capacity comparisons when every unit is eligible.
-- Package-size scaling and persisted-output transformation are separate variables: the former controls how much eligible work is pre-shaped; the latter supplies sequential validation boundaries inside suitable work.
+- More semantic outputs with unchanged control policy is capacity evidence.
+- Package-size scaling and persisted-output transformation are separate variables.
+- If semantic-output density stays stable but artifact I/O per output rises sharply, optimize persistence boundaries before increasing control complexity.
+- If density itself falls, stop scaling package size until weak units are removed or better substantive targets exist.
 
 ## Failure criteria
-REJECT or mark NON_COMPARABLE when:
-- review uses an unpublished/in-memory draft instead of the persisted candidate;
-- later result-dependent target was actually preselected;
-- defects are fabricated to satisfy a count;
-- revision merely appends commentary without correcting the target semantics;
-- validation does not inspect the persisted revision;
-- low-value artifacts or redundant I/O are added to increase elapsed time;
-- work stops with eligible units remaining but no exact remainder is persisted.
+REJECT/NON_COMPARABLE when:
+- review uses unpublished/in-memory state while claiming persisted review;
+- result-dependent target was actually preselected;
+- defects are fabricated;
+- revision does not correct target semantics;
+- validation skips the persisted revision;
+- redundant I/O or low-value artifacts are added for elapsed time;
+- eligible remainder is lost at handoff.
 
 ## Promotion and demotion
-Promote this protocol for a work class only when repeated eligible samples show semantic/downstream-value gain without extra scheduler/control cost.
-
-Demote it for a work class when direct evidence-to-decision work produces equal semantic quality/reliability with less artifact I/O, or when persisted boundaries repeatedly add latency without causing material corrections.
+Promote the full persisted-output protocol for a work class only when repeated samples show semantic/downstream-value or correction-yield gain worth its artifact I/O. Otherwise thin or demote it while preserving the large-package eligibility and exact-handoff rules.
