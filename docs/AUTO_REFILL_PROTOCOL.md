@@ -1,66 +1,41 @@
 # Same-Invocation Auto-Refill Protocol
 
-Status: PROMOTED DEFAULT within tested P5M6+ conditions; E12 finalization-reserve optimization active
+Status: PROMOTED DEFAULT; scoped 270s finalization-reserve admission cutoff active
 
-## Purpose and invariant
-Use fast package completion as spare execution capacity. `PACKAGE_COMPLETE != TURN_COMPLETE`. A package is a bounded work-shaping unit; an invocation may contain many packages.
+## Core invariant
+`PACKAGE_COMPLETE != TURN_COMPLETE`. Package completion is a refill trigger, not invocation completion. Refill useful work immediately while value/safety gates pass. Normal scheduler mutation occurs exactly once at actual invocation end.
 
 ## Refill transition
-After package N validates: persist one compact combined package-result/refill record; reassess parent GOAL; derive next value-gated substantive package if useful work remains; freeze persistence routing; execute N+1 immediately in the SAME invocation. The combined record replaces redundant package END + refill records. Do not mutate scheduler at refill boundaries; normal scheduler mutation occurs exactly once at actual invocation end.
+After a package validates, persist one compact combined package-result/refill boundary, reassess parent GOAL, select the next value-gated substantive package, and execute it in the same invocation. Never mutate scheduler at refill boundaries.
 
 ## Valid stop conditions
-PROGRAM_COMPLETE; genuine external blocker with no independent useful work; runtime/tool/safety limit; evidence-based NO_USEFUL_WORK_REMAINS. TO-DO/package/artifact/checkpoint/quota completion is not a stop condition.
+PROGRAM_COMPLETE; genuine external blocker with no independent useful work; runtime/tool/safety limit; evidence-based NO_USEFUL_WORK_REMAINS. TO-DO/checkpoint/package completion is not a stop condition. Padding/sleep/redundant work is invalid.
 
-## Eligibility and persistence
-Refill never relaxes eligibility. Filler/sleep/padding/redundant work is invalid. VALUE_GATED_TARGET_SELECTION remains active. THIN_ELIGIBLE is restricted to reconstructible audit/decision work; authoritative mutation or representation-dependent validation uses FULL_CHAIN. Source reads remain artifact I/O.
+## Eligibility and recovery
+VALUE_GATED_TARGET_SELECTION remains active. THIN_ELIGIBLE is limited to reconstructible audit/decision work; authoritative mutation or representation-dependent validation remains FULL_CHAIN. Cold recovery revalidates live authority/value/persistence gates before side effects. Generic UNKNOWN never authorizes replay.
 
-## Scale
-30–36 eligible units is per-package semantic-capacity guidance, not invocation cap or wall-time guarantee. Do not inflate one package merely to increase duration.
+## Finalization reserve
+At substantive package admission boundaries compare GitHub server time against invocation START. Current scoped TESTED new-package admission cutoff is 270s; 260s is tested fallback. The cutoff stops admission of a NEW substantive package only and never interrupts active validation. On reserve entry preserve exact remainder, append final baton, perform the sole scheduler mutation, then append END.
 
-## Crash/recovery
-Combined boundary records only the validated package and exact recovery pointer; never pre-claims next completion. `NEXT_PACKAGE` is a recovery pointer, not unconditional cold-start command. Cold recovery revalidates authority/value/persistence gates before side effects. Generic per-package START is not a correctness requirement; unsafe replay targets need effect-level stable identity plus authoritative receipt/status or equivalent checkpoint. Invocation START/END remain the WORKED clock.
+Evidence:
+- 240s repeated safe LW26/LW27.
+- 250s repeated safe LW28/LW29.
+- 260s repeated safe LW30/LW31.
+- 270s repeated safe LW32/LW33; LW33 admitted useful work from a +264s boundary that 260s would have rejected, satisfying the incremental-value gate. Therefore 270s is promoted only within current relay/finalization conditions. No further cutoff step-down absent new value evidence.
 
-## E12 finalization reserve
-Elapsed time is a safety/admission signal only, never work quota. At substantive package admission boundaries compare external GitHub time to invocation START. A predeclared cutoff stops admission of a NEW substantive package; it does not interrupt an already-validating package. On reserve entry preserve exact remainder, write final baton, perform sole scheduler mutation, append END.
+Telemetry remains D=last admitted boundary->reserve entry, A=reserve entry->final baton, B=final baton->END, C=reserve entry->END. Package overrun is not adverse by itself if exact continuation is preserved.
 
-Normalize telemetry:
-- D = last admitted boundary -> reserve entry (package exposure/overrun)
-- A = reserve entry -> final baton
-- B = final baton -> END, including scheduler mutation
-- C = reserve entry -> END
+## Boundary-document authority/freshness
+Live pending endpoint remains in Issue #1. Boundary documents are reconciled after evidence-complete classification, not inside the finalization critical path. Later explicit live correction/baton/evidence governs operational NEXT; fresh narrow contracts govern their scope absent later rollback; stale broad summaries cannot roll back later evidence. If a repair write is blocked, persist the exact dirty remainder in Issue authority and keep stale text non-authoritative. Do not add a second mutable CURRENT/cache pointer.
 
-Cutoff controls admission; it cannot bound D after admission. `PACKAGE_OVERRUN` is not reserve failure unless continuation is lost. Future step-down decisions evaluate D and C jointly: C measures finalization tail after reserve entry, while D measures post-admission exposure before reserve entry.
-
-### E12 evidence
-- LW26 cutoff 240s: A/B/C=22/31/53s, safe.
-- LW27 cutoff 240s: A/B/C=13/21/34s, safe. 240s=`CONSERVATIVE_REPEAT_CONFIRMED`.
-- LW28 cutoff 250s: A/B/C=11/26/37s, safe with overrun; last admission +224 -> reserve boundary +267 (43s exposure).
-- LW29 cutoff 250s: A/B/C=8/17/25s, WORKED=282s, 33 packages, one scheduler write, safe. Late exposures after +200s included 13s,6s,8s; edge admission +249 -> reserve +257. Earlier running semantic-output cumulative labels from this run are not treated as audited throughput evidence.
-- Therefore 250s is a TESTED CUTOFF within current relay/finalization conditions after independent LW28+LW29 samples. This is not a universal runtime ceiling or arbitrary-package guarantee.
-- LW30 cutoff 260s: D=8s, A/B/C=9/13/22s, WORKED=286s, one scheduler write, continuation safe. Semantic outputs remain `UNKNOWN_PENDING_AUDIT`. This is one directional-safe 260s sample only.
-- LW31 repeats the same predeclared 260s cutoff independently; 260s is not promoted before this repeat safely finalizes.
-
-### Frozen E12 rules
-1. predeclare cutoff before live work;
-2. package-boundary clock checks only; no per-action polling absent demonstrated need;
-3. never tune cutoff within a live run;
-4. do not sleep/pad or interrupt active validation to hit cutoff;
-5. one safe step-down is directional; repeated same-cutoff safe continuation is required for promotion;
-6. adverse/ambiguous 260s evidence rolls back to independently repeated 250s; 240s is older fallback only if shared-mode defect invalidates 250 evidence;
-7. add class-specific admission guard only after repeated same-class long-tail evidence;
-8. never infer a fixed runtime ceiling from sparse near-limit traces.
-
-## Required combined package-result/refill fields
-`PACKAGE`, `PACKAGE_COMPLETE=YES`, `RESULT`, `LAST_VALIDATION`, cumulative semantic/unit accounting when active, `NEXT_PACKAGE`, `SELECTED_BY`, `TURN_COMPLETE=NO`. Optional fields only when material.
+## Coalescing interaction
+Fixed n=3 reconstructible shared-recovery-fate coalescing is promoted under `docs/COALESCING_PROTOCOL.md`. Effectful groups retain mandatory effect evidence. Conservative retry uses durable pre-effect attempt/intent plus authoritative receipt reconciliation. Exact-fingerprint target-native exception may omit the separate relay attempt-intent only under its full adapter/provenance contract; generic UNKNOWN retry remains forbidden.
 
 ## Invocation metrics
-Record PACKAGES_COMPLETED, cumulative SEMANTIC_OUTPUTS when audited (otherwise `UNKNOWN`), ARTIFACT_IO, REFILL_IO, CONTROL_IO, GitHub-server WORKED, STOP_REASON, exact NEXT/REMAINDER. E12 adds cutoff, last admission elapsed, reserve entry, D/A/B/C, PACKAGE_OVERRUN, continuation safety.
+Record PACKAGES_COMPLETED, audited semantic outputs, PACKAGE_BOUNDARY_WRITES, RELAY_CONTROLLED_DURABLE_WRITES, GitHub-server WORKED, STOP_REASON, exact NEXT/REMAINDER, and scheduler writes. Provider-internal opaque persistence is excluded from relay-controlled write accounting.
 
 ## Semantic-output accounting
-Count an output only when `OUTPUT_ID`, `DURABLE_CHANGE`, `DOWNSTREAM_CONSEQUENCE`, and `VALIDATED_BY` are present and the consequence is not a duplicate. Summary/style/read-write bookkeeping counts zero. Package/refill count is throughput telemetry, not a semantic-quality proxy. If an invocation was not audited under this contract, report `SEMANTIC_OUTPUTS=UNKNOWN` rather than reconstructing a favorable cumulative number post hoc.
+Count an output only with unique OUTPUT_ID, DURABLE_CHANGE, DOWNSTREAM_CONSEQUENCE, and VALIDATED_BY; bookkeeping/style summaries count zero.
 
-## Promotion evidence
-LW24 demonstrated 11 substantive packages in one invocation; LW25 independently repeated multi-package refill and hardened cold stale-NEXT handling. AUTO_REFILL is therefore default within tested relay conditions. LW28+LW29 independently establish scoped 250s finalization-reserve admission evidence. LW30 provides one directional-safe 260s sample; repeat evidence remains required.
-
-## Rollback / adverse evidence
-Narrow or reject auto-refill on duplicate side effects, stale-authority overwrite, lost recovery state, extra scheduler mutations, material quality regression, counter inflation, or systematic low-value work. Runtime saturation itself is not failure if exact recovery state is preserved.
+## Rollback
+Narrow/reject on duplicate effects, stale-authority overwrite, lost recovery state, extra scheduler mutations, material quality regression, counter inflation, or systematic low-value work. Runtime saturation alone is not failure when exact recovery state is preserved.
