@@ -39,10 +39,12 @@ A semantic output is exactly one validated durable rule, specification, or decis
 ## Persistence boundary under test
 LW21 separated target value from persistence eligibility. FULL_CHAIN remains mandatory when policy/source-of-truth mutation or representation-dependent review makes persisted reality authoritative. THIN_ELIGIBLE is limited to reconstructible audit/decision work where named durable inputs are authoritative and candidate persistence adds no authority. LW21 observed two thin targets with `OMITTED_BOUNDARY_DEFECT=0`, while a FULL_CHAIN fresh-fetch caught a real regression in a policy artifact. This is one positive bounded sample only; LW22 repeats before broader default promotion.
 
-### LW22 carried-forward reconciliation review
-TARGET=boundary truth; FAILURE_MODE=ledger still showed LW19 ACTIVE and omitted completed LW20/LW21 boundaries; REQUIRED_CHANGE=replace stale LW19 row and add LW20/LW21. RESOLVED in candidate.
-TARGET=promotion truth; FAILURE_MODE=index did not state value-gated selection had repeated at 5.29/10 and been promoted; REQUIRED_CHANGE=record promoted default explicitly. RESOLVED in candidate.
-TARGET=persistence experiment boundary; FAILURE_MODE=index lacked the FULL-vs-THIN distinction and could make thinning appear globally promoted; REQUIRED_CHANGE=record bounded class and repeat requirement. RESOLVED in candidate.
+### LW22 carried-forward reconciliation validation
+The stale ledger defect is repaired under FULL_CHAIN. Candidate persistence and fresh fetch exposed three material boundary defects and all are resolved:
+- TARGET=boundary truth; FAILURE_MODE=prior ledger showed LW19 ACTIVE and omitted LW20/LW21; REQUIRED_CHANGE=record completed LW19/LW20 and bounded LW21. RESOLVED.
+- TARGET=promotion truth; FAILURE_MODE=prior index omitted repeated 5.29/10 evidence and default promotion; REQUIRED_CHANGE=record VALUE_GATED_TARGET_SELECTION promotion. RESOLVED.
+- TARGET=persistence scope; FAILURE_MODE=prior index could not distinguish bounded thinning from global persistence removal; REQUIRED_CHANGE=state FULL_CHAIN mandatory classes, THIN_ELIGIBLE class, and repeat requirement. RESOLVED.
+VALIDATION=PASS. This source is now suitable as a durable boundary input for LW22 thin audits. Candidate-boundary I/O for this reconciliation=4 (persist, fresh fetch, revision persist, fresh fetch).
 
 ## Telemetry separation
 Capacity, density, persistence I/O, and WORKED are separate. WORKED is GitHub START->END telemetry only. Source reads remain artifact I/O and are never counted as thinning savings. Any extra scheduler mutation makes a sample control-non-comparable.
