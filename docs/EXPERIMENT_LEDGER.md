@@ -44,6 +44,7 @@ Issue #1 is the canonical append-only raw experiment stream. Git history preserv
 | LW57 | hot-path audit PASS_NO_SAFE_CONTROL_WRITE_ELISION; fixed relay-control write floor remains START + FINAL_BATON + END |
 | LW58 | frozen crash matrix PASS_ELIGIBLE_SCOPED; first real final-package audit tuple coalesced into FINAL_BATON, eligible durable-write delta 2->1 |
 | LW59 | independent next-invocation cold reconstruction PASS; scoped final-admitted-package/FINAL_BATON coalescing PROMOTED |
+| LW68-LW69 | PROMOTE mandatory AUTO_REFILL decision gate after discriminating run + independent repeat: below cutoff, existing durable boundary must encode CONTINUE with a qualifying candidate or STOP with an allowed evidenced reason; named experiment/package completion is not a stop reason; no standalone refill-control write required |
 
 ## E12 finalization-reserve ledger
 | Trial | Cutoff | D | A/B/C | Scheduler writes | Result |
@@ -60,6 +61,7 @@ Issue #1 is the canonical append-only raw experiment stream. Git history preserv
 ## Current promoted boundaries
 - 30–36 is per-package guidance, not invocation cap or wall-time guarantee.
 - `PACKAGE_COMPLETE != TURN_COMPLETE`; same-invocation AUTO_REFILL is default while useful work remains.
+- Mandatory AUTO_REFILL gate: before finalization below cutoff, the existing durable package/group boundary must carry either `REFILL_DECISION=CONTINUE` with a qualifying candidate/value evidence and then execute it, or `REFILL_DECISION=STOP` with an allowed evidenced reason (`NO_QUALIFYING_WORK`, `CUTOFF_OR_RESERVE`, authority/safety blocker with no independent useful work, or `PROGRAM_COMPLETE`). Named experiment/package completion is never a stop reason. Do not create a standalone refill-decision write.
 - `NEXT_PACKAGE` is a recovery pointer, not an unconditional cold-start command.
 - 270s is the scoped TESTED new-package admission cutoff; 260s remains tested fallback. Do not infer a universal runtime ceiling or continue cutoff chasing without new value evidence.
 - Fixed n=3 coalescing is promoted only for shared-recovery-fate reconstructible groups and the narrow one-authoritative/idempotent-mutation receipt contract in `docs/COALESCING_PROTOCOL.md`.
