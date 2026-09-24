@@ -1,164 +1,92 @@
-# External Case Studies and Research Benchmarks v0.1
+# External Case Studies and Research Benchmarks v0.2
 
 Status: ACTIVE REFERENCE
 Repository: `amzsdq/tEST`
 
 ## Purpose
+This benchmark layer extracts failure-handling invariants from mature systems and turns them into falsifiable relay tests. It is not evidence that ChatGPT Automation shares vendor semantics. Empirical evidence in this repository remains authoritative.
 
-This document is a benchmark layer for the relay experiments. It is not evidence that ChatGPT Automation behaves like these systems.
+## Benchmark-to-experiment rule
+A vendor pattern is useful only when it yields all four fields below:
 
-Use it to:
-- identify mature distributed-systems patterns worth testing;
-- detect reinvention of solved primitives;
-- define adverse tests and promotion criteria;
-- prefer simpler mechanisms when they preserve the same safety properties.
+```text
+INVARIANT=<portable property>
+RELAY_HYPOTHESIS=<what should hold here>
+ADVERSE_TEST=<how to try to break it>
+PROMOTION_EVIDENCE=<what repository evidence would justify adoption>
+```
 
-Empirical evidence from this repository remains authoritative for ChatGPT Automation behavior.
+Do not copy architecture mechanically. If a benchmark cannot produce a discriminating adverse test or decision, keep it reference-only.
 
-## Case study 1 — Temporal durable execution
+## 1. Temporal durable execution
+Observed pattern: workflow progress is durable rather than tied to one worker; workers can disappear and resume from history; faster paths can fall back to durable reconstruction.
 
-Observed pattern:
-- workflow progress is represented durably rather than being tied to one worker process;
-- workers may disappear and later resume work from persisted execution history;
-- latency optimizations can fall back to a slower durable path after failure.
+Derived test:
+- INVARIANT=worker/chat continuity is not required for correctness.
+- RELAY_HYPOTHESIS=a cold worker can reconstruct exact next valid action from durable state.
+- ADVERSE_TEST=remove prior chat context and resume from Issue/repository state only.
+- PROMOTION_EVIDENCE=multiple cold resumes recover exact package/NEXT without user repair or duplicate substantive effects.
 
-Relevant lesson for this repository:
-- worker/chat continuity should not be required for correctness;
-- durable reconstruction is more important than keeping one worker alive;
-- fast continuation should be an optimization over a recoverable durable path.
+## 2. AWS Step Functions execution guarantees
+Observed pattern: workflow types make execution guarantees explicit; retry semantics and side-effect safety are separate from state transition success.
 
-Maps to:
-- E8 Durable cold-resume
-- checkpoint reconstruction
-- disposable-worker design
+Derived test:
+- INVARIANT=wake/transition success is not side-effect completion.
+- RELAY_HYPOTHESIS=WRITE_OK, scheduler STATE_OK, WAKE_OK, and WORK_OK can be distinguished when needed.
+- ADVERSE_TEST=simulate/observe successful wake with incomplete work or ambiguous external effect.
+- PROMOTION_EVIDENCE=relay never upgrades wake evidence into completion evidence and recovery selects the correct next action.
 
-Source:
-- https://docs.temporal.io/
-- https://docs.temporal.io/develop/worker-performance
+## 3. Kubernetes Lease leader election
+Observed pattern: a lease grants temporary authority; expiration permits takeover; ownership does not prove prior work completion.
 
-## Case study 2 — AWS Step Functions execution guarantees
+Derived test:
+- INVARIANT=authority and completion are separate facts.
+- RELAY_HYPOTHESIS=worker replacement can transfer authority without assuming prior side effects.
+- ADVERSE_TEST=interrupt an authority holder around an ambiguous side effect and reconstruct with a successor.
+- PROMOTION_EVIDENCE=successor neither duplicates a proven effect nor suppresses an unproven required effect.
 
-Observed pattern:
-- Standard Workflows persist execution state between transitions and use an exactly-once workflow execution model unless explicit retry behavior is configured;
-- Express Workflows trade stronger execution guarantees for higher-throughput at-least-once or at-most-once semantics depending on mode.
+## 4. Cloudflare Durable Objects Alarms
+Observed pattern: one current alarm can point at the next durable event; alarms may be delivered at least once and handlers should be idempotent.
 
-Relevant lesson:
-- execution semantics must be explicit;
-- non-idempotent effects require stronger authority than merely “the wake happened”;
-- reliability and throughput/latency are separate axes.
+Derived test:
+- INVARIANT=one mutable next wake can coexist with durable logical state.
+- RELAY_HYPOTHESIS=one recurring automation plus durable baton is sufficient for continuation without per-turn automation creation.
+- ADVERSE_TEST=duplicate/retry a wake and test whether substantive work identity prevents harmful duplication.
+- PROMOTION_EVIDENCE=repeated continuation succeeds with one scheduler mutation per normal turn and duplicate wake does not create duplicate substantive effects.
 
-Maps to:
-- WRITE_OK / STATE_OK / WAKE_OK / WORK_OK separation
-- E7 Duplicate authority
-- side-effect receipt/idempotency research
+## 5. GitHub Actions concurrency groups
+Observed pattern: concurrency exclusion controls simultaneous runs but does not identify logical work or guarantee idempotency.
 
-Source:
-- https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html
-- https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html
+Derived test:
+- INVARIANT=mutual exclusion is not effect identity.
+- RELAY_HYPOTHESIS=logical package/effect identity survives worker/run replacement independently of concurrency.
+- ADVERSE_TEST=allow replacement/retry under the same logical work id and inspect external effects.
+- PROMOTION_EVIDENCE=work identity remains stable and duplicate execution is either prevented or safely idempotent.
 
-## Case study 3 — Kubernetes Lease leader election
+## 6. Stripe idempotency keys
+Observed pattern: retries sharing an idempotency key can resolve to the stored first result; safety depends on evidence retention horizon.
 
-Observed pattern:
-- a Lease is a lightweight durable coordination object;
-- only one candidate owns leadership at a time;
-- leadership expires if it is not renewed;
-- another candidate may take over after failure.
+Derived test:
+- INVARIANT=stable effect identity plus authoritative sink result is stronger than local success belief.
+- RELAY_HYPOTHESIS=ambiguous retry can be resolved from durable effect identity/receipt when an external side effect exists.
+- ADVERSE_TEST=timeout/crash after request submission but before local acknowledgment.
+- PROMOTION_EVIDENCE=recovery can distinguish already-applied from not-applied effects without duplication throughout the supported recovery horizon.
 
-Relevant lesson:
-- a lease proves temporary authority, not task completion;
-- lease identity and expiration must be durable and reconstructable;
-- takeover must not imply that prior side effects did or did not happen.
+## Cross-case benchmark principles
+Reject or constrain a candidate that violates an applicable principle:
+1. durable reconstruction;
+2. wake != completion;
+3. at-least-once tolerance;
+4. stable logical work/effect identity;
+5. explicit authority;
+6. authoritative completion evidence;
+7. evidence retention covers recovery horizon;
+8. fast path retains durable fallback;
+9. concurrency control != idempotency;
+10. simpler mechanism wins only after adverse testing.
 
-Maps to:
-- E7 Duplicate authority
-- lease/epoch design
-- recovery after worker disappearance
-
-Source:
-- https://kubernetes.io/docs/concepts/architecture/leases/
-- https://kubernetes.io/docs/concepts/cluster-administration/coordinated-leader-election/
-
-## Case study 4 — Cloudflare Durable Objects Alarms
-
-Observed pattern:
-- each Durable Object has one current alarm;
-- alarms are at-least-once and may be retried;
-- documentation explicitly recommends idempotent alarm handlers;
-- many logical scheduled events can be stored durably while one alarm points at the next due event.
-
-Relevant lesson:
-- a wake primitive should not be treated as exactly-once;
-- “one mutable next wake + durable logical schedule” is a proven simplification pattern;
-- duplicate-safe work is required even when the scheduler itself is durable.
-
-Maps to:
-- E2 Minimum lead-time search
-- E3 final-writer behavior
-- E5 Missed-wake recovery
-- single recurring automation + durable state
-
-Source:
-- https://developers.cloudflare.com/durable-objects/api/alarms/
-- https://developers.cloudflare.com/durable-objects/best-practices/rules-of-durable-objects/
-
-## Case study 5 — GitHub Actions concurrency groups
-
-Observed pattern:
-- concurrency groups can restrict execution so that only one run in a group is active at a time;
-- pending/cancel/queue policy is distinct from the identity of the logical work being performed.
-
-Relevant lesson:
-- concurrency exclusion is not the same thing as idempotency;
-- preventing two workers from running simultaneously does not prove an external side effect occurred exactly once;
-- work identity must survive worker/run replacement.
-
-Maps to:
-- E7 Duplicate authority
-- stable work-item identity
-- avoiding “current worker == logical job” assumptions
-
-Source:
-- https://docs.github.com/en/actions/concepts/workflows-and-actions/concurrency
-- https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency
-
-## Case study 6 — Stripe idempotency keys
-
-Observed pattern:
-- retries with the same idempotency key return the stored result of the first request;
-- key retention is finite, so retry safety depends on the retention horizon;
-- the idempotency key identifies one logical operation across network uncertainty.
-
-Relevant lesson:
-- stable effect identity is a first-class primitive;
-- recovery correctness depends on the idempotency evidence living at least as long as the recovery horizon;
-- local “I think it succeeded” state is weaker than an authoritative sink-side result.
-
-Maps to:
-- stable effect identity experiments
-- receipt elimination when the sink is authoritative
-- timeout/crash ambiguity tests
-
-Source:
-- https://docs.stripe.com/api/idempotent_requests
-
-## Derived benchmark principles
-
-A candidate relay design should be rejected or explicitly constrained if it violates any applicable principle below:
-
-1. **Durable reconstruction** — a fresh worker can determine the next valid action without the previous worker's chat state.
-2. **Wake != completion** — scheduler delivery is never treated as proof that useful work or an external side effect completed.
-3. **At-least-once tolerance** — duplicate wake or retry must not create duplicate substantive side effects.
-4. **Stable logical identity** — work/effect identity survives retry, worker replacement, and timing changes.
-5. **Authority is explicit** — lease/ownership identifies who may act, not what has already completed.
-6. **Completion evidence is authoritative** — completion comes from durable receipt/state or an authoritative idempotent sink.
-7. **Recovery horizon is bounded by evidence retention** — idempotency/receipt data must outlive the longest supported recovery interval.
-8. **Fast path has a slower durable fallback** — latency optimization must not remove the reconstructable path.
-9. **Concurrency control is not idempotency** — both are evaluated separately when both are needed.
-10. **Simpler wins only after adverse testing** — fewer states/writes are preferred only if recovery and duplicate safety remain equivalent.
-
-## Research scorecard
-
-For every candidate architecture, record:
+## Decision scorecard
+For a candidate architecture or prompt mechanism, record only applicable fields:
 
 ```text
 DURABLE_RECONSTRUCTION=YES|NO|CONSTRAINED
@@ -167,16 +95,26 @@ STABLE_WORK_ID=YES|NO
 STABLE_EFFECT_ID=YES|NO|N/A
 EXCLUSIVE_AUTHORITY=YES|NO|N/A
 AUTHORITATIVE_COMPLETION=YES|NO|N/A
-RECOVERY_HORIZON_COVERED=YES|NO|UNKNOWN
+RECOVERY_HORIZON_COVERED=YES|NO|UNKNOWN|N/A
 FAST_PATH_HAS_DURABLE_FALLBACK=YES|NO
-DUPLICATE_ADVERSE_TEST=PASS|FAIL|NOT_RUN
-CRASH_ADVERSE_TEST=PASS|FAIL|NOT_RUN
-MEASURED_OVERHEAD=<value>
+DUPLICATE_ADVERSE_TEST=PASS|FAIL|NOT_RUN|N/A
+CRASH_ADVERSE_TEST=PASS|FAIL|NOT_RUN|N/A
+MEASURED_CONTROL_IO=<value>
+MEASURED_USEFUL_OUTPUT=<value>
 MEASURED_CONTINUATION_RELIABILITY=<value>
+DECISION=ADOPT|RETEST|REJECT|REFERENCE_ONLY
 ```
 
-This scorecard is diagnostic, not a weighted ranking. Promotion still follows measured repository evidence and the promotion rules in `RELAY_RESEARCH_PROGRAM.md`.
+### Evidence boundary
+A `YES` requires repository evidence or a directly observed runtime fact. Vendor documentation can justify the benchmark invariant but cannot make a ChatGPT relay score `YES`. `NOT_RUN` remains distinct from `PASS`.
+
+## Sources
+- Temporal: https://docs.temporal.io/ ; https://docs.temporal.io/develop/worker-performance
+- AWS Step Functions: https://docs.aws.amazon.com/step-functions/latest/dg/choosing-workflow-type.html ; https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html
+- Kubernetes Lease: https://kubernetes.io/docs/concepts/architecture/leases/ ; https://kubernetes.io/docs/concepts/cluster-administration/coordinated-leader-election/
+- Cloudflare Durable Objects Alarms: https://developers.cloudflare.com/durable-objects/api/alarms/ ; https://developers.cloudflare.com/durable-objects/best-practices/rules-of-durable-objects/
+- GitHub Actions concurrency: https://docs.github.com/en/actions/concepts/workflows-and-actions/concurrency ; https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency
+- Stripe idempotency: https://docs.stripe.com/api/idempotent_requests
 
 ## Explicit non-goal
-
-Do not copy vendor architecture mechanically. The useful unit is the invariant or failure-handling pattern, then a controlled experiment against ChatGPT Automation.
+This document supplies invariants and adverse-test templates. Promotion still follows measured repository evidence and the active convergence protocol.
