@@ -24,15 +24,18 @@ Use a persisted chain only when all are true: downstream decision value, substan
 Zero defects is valid. Weak style preferences without downstream consequence do not count.
 
 ## Semantic-output audit contract
-A counted semantic output must be durable, validated, and decision-bearing. Record it as:
+A counted semantic output must be durable, validated, and decision-bearing. Record:
 - `OUTPUT_ID=<stable local id>`
 - `DURABLE_CHANGE=<rule/spec/decision changed>`
 - `DOWNSTREAM_CONSEQUENCE=<named future experiment/prompt/recovery decision changed>`
 - `VALIDATED_BY=<fresh-fetch validation or named evidence boundary>`
 
-Two formulations that drive the same downstream consequence count once unless each independently changes a different named decision. Summaries, evidence restatement, stylistic edits, reads/writes, and control bookkeeping count zero.
+Two formulations driving the same downstream consequence count once unless they independently change different named decisions. Summaries, evidence restatement, stylistic edits, reads/writes, and control bookkeeping count zero.
 
-A package-level synthesis counts only when it changes a named future decision not already counted by its component outputs. This prevents aggregation prose from inflating semantic density.
+A package synthesis counts only when it changes a named future decision not already counted by components.
+
+### Value adjudication is separate from count
+Raw semantic-output count is the default density numerator. A lower-count sample may claim higher-value adjudication only by recording `VALUE_OVERRIDE_ID`, the exact counted output(s), the materially larger named consequence, the baseline output(s) it dominates, and falsifiable evidence for that dominance. Vague claims such as "more important" or "higher quality" are invalid. Value override changes the verdict explanation, never the raw count.
 
 ## Adaptive persistence budget
 Persistence is justified by corrections or state-boundary risk, not ceremony. For each chain record MATERIAL_DEFECTS_FOUND/RESOLVED, ARTIFACT_IO_RAW, SEMANTIC_OUTPUTS, and `CORRECTION_YIELD = MATERIAL_DEFECTS_RESOLVED / ARTIFACT_IO_RAW`.
@@ -45,20 +48,20 @@ Never thin authority, scheduler/recovery, or external-side-effect evidence merel
 Multiple artifact chains may be composed when later targets genuinely depend on earlier validated results. Each claimed transition records `SELECTED_BY=<prior validated result> -> <later target>`. The later substantive target must remain unresolved until prior validation. A preselected target does not count as dependency evidence.
 
 ## Density guardrail
-For the frozen LW18 repeat, the guardrail is 4.13 counted semantic outputs per 10 actual eligible units. Density is computed from actual UNITS_DONE. Below-guardrail results are DENSITY_DEGRADED unless higher-value adjudication names the specific output, materially larger downstream consequence, and reason raw count understates value. Wall time cannot override density.
+For frozen LW18, guardrail = 4.13 counted semantic outputs per 10 actual eligible units. Below-guardrail is DENSITY_DEGRADED unless a valid value override is recorded. Wall time cannot override density.
 
 ## Measurement decomposition
-Record SEMANTIC_OUTPUTS and output IDs, SEMANTIC_OUTPUTS_PER_10_UNITS, DOWNSTREAM_DECISIONS_CHANGED, DEFECTS_FOUND/RESOLVED, ARTIFACT_IO_RAW, ARTIFACT_IO_PER_SEMANTIC_OUTPUT, CORRECTION_YIELD, CONTROL_IO, WORKED, UNITS_PLANNED/DONE/REMAINING, and SATURATED.
+Record SEMANTIC_OUTPUTS and output IDs, SEMANTIC_OUTPUTS_PER_10_UNITS, DOWNSTREAM_DECISIONS_CHANGED, valid VALUE_OVERRIDE if any, DEFECTS_FOUND/RESOLVED, ARTIFACT_IO_RAW, ARTIFACT_IO_PER_SEMANTIC_OUTPUT, CORRECTION_YIELD, CONTROL_IO, WORKED, UNITS_PLANNED/DONE/REMAINING, and SATURATED.
 
 ## Interpretation rules
 - More WORKED with weak semantic gain is not promotion.
 - More semantic outputs with unchanged control policy is capacity evidence.
 - Package-size scaling and persisted-output transformation are separate variables.
-- Rising artifact I/O per output suggests a future controlled thinning experiment; it does not authorize skipping validation boundaries.
-- Falling semantic-output density means stop scale-up until weak units are removed or better targets exist.
+- Rising artifact I/O/output suggests a future controlled thinning experiment; it does not authorize skipping validation boundaries.
+- Falling density stops scale-up until weak units are removed or better targets exist, absent a valid value override.
 
 ## Failure criteria
-REJECT/NON_COMPARABLE when review uses unpublished state while claiming persisted review; a result-dependent target was preselected; defects are fabricated; revision does not correct target semantics; validation skips persisted revision; semantic outputs lack named downstream consequences; redundant I/O/low-value artifacts are added for elapsed time; or eligible remainder is lost at handoff.
+REJECT/NON_COMPARABLE when review uses unpublished state while claiming persisted review; a result-dependent target was preselected; defects are fabricated; revision does not correct target semantics; validation skips persisted revision; semantic outputs lack named downstream consequences; value override is subjective/unfalsifiable; redundant I/O/low-value artifacts are added for elapsed time; or eligible remainder is lost at handoff.
 
 ## Promotion and demotion
-Promote the full protocol for a work class when repeated samples show semantic/downstream-value or correction-yield gain worth its I/O. Demote/thin only through a controlled non-inferiority experiment, never from intuition or a single zero-defect sample.
+Promote the full protocol for a work class when repeated samples show semantic/downstream-value or correction-yield gain worth its I/O. Demote/thin only through controlled non-inferiority, never from intuition or a single zero-defect sample.
