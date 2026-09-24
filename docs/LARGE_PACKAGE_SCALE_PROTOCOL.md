@@ -1,6 +1,6 @@
 # Large-Package Scale Protocol
 
-Status: PROMOTED through tested 30–36 eligible-unit scale under P5M4 conditions.
+Status: PROMOTED through tested 30–36 eligible-unit scale under P5M4/P5M5 work-shaping conditions.
 
 ## Objective
 Maximize eligible semantic work per invocation while preserving continuation reliability and avoiding control/persistence work that exists only to inflate duration.
@@ -15,31 +15,29 @@ Promotion scope is semantic capacity+density only. No 10-minute guarantee and no
 
 ## Scale decision algorithm
 1. Pre-shape only eligible work.
-2. Keep result-dependent substantive focus unresolved; record SELECTED_BY.
-3. Execute until completion, genuine saturation, or eligible-work convergence.
-4. Preserve exact remainder on saturation.
-5. Measure capacity, density, persistence cost, WORKED separately.
-6. Scale beyond promoted boundary only as separate experiment; do not mix target-selection/persistence changes with size attribution.
+2. Rank competing eligible work with the promoted value gate; value score never changes persistence eligibility.
+3. Keep result-dependent substantive focus unresolved; record SELECTED_BY.
+4. Execute until completion, genuine saturation, or eligible-work convergence.
+5. Preserve exact remainder on saturation.
+6. Measure capacity, density, persistence cost, WORKED separately.
+7. Scale beyond promoted boundary only as separate experiment; do not mix persistence or scheduler changes with size attribution.
 
 ## Semantic-output contract
 One output = one validated durable rule/spec/decision with named downstream consequence. Duplicate consequence counts once. Summary/style/read-write bookkeeping counts zero. Audit with OUTPUT_ID / DURABLE_CHANGE / DOWNSTREAM_CONSEQUENCE / VALIDATED_BY.
 
 ## Target-selection layer
-Package-size eligibility does not rank competing eligible work. Value-gated target selection is separate and remains unpromoted until controlled comparison. Scores cannot lower eligibility, force persistence, alter counting, or justify post-hoc cherry-picking.
+Package-size eligibility does not rank competing eligible work. VALUE_GATED_TARGET_SELECTION is promoted as the default selector within tested conditions: LW19 and LW20 independently completed 34/34 on different candidate pools with 18 outputs=5.29/10 versus LW18 4.71/10. Frozen dimensions are decision reach, unresolved uncertainty, falsifiability, and downstream reuse; scoring cannot force persistence or justify post-hoc cherry-picking.
 
 ## Persistence interaction
-Full persisted chains remain baseline where persisted reality matters. Target score and persistence eligibility are separate gates. Thinning is separate.
+Target score and persistence eligibility are separate gates. FULL_CHAIN remains mandatory where persisted representation/source mutation matters. Bounded THIN_ELIGIBLE reconstructible audit/decision work is under repeat testing; necessary source reads remain I/O and any omitted-boundary defect restores FULL_CHAIN.
 
 ## Long-duration interpretation
-Larger packages increased useful WORKED directionally, including multi-minute samples, but elapsed time remains telemetry. A 10-minute guarantee is unproven.
+Larger packages increased semantic capacity and produced some multi-minute samples, but elapsed time remains telemetry and is not monotonic with unit count. A 10-minute guarantee is unproven.
 
-## LW19 synthesis validation
-Fresh-fetch review found three confound risks and the protocol now resolves them:
-- TARGET=mechanism layering; FAILURE_MODE=package size, target ranking, persistence, and counting could collapse into one policy; REQUIRED_CHANGE=separate causal layers. RESOLVED.
-- TARGET=baseline misuse; FAILURE_MODE=LW18 4.71 could become a universal density law; REQUIRED_CHANGE=use it only as LW19 comparison baseline while 4.13 remains historical scale guardrail. RESOLVED.
-- TARGET=duration overclaim; FAILURE_MODE=multi-minute samples could be promoted as guaranteed duration; REQUIRED_CHANGE=retain explicit unproven status. RESOLVED.
-
-SYNTHESIS_VALIDATION=PASS. Future experiments can vary one layer while freezing the others.
+## LW22 reconciliation review
+TARGET=target-selection maturity; FAILURE_MODE=prior protocol still said value-gated selection was unpromoted after LW19/LW20 repeated 5.29/10; REQUIRED_CHANGE=record promoted default and evidence. RESOLVED in candidate.
+TARGET=persistence maturity; FAILURE_MODE=prior text treated full persisted chains as undifferentiated baseline and omitted bounded thinning experiment; REQUIRED_CHANGE=separate persistence eligibility and bounded thin class. RESOLVED in candidate.
+TARGET=duration inference; FAILURE_MODE=prior wording could imply larger package directionally increases WORKED despite LW20 34-unit 80s sample; REQUIRED_CHANGE=state non-monotonic wall time and retain 10-minute OPEN status. RESOLVED in candidate.
 
 ## Required baton fields
 PACKAGE, UNITS_PLANNED/DONE/REMAINING, PACKAGE_COMPLETE, SATURATED, semantic outputs/output IDs, density, downstream decisions, SELECTED_BY, target-selection evidence if active, artifacts, artifact I/O, I/O/output, CONTROL_IO, COMPARABILITY, WORKED, RESULT, exact NEXT.
