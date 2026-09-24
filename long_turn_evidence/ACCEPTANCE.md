@@ -2,30 +2,30 @@
 
 | Obligation | Evidence | State |
 |---|---|---|
-| normalized invocation schema | `schema.json`, `validator.py` | implemented |
-| explicit fixture-only input boundary | `validator.py`, README | implemented |
-| deterministic duration/ordering | `validator.py` | implemented |
-| exact vs censored duration | validator + F2/F4/F7/A1 | implemented |
-| F1-F7 recovery fixtures | `fixtures.json` | implemented |
-| S1-S6 scheduler/finalization fixtures | `fixtures.json` | implemented |
-| malformed/missing/boolean/timestamp adversaries | F5/F6 + `test_hardening.py` | implemented |
-| missing END | F2/F3/F4/F7/A1 | implemented |
-| multiple candidate END / ambiguous lineage | `lineage.py`, `test_lineage.py` | implemented |
-| active-censored != abrupt | observation_state fence + regression | implemented |
-| cross-invocation no-sum | S5 | implemented |
-| 899/900 target crossing | S6/A1 | implemented |
-| exactly-one final mutation | S1-S4 | implemented |
-| five report classes | validator + `report.py` | implemented |
-| authority/nonclaims | README | implemented |
-| modular deterministic tests | validator/lineage/hardening tests | implemented; full modular execution pending |
-| exact-copy executable acceptance | `bundle_acceptance.py` | PASS: local output `BUNDLE_ACCEPTANCE_PASS cases=6 exact_LT02=411 threshold=899/900 active_censored=UNKNOWN`; local Git-blob SHA `7a632a3f93ad3b9e76c7b3d7f87948d856e522b8` exactly equals GitHub blob SHA readback |
-| generated report | `report.py` | generator implemented; generated file pending modular execution |
-| exact repository file inspection | GitHub contents/blob readback | pass |
+| normalized schema + deterministic duration | schema/validator | PASS |
+| exact vs censored + five classes | fixtures + validator | PASS |
+| F1-F7 / S1-S6 | `fixtures.json` | PASS |
+| malformed/boolean/timestamp/contradiction hardening | `test_hardening.py` | PASS: 14 tests |
+| missing/multiple/ambiguous END | lineage fixtures/tests | PASS: 4 tests |
+| cross-invocation no-sum | S5 + validator | PASS |
+| 899/900 crossing | S6/A1 + admission | PASS |
+| exactly-one final mutation | S1-S4 | PASS |
+| active censored != abrupt | observations + hardening | PASS |
+| observed LT02 exact 411s / LT03 censored 521s | `validate_observations.py` | PASS |
+| fixture integration | `validator.py` direct run | PASS: 15 fixture results |
+| unittest fixture harness | `test_validator.py` | PASS: 3 tests |
+| deterministic report | `report.py` | PASS: 15 fixtures; class counts persisted in `generated_report_summary.json` |
+| scheduler +180/readback | scheduler tests | PASS: 4 tests |
+| cold recovery authority/fallback | recovery tests | PASS: 7 tests |
+| long-turn admission/reserve | admission tests | PASS: 6 tests |
+| broader acceptance bundles | bundle + bundle_v2 | PASS: 6 + 13 checks |
 
-## Defects found during LT03 dogfood
+## Exact-byte execution proof
 
-The artifact workload exposed real correctness defects rather than filler: report rejection-reason checking was initially too permissive; marker validation allowed malformed missing timestamps/bool-as-int edges; a live censored invocation was initially conflated with abrupt termination; enum/boolean evidence needed fail-closed validation. These were repaired with regression coverage.
+The no-network checkout problem was bypassed without GitHub Actions by reconstructing files from connector readback and verifying local Git-blob SHA against GitHub blob SHA before treating execution as authoritative. Key exact matches: validator `e6861c9f940f8a0529b8f93dd546ebcd42c852a7`; fixtures `bc269b52a866b377e52813edb9395f1a7225d881`; report `15895ec4a2b86e9e6c7680323d6ecf419c1faaec`; hardening tests `2268ecddb6c78c570c715114c248113a0b4429a1`; lineage/test `b7c656c8a838a32d4544ba1079fe6235b35f7c9c` / `c5f832bcaa7cce8d814674ee98e3b88295f6a724`; observations/validator `f7b937e76e56a9f546db555bbef604be5c6492c4` / `bea8e55683bd050c5fa92853fab845ba8c5a1e01`.
 
-## Remaining acceptance work
+## Defects found and repaired during dogfood
 
-Full modular execution (`validator.py`, `test_validator.py`, `test_lineage.py`, `test_hardening.py`, `validate_observations.py`, `report.py`) from exact committed files remains the principal artifact acceptance gap. The container cannot resolve `github.com`, so clone-based execution fails before checkout. The hash-verified bundle proves core arithmetic/classification semantics, but it is not a substitute for the complete modular suite. Do not call the package complete yet.
+The workload exposed real defects: permissive report rejection matching; missing timestamp/bool-as-int edges; active censored misclassified as abrupt; malformed enum/boolean claims; contradictory active/closed/termination evidence; unverified END suppressing cold resume. All received regression coverage.
+
+Artifact acceptance is now evidence-complete for the specified LT03 deterministic workload. Remaining work in this invocation is the long-turn runtime target itself: continue only genuinely useful integration/audit work until raw GitHub elapsed reaches 900s, then enter reserve immediately.
