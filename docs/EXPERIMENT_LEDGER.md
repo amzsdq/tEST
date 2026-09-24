@@ -1,56 +1,46 @@
 # Relay Experiment Ledger
 
 ## Canonical storage contract
-Issue #1 is the canonical append-only raw experiment stream. Git history preserves every prior ledger version. This document is a current boundary index, not permission to erase history. Historical rows omitted from the compact view remain authoritative in Issue #1/git history. Never interpret absence from a compact view as a failed or deleted trial.
+Issue #1 is the canonical append-only raw experiment stream. Git history preserves prior ledger versions. This document is a compact current boundary index; omission never means failed/deleted evidence.
 
-## Current scheduler/recovery boundary rows
-| Trial | Prompt | Primary variable | Lead time | Writes/wake | WRITE_OK | STATE_OK | WAKE_OK | WORK_OK | Recovery? | Result |
-|---|---|---|---:|---:|---|---|---|---|---|---|
-| P1-10M-01..03 | P0R/P1 | lead time | 10m class | 1 | YES | YES | YES | YES | n/a | PASS family |
-| P1-5M-01..03 | P0R/P1 | lead time | 5m | 1 | YES | YES | YES | YES | n/a | PASS family |
-| P1-3M-01..04 | P0R/P1 | lead time | 3m | 1 | YES | YES | YES | YES | prior cold evidence | PASS family |
-| P1-2M-01 | P0R/P1 | lead time | 2m | 1 | YES | YES | NO near wake | YES after fallback | YES | MISSED_NEAR_OCCURRENCE + RECOVERY_PASS |
-| P1-2M-02 | P0R/P1 | lead time | 2m | 1 | YES | YES | YES | YES | n/a | PASS_WITH_TIMING_ANOMALY |
-| P2-3M-01 | P0R/P2 | extra provisional write | 3m | 2 | YES | YES | YES | YES | no benefit | PASS_BUT_REJECTED |
-| E8-P1-COLD-01 | P0R/P1 | cold recovery | hourly fallback | 0 after checkpoint | n/a | YES | YES | YES | YES | RECOVERY_PASS |
-| E7-AUTHORITY | P0R/P1 | authority | 3m | 1 | n/a | YES | YES | YES | YES | PASS_WITH_CONSTRAINT |
-| E8-MINIMAL-CHECKPOINT | P0R/P1 | checkpoint | 3m | 1 | YES | YES | YES | YES | YES | PASS |
+## Promoted scheduler/recovery boundary
+- One final recurring scheduler mutation is the normal control baseline.
+- Practical +3m lead remains current; 2m has mixed evidence.
+- Issue #1 compact tail is routine recovery authority; broader docs are cold-path.
+- GitHub START/END `created_at` is the WORKED clock.
 
-## Large-package / work-shaping ledger
-| Trial | Planned | Done | Saturated | Semantic outputs | Outputs/10 | Primary variable | Candidate-boundary I/O | Scheduler writes | Result |
-|---|---:|---:|---|---:|---:|---|---:|---:|---|
-| LW15-A | 15 | 15 | NO | >=5 | >=3.33 | package size | disclosed | 1 | CAPACITY_GAIN_DIRECTIONAL_RETEST |
-| LW15-B | 15 | 15 | NO | 8 | 5.33 | package size repeat | 8 | 1 | PROMOTE_FOR_SEMANTIC_CAPACITY |
-| LW16 | 22 | 22 | NO | 11 | 5.00 | package size scale | 12 | 1 | CAPACITY_GAIN_22_OF_22_NO_SATURATION |
-| LW17 | 34 | 34 | NO | 14 | 4.12 | package size scale | full baseline | 1 | CAPACITY_GAIN_WITH_DENSITY_WARNING |
-| LW18 | 34 | 34 | NO | 16 | 4.71 | frozen 34-unit repeat | full baseline | 1 | PROMOTE_30_36_SCALE_FOR_SEMANTIC_CAPACITY_AND_DENSITY |
-| LW19 | 34 | 34 | NO | 18 | 5.29 | value-gated target selection | full baseline | 1 | DIRECTIONAL_PROMOTION_RETEST |
-| LW20 | 34 | 34 | NO | 18 | 5.29 | value-gate repeatability | full baseline | 1 | PROMOTE_AS_DEFAULT_VALUE_GATED_TARGET_SELECTION |
-| LW21 | ~34 | 30 eligible | NO | 10 | audited non-inferior | persistence thinning | FULL=8; THIN=0; source reads=2 | 1 | BOUNDED_THINNING_POSITIVE_RETEST |
-| LW22 | 30-36 | 30 | NO | 15 | 5.00 | persistence thinning repeat | FULL candidate-boundary=16; THIN=0; source reads=4 | 1 | PROMOTE_BOUNDED_THINNING_DEFAULT |
-| LW24 | multi-package | 11 packages | runtime-margin stop | 36 | invocation metric | same-invocation auto-refill | combined refill boundaries | 1 | DIRECTIONAL_PASS_RETEST |
-| LW25 | multi-package | 7 packages | runtime-margin stop | 25 | invocation metric | auto-refill repeatability | combined refill boundaries | 1 | PROMOTE_AUTO_REFILL_DEFAULT |
-| LW26 | multi-package | 8 packages | 240s reserve | 42 | invocation metric | finalization reserve baseline | A/B/C=22/31/53s | 1 | SAFE_FINALIZATION_DIRECTIONAL |
-| LW27 | multi-package | 16 packages | 240s reserve | 46 | invocation metric | reserve repeatability | A/B/C=13/21/34s | 1 | 240S_CONSERVATIVE_REPEAT_CONFIRMED |
-| LW28 | multi-package | 12 packages | 250s reserve; package overrun | 50 | invocation metric | reserve cutoff step-down | A/B/C=11/26/37s | 1 | 250S_DIRECTIONAL_SAFE_WITH_PACKAGE_OVERRUN |
+## Work-shaping / persistence boundary
+| Trial | Result |
+|---|---|
+| LW18 | PROMOTE 30–36 eligible-unit per-package semantic-capacity range |
+| LW20 | PROMOTE VALUE_GATED_TARGET_SELECTION default |
+| LW22 | PROMOTE bounded THIN_ELIGIBLE for reconstructible audit/decision; FULL_CHAIN for authoritative mutation/representation-dependent validation |
+| LW24 | AUTO_REFILL directional pass: 11 packages / 36 outputs |
+| LW25 | PROMOTE AUTO_REFILL default: 7 packages / 25 outputs; cold NEXT revalidation hardened |
+
+## E12 finalization-reserve ledger
+| Trial | Cutoff | Packages | Semantic outputs | A/B/C | Overrun | Scheduler writes | Result |
+|---|---:|---:|---:|---|---|---:|---|
+| LW26 | 240s | 8 | 42 | 22/31/53s | observed policy | 1 | SAFE_DIRECTIONAL |
+| LW27 | 240s | 16 | 46 | 13/21/34s | observed policy | 1 | 240S_CONSERVATIVE_REPEAT_CONFIRMED |
+| LW28 | 250s | 12 | 50 | 11/26/37s | YES; last admission +224, next boundary +267 | 1 | 250S_DIRECTIONAL_SAFE_WITH_PACKAGE_OVERRUN |
+| LW29 | 250s | 33 | 156 conservative | 8/17/25s | YES; late exposures 13s,6s,8s; edge admission +249 -> +257 | 1 | PROMOTE_250S_TESTED_CUTOFF_CURRENT_CONDITIONS |
+| LW30 | 260s | active | active | pending | pending | target 1 | DIRECTIONAL_STEPDOWN_ACTIVE |
+
+## Current promoted boundaries
+- 30–36 is per-package guidance, not invocation cap or wall-time guarantee.
+- `PACKAGE_COMPLETE != TURN_COMPLETE`; same-invocation AUTO_REFILL is default while useful work remains.
+- `NEXT_PACKAGE` is a recovery pointer, not unconditional cold-start command.
+- Source reads remain artifact I/O.
+- 250s is a TESTED new-package admission cutoff only within current relay/finalization conditions after independent LW28+LW29 safe samples. It is not a universal runtime ceiling or arbitrary-package safety guarantee.
+- 260s is directional only until independently repeated.
+- Adverse/ambiguous 260s evidence rolls back to 250s. 240s is older conservative fallback only if a shared-mode defect invalidates the 250s sample family.
+
+## E12 telemetry contract
+A=`RESERVE_ENTRY->FINAL_BATON`; B=`FINAL_BATON->END`; C=`RESERVE_ENTRY->END`. D=`last admitted boundary->reserve entry` captures package exposure/overrun separately. Cutoff controls admission, not D after admission. `PACKAGE_OVERRUN` is not failure unless continuation is lost. Do not infer a fixed runtime ceiling from near-300s traces; do not poll time per action or sleep/pad.
 
 ## Frozen semantic-output contract
-A semantic output is exactly one validated durable rule, specification, or decision with a named downstream consequence. Summaries, stylistic edits, raw reads/writes, and merely restated evidence count zero. Two statements with the same downstream consequence count once unless they independently change different named decisions. Each counted output is logged as `OUTPUT_ID`, `DURABLE_CHANGE`, `DOWNSTREAM_CONSEQUENCE`, `VALIDATED_BY`. Result dependency requires `SELECTED_BY=<prior validated result> -> <later substantive target>`.
-
-## Promoted boundaries
-- 30–36 eligible-unit pre-shaped packages are promoted for semantic capacity+density under tested conditions; this is a per-package boundary, not an invocation cap or wall-time guarantee.
-- VALUE_GATED_TARGET_SELECTION is the default target selector under tested conditions.
-- BOUNDED THIN_ELIGIBLE routing is promoted for reconstructible audit/decision work; FULL_CHAIN remains mandatory for authoritative mutation, newly persisted decision evidence, and representation-dependent validation.
-- AUTO_REFILL is the default invocation work-loop after LW24 and LW25: `PACKAGE_COMPLETE != TURN_COMPLETE`.
-- `NEXT_PACKAGE` is a recovery pointer, not an unconditional cold-start command; revalidate current authority before side effects.
-- Source reads remain artifact I/O and never count as thinning savings.
-- Single final scheduler mutation remains the control baseline.
-
-## Active boundary: P5M8 / E12 FINALIZATION RESERVE STEP-DOWN
-AUTO_REFILL remains promoted. LW26 and LW27 independently used a predeclared 240-second new-package admission cutoff and safely committed final baton + sole scheduler mutation + END, with normalized A/B/C tails 22/31/53s and 13/21/34s. The 240s cutoff is `CONSERVATIVE_REPEAT_CONFIRMED` within observed conditions. LW28 tested 250s and safely finalized with A/B/C=11/26/37s despite a package admitted at +224s completing after cutoff; classify `DIRECTIONAL_SAFE_WITH_PACKAGE_OVERRUN`. LW29 repeats 250s unchanged before promotion. Adverse or ambiguous finalization restores 240s.
-
-## Telemetry separation
-Capacity, density, persistence I/O, refill count, reserve timing, and WORKED are separate. WORKED is GitHub START->END telemetry only. E12 reports A=`RESERVE_ENTRY->FINAL_BATON`, B=`FINAL_BATON->END`, C=`RESERVE_ENTRY->END`; B-like and C-like historical tails are not compared as equivalent. A package admitted before cutoff may overrun it; record admission and completion/boundary exposure rather than treating cutoff as a hard interruption deadline.
+A semantic output is one validated durable rule/specification/decision with a named downstream consequence. Summaries, stylistic edits, raw reads/writes, and restated evidence count zero. Result dependency requires `SELECTED_BY` from prior validated result to later substantive target.
 
 ## Reconciliation contract
-Routine non-boundary evidence lives in Issue #1. Reconcile this index at sample-set completion, promotion/rejection/rollback, prompt-version boundary, or explicit evidence audit. The ledger must not become a mandatory hot-path read.
+Routine non-boundary evidence stays in Issue #1. Reconcile this index at sample-set completion, promotion/rejection/rollback, prompt-version boundary, or explicit evidence audit. The ledger must not become a mandatory hot-path read.
