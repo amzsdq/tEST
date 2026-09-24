@@ -1,4 +1,4 @@
-# Relay Research Program v0.8
+# Relay Research Program v0.9
 
 Status: ACTIVE — work-shaping, bounded persistence routing, same-invocation auto-refill promoted; E12 finalization reserve optimizing
 Repository: `amzsdq/tEST`
@@ -27,23 +27,24 @@ Evidence:
 - LW26 cutoff 240s: A/B/C=22/31/53s, safe.
 - LW27 cutoff 240s: A/B/C=13/21/34s, safe. 240s=`CONSERVATIVE_REPEAT_CONFIRMED`.
 - LW28 cutoff 250s: A/B/C=11/26/37s, safe with package overrun.
-- LW29 cutoff 250s: A/B/C=8/17/25s, WORKED=282s, safe with one scheduler write. Independent LW28+LW29 evidence promotes 250s as a TESTED CUTOFF within current relay/finalization conditions.
-- LW30: predeclared 260s directional step-down active. One safe sample is directional only and requires repeat before promotion.
+- LW29 cutoff 250s: A/B/C=8/17/25s, WORKED=282s, safe with one scheduler write. Independent LW28+LW29 evidence promotes 250s as a TESTED CUTOFF within current relay/finalization conditions. Prior running semantic-output cumulative labels are not treated as audited throughput evidence.
+- LW30 cutoff 260s: D=8s, A/B/C=9/13/22s, WORKED=286s, one scheduler write, continuation safe. Semantic outputs remain UNKNOWN_PENDING_AUDIT. This is directional evidence only.
+- LW31: independent predeclared 260s repeat active. 260s remains unpromoted until this repeat safely commits continuation.
 
 ### E12 frozen constraints
 - GitHub server START/END timestamps are the WORKED clock.
 - Check external elapsed time at substantive package admission boundaries, not every action.
 - Reserve protects exact remainder + final baton + one scheduler mutation + END.
-- Normalize A=`RESERVE_ENTRY->FINAL_BATON`, B=`FINAL_BATON->END`, C=`RESERVE_ENTRY->END`.
-- `PACKAGE_OVERRUN` is not failure unless continuation is lost.
+- Normalize A=`RESERVE_ENTRY->FINAL_BATON`, B=`FINAL_BATON->END`, C=`RESERVE_ENTRY->END`, D=`last admitted boundary->reserve entry`.
+- Cutoff controls admission, not D after admission. `PACKAGE_OVERRUN` is not failure unless continuation is lost.
 - Track packages admitted after +200s by admission -> next validated-boundary exposure; telemetry does not alter the live cutoff.
-- Safety has two distinct serial observations: D=last admitted boundary -> reserve entry (package exposure/overrun) and C=reserve entry -> END (finalization). Cutoff controls admission, not D after admission.
+- Future step-down decisions review D and C jointly; a short C cannot hide a long post-admission D.
 - Do not add class-specific admission guards without repeated same-class long-tail evidence; do not add global per-action polling absent demonstrated need.
 - Adverse/ambiguous 260s finalization rolls back to tested 250s. 240s remains older conservative fallback only if a shared-mode defect invalidates 250 evidence.
 - Never infer a fixed runtime ceiling from near-300s traces.
 
 ## Metrics
-Primary: continuation success, duplicate substantive execution, useful-work duty cycle, recovery latency, semantic useful outputs per invocation. Secondary: scheduler mutations per useful-work minute, control overhead, artifact I/O per semantic output, packages per invocation, refill success, finalization success, D and normalized A/B/C tails.
+Primary: continuation success, duplicate substantive execution, useful-work duty cycle, recovery latency, audited semantic useful outputs per invocation (or UNKNOWN). Secondary: scheduler mutations per useful-work minute, control overhead, artifact I/O per audited semantic output, packages per invocation, refill success, finalization success, D and normalized A/B/C tails.
 
 ## External benchmark layer
 `docs/EXTERNAL_CASE_STUDIES.md` supplies invariants/adverse-test ideas, never proof of ChatGPT Automation behavior.
