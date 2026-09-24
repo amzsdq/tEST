@@ -30,6 +30,8 @@ Issue #1 is the canonical append-only raw experiment stream. Git history preserv
 | LW22 | 30-36 | 30 | NO | 15 | 5.00 | persistence thinning repeat | FULL candidate-boundary=16; THIN=0; source reads=4 | 1 | PROMOTE_BOUNDED_THINNING_DEFAULT |
 | LW24 | multi-package | 11 packages | runtime-margin stop | 36 | invocation metric | same-invocation auto-refill | combined refill boundaries | 1 | DIRECTIONAL_PASS_RETEST |
 | LW25 | multi-package | 7 packages | runtime-margin stop | 25 | invocation metric | auto-refill repeatability | combined refill boundaries | 1 | PROMOTE_AUTO_REFILL_DEFAULT |
+| LW26 | multi-package | 8 packages | 240s reserve | 42 | invocation metric | finalization reserve baseline | A/B/C=22/31/53s | 1 | SAFE_FINALIZATION_DIRECTIONAL |
+| LW27 | multi-package | 16 packages | 240s reserve | 46 | invocation metric | reserve repeatability | A/B/C=13/21/34s | 1 | 240S_CONSERVATIVE_REPEAT_CONFIRMED |
 
 ## Frozen semantic-output contract
 A semantic output is exactly one validated durable rule, specification, or decision with a named downstream consequence. Summaries, stylistic edits, raw reads/writes, and merely restated evidence count zero. Two statements with the same downstream consequence count once unless they independently change different named decisions. Each counted output is logged as `OUTPUT_ID`, `DURABLE_CHANGE`, `DOWNSTREAM_CONSEQUENCE`, `VALIDATED_BY`. Result dependency requires `SELECTED_BY=<prior validated result> -> <later substantive target>`.
@@ -44,11 +46,11 @@ A semantic output is exactly one validated durable rule, specification, or decis
 - Source reads remain artifact I/O and never count as thinning savings. Any defect attributable specifically to an omitted candidate boundary rolls back the affected thin class.
 - Single final scheduler mutation remains the control baseline.
 
-## Active boundary: P5M7 / E12 FINALIZATION RESERVE
-AUTO_REFILL remains promoted. E12 tests only when to stop admitting NEW substantive packages so the invocation can durably commit final baton + sole scheduler mutation + END marker. First baseline predeclares a conservative 240-second package-boundary cutoff. Prior successful finalization envelopes measured from GitHub server timestamps are 23s (LW24) and 25s (LW25); n=2 is insufficient to set a minimum reserve. Package completion remains a refill trigger outside the reserve. Reserve timing is telemetry/safety, never a work quota.
+## Active boundary: P5M8 / E12 FINALIZATION RESERVE STEP-DOWN
+AUTO_REFILL remains promoted. LW26 and LW27 independently used a predeclared 240-second new-package admission cutoff and both safely committed final baton + sole scheduler mutation + END. Their normalized A/B/C tails were 22/31/53s and 13/21/34s respectively. The 240s cutoff is therefore `CONSERVATIVE_REPEAT_CONFIRMED` within observed conditions, not a required minimum. LW28 separately tests a predeclared 250-second cutoff. One safe 250s sample is directional only and requires repeat; adverse evidence restores 240s.
 
 ## Telemetry separation
-Capacity, density, persistence I/O, refill count, reserve timing, and WORKED are separate. WORKED is GitHub START->END telemetry only. Source reads remain artifact I/O and are never counted as thinning savings. Any extra scheduler mutation makes a sample control-non-comparable.
+Capacity, density, persistence I/O, refill count, reserve timing, and WORKED are separate. WORKED is GitHub START->END telemetry only. Source reads remain artifact I/O and are never counted as thinning savings. Any extra scheduler mutation makes a sample control-non-comparable. E12 reports A=`RESERVE_ENTRY->FINAL_BATON`, B=`FINAL_BATON->END`, C=`RESERVE_ENTRY->END`; B-like and C-like historical tails are not compared as equivalent.
 
 ## Reconciliation contract
 Routine non-boundary evidence lives in Issue #1. Reconcile this index at sample-set completion, promotion/rejection/rollback, prompt-version boundary, or explicit evidence audit. The ledger must not become a mandatory hot-path read.
