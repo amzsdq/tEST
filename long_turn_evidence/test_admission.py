@@ -9,4 +9,8 @@ class AdmissionTests(unittest.TestCase):
  def test_target_crossed_but_finalization_unsafe(self):self.assertEqual(decide(900,finalization_safe=False)['state'],'FINALIZATION_BLOCKED')
  def test_bad_relationship(self):
   with self.assertRaisesRegex(ValueError,'target/stretch'):decide(1,target_seconds=900,stretch_seconds=899)
+ def test_string_qualifying_gate_rejected(self):
+  with self.assertRaisesRegex(ValueError,'invalid qualifying_work'):decide(1,qualifying_work='false')
+ def test_string_finalization_gate_rejected(self):
+  with self.assertRaisesRegex(ValueError,'invalid finalization_safe'):decide(900,finalization_safe='false')
 if __name__=='__main__':unittest.main(verbosity=2)
