@@ -8,10 +8,13 @@ ROOT = Path(__file__).resolve().parent
 fixtures = json.loads((ROOT / "fixtures.json").read_text())
 rows = []
 for f in fixtures:
-    if f["expected"].get("raises"):
+    expected_raise = f["expected"].get("raises")
+    if expected_raise:
         try:
             validate_fixture(f)
         except ValueError as exc:
+            if expected_raise not in str(exc):
+                raise AssertionError(f"{f['id']}: expected rejection containing {expected_raise!r}, got {str(exc)!r}") from exc
             rows.append({"fixture": f["id"], "classification": "REJECTED_INPUT", "detail": str(exc)})
         else:
             raise AssertionError(f"{f['id']}: expected rejection")
