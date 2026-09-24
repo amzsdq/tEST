@@ -1,27 +1,23 @@
 # LT03 artifact manifest
 
 ## Core evidence
-- `validator.py` — exact/censored duration, classification, fail-closed malformed/contradictory evidence checks.
-- `schema.json` — normalized record schema including active/recovered/closed observation state.
-- `fixtures.json` — F1-F7, S1-S6, target/adversarial fixtures.
-- `observations.json` — LT02 exact closed record + advancing LT03 active censored record.
-- `validate_observations.py` — exact 411s LT02 and censored LT03 assertions.
+- `validator.py` + `schema.json` — normalized exact/censored evidence model and fail-closed validation.
+- `fixtures.json` — F1-F7, S1-S6, target/adversarial cases.
+- `observations.json` / `validate_observations.py` — LT02 exact 411s and LT03 active censored evidence.
 
-## Lineage/recovery
-- `lineage.py` / `test_lineage.py` — exact START + FINAL_BATON backlink END recovery; zero/multiple candidates fail closed.
-- `recovery.py` / `test_recovery.py` — cold resume, verified-END requirement, identity/enabled/hourly fallback fences. Latest exact-copy execution: 7 tests PASS; blobs `eb0b50a8b24931e2225ca74d2ed7ad886209a660` / `aba212192317706670c42ac24c59b24493d618df` equal executed bytes.
+## Executed exact-byte suite
+All listed byte identities were checked using Git blob SHA before accepting local execution as evidence.
+- validator direct fixture run: 15 fixture results PASS; validator blob `e6861c9f940f8a0529b8f93dd546ebcd42c852a7`; fixtures blob `bc269b52a866b377e52813edb9395f1a7225d881`.
+- `test_validator.py`: 3 tests PASS, blob `f6f23844c59f059a7c81afd41eb81aa690178e09`.
+- `test_lineage.py`: 4 tests PASS; lineage/test blobs `b7c656c8a838a32d4544ba1079fe6235b35f7c9c` / `c5f832bcaa7cce8d814674ee98e3b88295f6a724`.
+- `test_hardening.py`: 14 tests PASS, blob `2268ecddb6c78c570c715114c248113a0b4429a1`.
+- `validate_observations.py`: PASS; observations/script blobs `f7b937e76e56a9f546db555bbef604be5c6492c4` / `bea8e55683bd050c5fa92853fab845ba8c5a1e01`.
+- `report.py`: PASS over 15 fixtures; report blob `15895ec4a2b86e9e6c7680323d6ecf419c1faaec`; summary persisted in `generated_report_summary.json`.
+- scheduler: 4 tests PASS; recovery: 7 tests PASS; admission/reserve: 6 tests PASS.
+- acceptance bundles: 6 and 13 checks PASS with committed/executed byte equality.
 
-## Scheduler/finalization
-- `scheduler.py` / `test_scheduler.py` — FINAL_BATON +180 target/readback. Exact-copy execution: 4 tests PASS; blobs `c879d9506ce710171113ea7225f3690d6264a3d5` / `398d31b9fd778c108d231ef116029ca605778330`.
-- `admission.py` / `test_admission.py` — 899 CONTINUE, 900 RESERVE_ENTRY, anti-padding exhaustion. Exact-copy execution: 6 tests PASS; blobs `85af63747a01bb3be5b3204f1fcc78927a0558c6` / `96ac29794fcf12b565138478d6a2a67dc6013431`.
+## Docs
+`README.md`, `CAPABILITY_CLASSIFICATION.md`, `ACCEPTANCE.md`, and generated report summary document authority, nonclaims, capability mapping, and acceptance evidence.
 
-## Broader executable acceptance
-- `bundle_acceptance.py` — exact-copy/hash-verified, 6 cases PASS.
-- `bundle_acceptance_v2.py` — exact-copy/hash-verified blob `ff9cdc241813915114995a3aa08da8d777d7e5cb`, 13 checks PASS.
-- `selftest.py` — arithmetic/lineage smoke checks.
-
-## Reporting/docs
-- `report.py`, `README.md`, `CAPABILITY_CLASSIFICATION.md`, `ACCEPTANCE.md`.
-
-## Remaining gap
-A single-checkout execution of the full modular validator/fixtures/report suite remains pending because the local container cannot resolve `github.com`. That environment limitation is not a test result. Hash-verified exact-copy execution now covers scheduler, recovery, admission, and two acceptance bundles; the full `validator.py` + fixture/report integration must still not be preclaimed.
+## Status
+The specified deterministic artifact acceptance workload is complete. The original clone path remains unavailable due container DNS, but it is no longer an acceptance blocker because exact committed bytes were reconstructed, hash-verified against GitHub blobs, and executed locally. Remaining LT03 work is only the invocation-duration experiment and safe finalization once the GitHub START-relative 900s threshold is crossed.
