@@ -54,6 +54,8 @@ First E12 baseline predeclares a conservative 240-second new-package cutoff befo
 
 Two prior successful auto-refill turns provide observed final-baton -> scheduler-update -> END envelopes of 23s (LW24) and 25s (LW25), measured from GitHub comment `created_at`. Treat these as sparse empirical tail samples, not a safe minimum. The 240s first cutoff intentionally reserves much more than 25s.
 
+Normalize E12 tail telemetry before comparing samples: record (A) `RESERVE_ENTRY -> FINAL_BATON`, (B) `FINAL_BATON -> END`, and (C) `RESERVE_ENTRY -> END` separately. Do not compare a C-duration against an older B-duration as if they were the same metric. For LW26 the authoritative timestamps yield A=22s, B=31s, C=53s. This is evidence about the 240s baseline, not proof of a fixed runtime ceiling.
+
 Interpret a live reserve sample using the following frozen rule:
 - `SAFE_FINALIZATION`: final baton, sole scheduler mutation, and END all commit after reserve entry.
 - `RESERVE_TOO_SMALL`: execution terminates or loses continuation state before those three steps complete.
