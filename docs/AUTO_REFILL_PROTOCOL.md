@@ -1,6 +1,6 @@
 # Same-Invocation Auto-Refill Protocol
 
-Status: EXPERIMENTAL — P5M6 / E11 repeat validation active
+Status: PROMOTED DEFAULT within tested P5M6 / E11 relay conditions after independent LW24 + LW25 multi-package repeats
 
 ## Purpose
 Use fast package completion as spare execution capacity. Increase useful work per invocation by continuing with another substantive package instead of ending merely because the current package is complete.
@@ -63,10 +63,8 @@ Per invocation record: `PACKAGES_COMPLETED`, `REFILL_BOUNDARIES`, cumulative `UN
 
 Per package retain package units when meaningful, density, downstream consequences, SELECTED_BY, persistence mode, and validation result.
 
-## First-sample acceptance
-Directional `REFILL_GAIN` requires package 1 complete substantively; useful work remains; package 2 is derived from actual package-1 evidence; package 2 performs substantive work in the same invocation; no filler/padding; no scheduler mutation at refill boundary; exactly one normal scheduler mutation at actual invocation end.
-
-Promotion requires repeat multi-package samples. One successful invocation is not sufficient for default promotion.
+## Promotion evidence
+LW24 demonstrated 11 substantive packages in one invocation without package-complete early exit and with one final scheduler mutation. LW25 independently repeated same-invocation refill across multiple substantive packages using the combined boundary from package 1, and exposed/hardened cold-recovery stale-NEXT handling. Within tested relay conditions, auto-refill is therefore the default invocation work-loop. This does not promote filler, unbounded single-package size, or unsafe replay.
 
 ## Rollback / adverse evidence
 Reject or narrow auto-refill if it causes duplicate side effects, stale-authority overwrite, lost recovery state, extra scheduler mutations, material quality regression, counter inflation after crash, or systematic creation of low-value work. If cold recovery from the combined record cannot identify last validated package + exact next package + cumulative counters, restore richer boundary fields; do not add redundant package-end records by default. Runtime saturation is not a failure; record `REFILL_SATURATED_RUNTIME` with exact recovery state.
