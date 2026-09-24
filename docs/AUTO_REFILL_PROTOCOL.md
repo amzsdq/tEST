@@ -52,7 +52,15 @@ At substantive package boundaries only, compare an external clock against the in
 
 First E12 baseline predeclares a conservative 240-second new-package cutoff before observing its endpoint. This cutoff is directional evidence only: it is not promoted until repeated safe-finalization samples show that continuation safety improves without material useful-work loss. Runtime ending before finalization is `RESERVE_TOO_SMALL`; a large unused margin in one sample is `RESERVE_CONSERVATIVE`, not permission for post-hoc shrinking.
 
-Package-boundary clock checks are preferred over per-action polling because finalization risk changes meaningfully at package admission boundaries while per-action checks add control overhead without a demonstrated safety gain.
+Two prior successful auto-refill turns provide observed final-baton -> scheduler-update -> END envelopes of 23s (LW24) and 25s (LW25), measured from GitHub comment `created_at`. Treat these as sparse empirical tail samples, not a safe minimum. The 240s first cutoff intentionally reserves much more than 25s.
+
+Interpret a live reserve sample using the following frozen rule:
+- `SAFE_FINALIZATION`: final baton, sole scheduler mutation, and END all commit after reserve entry.
+- `RESERVE_TOO_SMALL`: execution terminates or loses continuation state before those three steps complete.
+- `RESERVE_CONSERVATIVE`: safe finalization occurs and observed finalization tail is materially below the available reserve; this is evidence for a later controlled repeat, not authority to shrink within the same run.
+- `PACKAGE_OVERRUN`: a package admitted before cutoff completes after the cutoff. Preserve the observation; do not relabel it as reserve failure unless finalization is lost.
+
+Package-boundary clock checks are preferred over per-action polling because finalization risk changes meaningfully at package admission boundaries while per-action checks add control overhead without a demonstrated safety gain. If a package class later demonstrates a tail capable of consuming the reserve by itself, add class-specific admission evidence rather than globally polling every action.
 
 ## Required combined package-result/refill fields
 - `PACKAGE`
@@ -69,6 +77,8 @@ Optional package-local metrics may be added only when material. The record must 
 
 ## Metrics
 Per invocation record: `PACKAGES_COMPLETED`, `REFILL_BOUNDARIES`, cumulative `UNITS_DONE`, cumulative `SEMANTIC_OUTPUTS`, `ARTIFACT_IO`, `REFILL_IO`, `CONTROL_IO`, GitHub-server `WORKED`, `STOP_REASON`, exact `NEXT/REMAINDER`.
+
+For E12 reserve trials additionally record: `RESERVE_CUTOFF_SECONDS`, last admitted package boundary elapsed, reserve-entry elapsed, final-baton server time when available, END server time, observed finalization-tail seconds, `PACKAGE_OVERRUN`, and whether exact unfinished useful work was preserved.
 
 Per package retain package units when meaningful, density, downstream consequences, SELECTED_BY, persistence mode, and validation result.
 
