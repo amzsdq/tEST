@@ -147,3 +147,41 @@ Rationale:
 The Issue body is a stable bootstrap/index only and MUST NOT contain a manually maintained experiment pointer that can silently become stale.
 
 A separate mutable current-state file may be reconsidered only if measured bootstrap cost remains material after bounded-tail retrieval and its benefit exceeds the added write/CAS/reconciliation overhead.
+
+
+## E9 — Long useful-work duration / Work Package Completion Gate
+
+Status: ACTIVE under P5M1.
+
+Research question:
+Can a pre-sized, multi-unit work package produce materially longer useful turns than an abstract duration instruction without harming relay reliability?
+
+### LW1 baseline
+Each wake receives exactly one concrete package with 4-6 substantive units and explicit acceptance criteria.
+
+Termination gate:
+- completing one subtask is not turn completion;
+- continue immediately into remaining package units;
+- end only on PACKAGE_COMPLETE, genuine BLOCKED, or execution/runtime safety constraint.
+
+Do not use model-reported elapsed time for evaluation.
+
+### Measurements
+Use GitHub server START_MARKER/END_MARKER created_at when available:
+- WORKED
+- units planned/completed
+- useful artifacts/results produced
+- reason for early termination
+- scheduler write count
+- next-wake continuation result
+
+### Comparison sequence
+1. LW1: sized package + early-stop gate.
+2. If LW1 still terminates early, test LW2: package decomposed into mandatory ordered checkpoints, without changing scheduler policy.
+3. If still short, test LW3: one mid-turn authoritative progress marker as a continuation trigger/measurement aid.
+4. Only after those fail, consider more complex mechanisms.
+
+Change only one long-work control variable at a time.
+
+### Simplification rule
+P4 anomaly/ABA findings remain cold-path references. They must not be reintroduced into the hot prompt unless a corresponding failure is observed in P5M1.
