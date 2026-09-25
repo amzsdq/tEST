@@ -1,4 +1,0 @@
-[WORK_MARKER]
-session=LT04-R152-T35
-phase=CHECKPOINT
-purpose=duration-gate-and-repin-readback
