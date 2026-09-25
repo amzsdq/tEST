@@ -26,8 +26,8 @@ def validate(record):
  r,_source_version=normalize_record(record)
  for k in ["invocation_id","automation_id","start","scheduler_mutation_count"]:
   if k not in r:raise ValueError(f"missing {k}")
- if not isinstance(r["invocation_id"],str) or not r["invocation_id"]:raise ValueError("invalid invocation_id")
- if not isinstance(r["automation_id"],str) or not r["automation_id"]:raise ValueError("invalid automation_id")
+ if not isinstance(r["invocation_id"],str) or not r["invocation_id"].strip():raise ValueError("invalid invocation_id")
+ if not isinstance(r["automation_id"],str) or not r["automation_id"].strip():raise ValueError("invalid automation_id")
  if r.get("start") is None:raise ValueError("start: marker must be object")
  for k in ["start","end","last_durable_boundary","final_baton"]:marker(r.get(k),k)
  if "finalization_signature" in r and not isinstance(r["finalization_signature"],bool):raise ValueError("invalid finalization_signature")
