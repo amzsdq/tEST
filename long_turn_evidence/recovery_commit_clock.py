@@ -6,14 +6,18 @@ def _is_hourly_rrule(value):
     return value == "FREQ=HOURLY"
 
 def _hourly_preserved(live):
-    if _is_hourly_rrule(live.get("rrule")):
-        return True
+    checks = []
+    if live.get("rrule") is not None:
+        checks.append(_is_hourly_rrule(live.get("rrule")))
     schedule = live.get("schedule")
-    if not isinstance(schedule, str):
-        return False
-    rrules = [line.strip().removeprefix("RRULE:")
-              for line in schedule.splitlines() if line.strip().startswith("RRULE:")]
-    return len(rrules) == 1 and _is_hourly_rrule(rrules[0])
+    if schedule is not None:
+        if not isinstance(schedule, str):
+            checks.append(False)
+        else:
+            rrules = [line.strip().removeprefix("RRULE:")
+                      for line in schedule.splitlines() if line.strip().startswith("RRULE:")]
+            checks.append(len(rrules) == 1 and _is_hourly_rrule(rrules[0]))
+    return bool(checks) and all(checks)
 
 def decide(session, live):
     if not session.get("start_commit"):
