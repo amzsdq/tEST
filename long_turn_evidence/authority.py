@@ -31,4 +31,4 @@ def select_authority(observation, exact_records):
         exact, seconds = matches[0]
         return {"kind": "exact", "evidence_id": exact["evidence_id"],
                 "exact_duration_seconds": seconds, "target_crossed": seconds >= observation.get("target_seconds", 900)}
-    return {"kind": "historical_censored", "invocation_id": observation["invocation_id"]}
+    return {"kind": "historical_record", "invocation_id": observation["invocation_id"], "historical_end_present": observation.get("end") is not None}
