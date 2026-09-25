@@ -19,7 +19,7 @@ class CommitClockRecoveryTests(unittest.TestCase):
   for rrule in ("FREQ=HOURLY;COUNT=3","FREQ=HOURLY;UNTIL=20260926T000000Z","FREQ=HOURLY;INTERVAL=2"):
    with self.subTest(rrule=rrule):self.assertEqual(decide(SESSION,{"automation_id":"A","enabled":True,"timing_mode":"exact_schedule","rrule":rrule})["action"],"RECURRENCE_DEGRADED")
  def test_hourly_prefix_spoof_is_rejected(self):
-  for schedule in ("BEGIN:VEVENT\nRRULE:FREQ=HOURLYEVIL\nEND:VEVENT","BEGIN:VEVENT\nRRULE:FREQ=HOURLYTHING;COUNT=3\nEND:VEVENT"):
+  for schedule in ("BEGIN:VEVENT\nDTSTART:20260925T120000Z\nRRULE:FREQ=HOURLYEVIL\nEND:VEVENT","BEGIN:VEVENT\nDTSTART:20260925T120000Z\nRRULE:FREQ=HOURLYTHING;COUNT=3\nEND:VEVENT"):
    with self.subTest(schedule=schedule):self.assertEqual(decide(SESSION,{"automation_id":"A","enabled":True,"timing_mode":"exact_schedule","schedule":schedule})["action"],"RECURRENCE_DEGRADED")
  def test_duplicate_conflicting_freq_is_rejected(self):
   for rrule in ("FREQ=HOURLY;FREQ=DAILY","FREQ=HOURLY;COUNT=3;FREQ=HOURLY"):
@@ -28,7 +28,7 @@ class CommitClockRecoveryTests(unittest.TestCase):
   rrule="FREQ=HOURLY;COUNT=3;COUNT=4"
   self.assertEqual(decide(SESSION,{"automation_id":"A","enabled":True,"timing_mode":"exact_schedule","rrule":rrule})["action"],"RECURRENCE_DEGRADED")
  def test_multiple_rrule_lines_are_rejected(self):
-  schedule="BEGIN:VEVENT\nRRULE:FREQ=HOURLY\nRRULE:FREQ=DAILY\nEND:VEVENT"
+  schedule="BEGIN:VEVENT\nDTSTART:20260925T120000Z\nRRULE:FREQ=HOURLY\nRRULE:FREQ=DAILY\nEND:VEVENT"
   self.assertEqual(decide(SESSION,{"automation_id":"A","enabled":True,"timing_mode":"exact_schedule","schedule":schedule})["action"],"RECURRENCE_DEGRADED")
  def test_conflicting_rrule_representations_are_rejected(self):
   live={"automation_id":"A","enabled":True,"timing_mode":"exact_schedule","rrule":"FREQ=HOURLY","schedule":"BEGIN:VEVENT\nRRULE:FREQ=DAILY\nEND:VEVENT"}

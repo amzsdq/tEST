@@ -7,6 +7,10 @@ class HardeningTests(unittest.TestCase):
   r=dict(BASE);r.update(patch)
   with self.assertRaisesRegex(ValueError,msg):validate(r)
  def test_null_start_is_rejected_deterministically(self):self.bad({'start':None},'start: marker must be object')
+ def test_whitespace_runtime_identities_fail_closed(self):
+  for key in ("invocation_id","automation_id"):
+   for value in (" ","   ","\t","\n"):
+    with self.subTest(key=key,value=repr(value)):self.bad({key:value},f"invalid {key}")
  def test_missing_created_at(self):self.bad({"start":{"id":1}},"start: missing created_at")
  def test_bool_marker_id(self):self.bad({"start":{"id":True,"created_at":"2026-09-24T00:00:00Z"}},"start: invalid marker id")
  def test_bool_mutation(self):self.bad({"scheduler_mutation_count":True},"invalid scheduler_mutation_count")
