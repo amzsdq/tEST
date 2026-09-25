@@ -14,6 +14,13 @@ class AdmissionTests(unittest.TestCase):
  def test_1200_qualifying_reserves(self):self.assertEqual(decide(1200)['state'],'RESERVE_ENTRY')
  def test_1200_no_work_reserves(self):self.assertEqual(decide(1200,qualifying_work=False)['state'],'RESERVE_ENTRY')
  def test_1200_unsafe_blocks(self):self.assertEqual(decide(1200,finalization_safe=False)['state'],'FINALIZATION_BLOCKED')
+ def test_custom_target_stretch_interval(self):
+  self.assertEqual(decide(9,target_seconds=10,stretch_seconds=20)['state'],'CONTINUE')
+  self.assertEqual(decide(10,target_seconds=10,stretch_seconds=20)['state'],'CONTINUE_STRETCH')
+  self.assertEqual(decide(19,target_seconds=10,stretch_seconds=20)['state'],'CONTINUE_STRETCH')
+  self.assertEqual(decide(20,target_seconds=10,stretch_seconds=20)['state'],'RESERVE_ENTRY')
+ def test_equal_target_and_stretch_has_no_stretch_interval(self):
+  self.assertEqual(decide(10,target_seconds=10,stretch_seconds=10)['state'],'RESERVE_ENTRY')
  def test_bad_relationship(self):
   with self.assertRaisesRegex(ValueError,'target/stretch'):decide(1,target_seconds=900,stretch_seconds=899)
  def test_zero_target_rejected(self):
