@@ -1,0 +1,4 @@
+[WORK_MARKER]
+session=LT04-R119-T6
+phase=CHECKPOINT
+state=candidate status persisted and exact blob identities read back
