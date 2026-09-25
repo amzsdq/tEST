@@ -7,8 +7,9 @@ class CommitClockRecoveryTests(unittest.TestCase):
  def test_open_session_resumes(self):self.assertEqual(decide(SESSION,LIVE)["action"],"RESUME_OPEN_SESSION")
  def test_full_vevent_schedule_is_accepted(self):
   live={"automation_id":"A","enabled":True,"schedule":"BEGIN:VEVENT\nDTSTART:20260925T120000\nRRULE:FREQ=HOURLY\nEND:VEVENT"};self.assertEqual(decide(SESSION,live)["action"],"RESUME_OPEN_SESSION")
- def test_hourly_rrule_with_parameters_is_accepted(self):
-  live={"automation_id":"A","enabled":True,"schedule":"BEGIN:VEVENT\nRRULE:FREQ=HOURLY;COUNT=3\nEND:VEVENT"};self.assertEqual(decide(SESSION,live)["action"],"RESUME_OPEN_SESSION")
+ def test_parameterized_rrule_is_rejected_for_canonical_liveness(self):
+  for rrule in ("FREQ=HOURLY;COUNT=3","FREQ=HOURLY;UNTIL=20260926T000000Z","FREQ=HOURLY;INTERVAL=2"):
+   with self.subTest(rrule=rrule):self.assertEqual(decide(SESSION,{"automation_id":"A","enabled":True,"rrule":rrule})["action"],"RECURRENCE_DEGRADED")
  def test_hourly_prefix_spoof_is_rejected(self):
   for schedule in ("BEGIN:VEVENT\nRRULE:FREQ=HOURLYEVIL\nEND:VEVENT","BEGIN:VEVENT\nRRULE:FREQ=HOURLYTHING;COUNT=3\nEND:VEVENT"):
    with self.subTest(schedule=schedule):self.assertEqual(decide(SESSION,{"automation_id":"A","enabled":True,"schedule":schedule})["action"],"RECURRENCE_DEGRADED")

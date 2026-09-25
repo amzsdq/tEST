@@ -1,22 +1,9 @@
 """Cold recovery for commit-backed clock sessions."""
 
 def _is_hourly_rrule(value):
-    if not isinstance(value, str) or not value:
-        return False
-    parts = value.split(";")
-    pairs = []
-    for part in parts:
-        if "=" not in part:
-            return False
-        key, val = part.split("=", 1)
-        if not key or not val:
-            return False
-        pairs.append((key, val))
-    keys = [key for key, _ in pairs]
-    if len(keys) != len(set(keys)):
-        return False
-    freq = [val for key, val in pairs if key == "FREQ"]
-    return len(freq) == 1 and freq[0] == "HOURLY"
+    # Canonical relay requires an unbounded one-hour recurrence. Parameters such
+    # as COUNT, UNTIL, INTERVAL, or BY* can truncate or alter liveness.
+    return value == "FREQ=HOURLY"
 
 def _hourly_preserved(live):
     if _is_hourly_rrule(live.get("rrule")):
