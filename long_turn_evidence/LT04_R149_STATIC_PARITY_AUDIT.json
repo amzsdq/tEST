@@ -1,0 +1,34 @@
+{
+  "session": "LT04-R149-T32",
+  "legacy_scheduler_nonstring": "FIXED_AND_REGRESSION_LANDED",
+  "scheduler_blob": "b7f6edc9efdfe1ac03d40dcd24d47cb56224c019",
+  "test_scheduler_blob": "a972ff6250094f3f835ae29b96503e56f44650ee",
+  "pin_blob": "102c7b5a968883d38d28422f9754a5bbb3940f84",
+  "pin_audit": "PASS_29_OF_29",
+  "open_findings": [
+    {
+      "id": "STRUCTURAL_MARKER_PARITY",
+      "schema": "marker additionalProperties=false",
+      "runtime": "validator.marker and authority._marker accept extra keys",
+      "status": "OPEN_STATIC_PARITY_DRIFT"
+    },
+    {
+      "id": "EXACT_RECORD_EXTRA_FIELDS",
+      "schema": "exact record additionalProperties=false",
+      "runtime": "authority.select_authority ignores unknown exact-record keys",
+      "status": "OPEN_STATIC_PARITY_DRIFT"
+    },
+    {
+      "id": "RFC3339_RUNTIME_BREADTH",
+      "schema": "format=date-time",
+      "runtime": "datetime.fromisoformat accepts a broader ISO-8601 subset",
+      "status": "OPEN_NORMALIZATION_REVIEW"
+    }
+  ],
+  "docs": {
+    "manifest": "STALE_AFTER_R149_SCHEDULER_REPIN",
+    "acceptance_manifest_gate": "FAIL_CLOSED_PENDING",
+    "acceptance_pin_row": "STALE"
+  },
+  "full_runner": "PENDING"
+}
