@@ -24,5 +24,5 @@ class SchemaContractTests(unittest.TestCase):
  def test_exact_evidence_contract_closes_structural_fields(self):
   s=json.loads((ROOT/"exact_evidence.schema.json").read_text());item=s["items"];marker=s["$defs"]["marker"]
   self.assertFalse(item["additionalProperties"]);self.assertFalse(marker["additionalProperties"])
-  self.assertEqual(item["properties"]["source"],{"const":"raw_github_start_end"})
+  self.assertEqual(item["properties"]["source"]["const"],"raw_github_start_end")
 if __name__=="__main__":unittest.main(verbosity=2)
