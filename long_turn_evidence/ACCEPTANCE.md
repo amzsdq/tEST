@@ -10,7 +10,7 @@
 | exact-over-censored authority | exact_evidence + hardened authority selector | CANDIDATE VERIFIED |
 | evidence v1/v2 normalization | versioning + validator | CANDIDATE VERIFIED |
 | 899/900/1199/1200 admission policy | admission + expanded tests/property check | CANDIDATE VERIFIED |
-| commit-clock recovery | recovery_commit_clock + spoof/ambiguity hardening | CANDIDATE VERIFIED |
+| commit-clock recovery | verified START/END + exact unbounded FREQ=HOURLY + conflicting-readback fail-closed | CANDIDATE VERIFIED |
 | exact canonical runner blob set | LT04_R126_EXACT_RUNNER_INPUTS.json, 29/29 SHA readback | PASS |
 | unchanged exact canonical runner execution | run_canonical_checks.py rc=0 + sentinel | PENDING |
 
