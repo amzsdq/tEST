@@ -15,6 +15,8 @@ def _ts(value):
 def _marker(value, label):
     if not isinstance(value, dict):
         raise ValueError(f"EXACT_{label}_INVALID")
+    if set(value) != {"id", "created_at"}:
+        raise ValueError(f"EXACT_{label}_FIELDS_INVALID")
     marker_id = value.get("id")
     if isinstance(marker_id, bool) or not isinstance(marker_id, int) or marker_id <= 0:
         raise ValueError(f"EXACT_{label}_ID_INVALID")
@@ -38,6 +40,8 @@ def select_authority(observation, exact_records):
     for exact in exact_records:
         if not isinstance(exact, dict):
             raise ValueError("EXACT_RECORD_INVALID")
+        if set(exact) != {"evidence_id","invocation_id","automation_id","source","supersedes_observation_invocation_id","start","end"}:
+            raise ValueError("EXACT_RECORD_FIELDS_INVALID")
         supersedes = _identity(exact.get("supersedes_observation_invocation_id"), "EXACT_SUPERSEDES_INVOCATION_ID_INVALID")
         exact_invocation = _identity(exact.get("invocation_id"), "EXACT_INVOCATION_ID_INVALID")
         exact_automation = _identity(exact.get("automation_id"), "EXACT_AUTOMATION_ID_INVALID")
