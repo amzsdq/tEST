@@ -1,31 +1,35 @@
 # Long-turn invocation evidence validator
 
-This directory is the deterministic artifact workload for LT03. It is independent of private/session data and does not scrape GitHub; inputs are explicit records.
+This directory contains deterministic LT03/LT04 evidence and runtime-policy artifacts.
 
-## Authority precedence
+## Authority
 
-1. Raw GitHub `created_at` on recognized START and matching END is the only exact WORKED clock.
-2. A durable boundary without END establishes only a **censored lower bound**. It is never an exact kill time.
-3. FINAL_BATON + matching END + exactly one final scheduler mutation is the accepted voluntary-final signature.
-4. Missing END never licenses summing another invocation. One-turn success is one lineage only.
-5. A currently active censored observation is not an abrupt termination. `observation_state=active` remains `UNKNOWN` until closure/recovery evidence exists.
-6. Runtime/toolpath candidate classes are causal hypotheses, not provider root-cause declarations.
+1. Recognized GitHub START/END `created_at` values are the exact WORKED clock.
+2. A durable boundary without END is only a censored lower bound.
+3. Later recognized exact same-lineage evidence may supersede a historical censored observation for authority selection without rewriting history.
+4. Missing END never licenses cross-invocation summing.
+5. Runtime/toolpath causal classes remain hypotheses unless independently established.
 
-## Normalized record
+## Evidence version migration
 
-Required: `invocation_id`, `automation_id`, `start`, `scheduler_mutation_count`. Optional: `end`, `last_durable_boundary`, `final_baton`, `finalization_signature`, `observation_state`, `termination_evidence`, target/claim fields. Markers require positive integer IDs and offset-aware ISO-8601 `created_at`.
+`evidence_version` is optional. Missing version normalizes to legacy v1. Explicit versions 1 and 2 are supported. Boolean, non-integer, and unsupported versions are rejected before ordinary validation.
 
-## Classification
+`schema.json` is a contract artifact; runtime enforcement is `versioning.normalize_record` plus `validator.validate`. Deprecated `cross_invocation_sum_seconds` remains shape-visible for compatibility but is semantically forbidden and still produces `CROSS_INVOCATION_SUM_FORBIDDEN`.
 
-- `VOLUNTARY_FINAL`: END + finalization signature + FINAL_BATON + exactly one scheduler mutation.
-- `ABRUPT_NONFINAL`: recovered/non-active censored lineage with no stronger explicit cause evidence.
-- `TOOLPATH_LOSS_CANDIDATE`: censored lineage plus explicit toolpath-loss evidence.
-- `PLATFORM_RUNTIME_KILL_CANDIDATE`: censored lineage plus explicit runtime-kill evidence.
-- `UNKNOWN`: insufficient evidence, including a still-active censored observation.
+## Historical and later-exact evidence
 
-## Safety/nonclaims
+`observations.json` remains immutable historical evidence. `exact_evidence.json` stores later exact evidence. `authority.py` validates invocation, automation, START identity, source, marker shape, timestamp ordering, and ambiguity before selecting exact evidence.
 
-The validator does not infer exact duration for censored runs, combine invocations, infer platform root cause from silence, validate scheduler provider delivery by itself, or equate elapsed time with useful work.
+LT03 therefore retains its historical 833-second censored lower bound while separately selecting recognized exact START/END evidence of 940 seconds.
+
+## Admission policy
+
+- elapsed < target: qualifying => `CONTINUE`; no-work => `WORKLOAD_EXHAUSTED`.
+- target <= elapsed < stretch: unsafe => `FINALIZATION_BLOCKED`; safe+qualifying => `CONTINUE_STRETCH`; safe+no-work => `RESERVE_ENTRY`.
+- elapsed >= stretch: unsafe => `FINALIZATION_BLOCKED`; safe => `RESERVE_ENTRY`.
+- Stretch admits useful work only; never padding.
+
+Boundary coverage is 899/900/1199/1200 plus strict input validation.
 
 ## Run
 
@@ -33,7 +37,15 @@ The validator does not infer exact duration for censored runs, combine invocatio
 `python3 long_turn_evidence/test_validator.py`
 `python3 long_turn_evidence/test_lineage.py`
 `python3 long_turn_evidence/test_hardening.py`
+`python3 long_turn_evidence/test_admission.py`
+`python3 long_turn_evidence/test_versioning.py`
+`python3 long_turn_evidence/test_authority.py`
+`python3 long_turn_evidence/test_authority_fallback.py`
 `python3 long_turn_evidence/validate_observations.py`
+`python3 long_turn_evidence/test_scheduler_v2.py`
+`python3 long_turn_evidence/test_recovery_commit_clock.py`
 `python3 long_turn_evidence/report.py`
 
-Fixtures cover normal completion, censored recovery, tool/runtime candidates, malformed IDs/timestamps, impossible ordering, one-final-mutation violations, missing baton, cross-invocation summing, multiple END candidates, and 899/900-second target boundaries.
+## Runtime evidence
+
+LT03 exact WORKED=940s proves the >=900 target. LT04-R118-T6B independently measured WORKED=1191s, independently repeating >=900 but remaining 9 seconds short of the 1200 stretch. Never round 1191 to 1200.
