@@ -1,0 +1,29 @@
+{
+  "session": "LT04-R142-T25",
+  "candidate_branch": "lt04-r142-final",
+  "exact_source_commit": "44f5f4a545430507e69bc77822dd21fb0f8ea623",
+  "final_docs_commit": "e74c6766b7c6645260969e38e3f2b6c800ebcdca",
+  "changes": {
+    "recovery_py": "7ea60695f642fb44f12fc1cafdbfa8b688c7ff10",
+    "test_recovery_py": "7ef058c6a41fb581625f31c41c605160dfff2c9e",
+    "authority_py": "08a594565ec8bff195dbcc34eb8e1bb0885cfa69",
+    "test_authority_py": "ddc746023ecec0d5f91803254f1de498288181f0",
+    "pin_manifest": "db779b0084ec4c33879f5059683b672df7d9f10a",
+    "manifest": "0d5cc89e6976c0ac022acb083989472e1a073105",
+    "acceptance": "8ab6b619156fe592538289ad9455f2da93383541"
+  },
+  "pin_audit": {
+    "total": 29,
+    "matches": 29,
+    "mismatches": 0,
+    "method": "fresh recursive Git tree vs exact pin manifest"
+  },
+  "gates": {
+    "legacy_recovery_chronology": "PASS_SOURCE_AND_REGRESSION_READBACK",
+    "authority_runtime_identity": "PASS_SOURCE_AND_REGRESSION_READBACK",
+    "full_runner": "PENDING",
+    "exact_materialization": "PENDING_CHANGED_FILES_REMOTE_WRITE_SAFETY_BLOCKED",
+    "main_integration": false
+  },
+  "new_static_note": "JSON schemas use minLength:1 and therefore allow whitespace-only identities while runtime hardening rejects them; consider schema/runtime parity hardening after current release gates."
+}
