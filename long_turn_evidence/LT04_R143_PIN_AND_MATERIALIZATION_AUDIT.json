@@ -1,0 +1,19 @@
+{
+  "session": "LT04-R143-T26",
+  "candidate": "lt04-r143-final-docs",
+  "pin_blob": "c61f33c21841537dbe314be11d8d87474f6f844a",
+  "pin_count": 29,
+  "audit_method": "two batched fresh fetch_file comparisons after correcting inherited stale R142 pins",
+  "result": "PASS_29_OF_29",
+  "mismatches": [],
+  "materialization": {
+    "recovery_py": "current by Remote readback",
+    "test_recovery_py": "current by Remote readback",
+    "authority_py": "stale R140 version",
+    "test_authority_py": "stale R140 version",
+    "schema_json": "stale pre-R143",
+    "exact_evidence_schema_json": "stale pre-R143",
+    "test_schema_contract_py": "stale pre-R143"
+  },
+  "full_runner": "PENDING"
+}
