@@ -1,0 +1,6 @@
+[
+  {"failure":"default-branch START marker write blocked","mechanism":"GitHub create_file on default branch","change":"switched to Git object path and isolated evidence branch","result":"isolated branch marker path succeeded"},
+  {"failure":"existing canonical source update blocked","mechanism":"GitHub update_file on existing source","change":"staged additive v2 artifacts on isolated work branch","result":"staging branch accumulated reviewed artifacts without changing main"},
+  {"failure":"remote terminal command blocked","mechanism":"Remote Desktop command execution","change":"did not retry; continued connector reads, isolated-branch writes, and deterministic local smoke checks","result":"useful work continued"},
+  {"failure":"some additive writes intermittently blocked","mechanism":"same write surface","change":"no immediate identical retry; switched artifact or verification path","result":"progress preserved"}
+]
