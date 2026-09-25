@@ -29,10 +29,14 @@ Boundary coverage: 899/900/1199/1200 plus strict type and relationship checks.
 
 ## Runtime helpers
 
-`scheduler_v2.py` computes END+180 and verifies either ISO timestamps or live VEVENT DTSTART readback, including TZID schedules. `recovery_commit_clock.py` requires a verified START before cold resume, distinguishes unverified/verified END, validates automation authority, and accepts normalized or full-VEVENT hourly recurrence.
+`scheduler_v2.py` computes END+180 and verifies either ISO timestamps or live VEVENT DTSTART readback, including TZID schedules; duplicate or spoofed DTSTART fields fail closed. `recovery_commit_clock.py` requires a verified START before cold resume, distinguishes unverified/verified END, validates automation authority, and accepts exactly one syntactically unambiguous hourly RRULE; spoofed, duplicate-key, conflicting-FREQ, or multiple-RRULE schedules fail closed.
 
 ## Run
 
+Canonical fail-fast suite:
+`python3 long_turn_evidence/run_canonical_checks.py`
+
+Individual checks:
 `python3 long_turn_evidence/validator.py`
 `python3 long_turn_evidence/test_validator.py`
 `python3 long_turn_evidence/test_lineage.py`
@@ -43,7 +47,9 @@ Boundary coverage: 899/900/1199/1200 plus strict type and relationship checks.
 `python3 long_turn_evidence/test_authority.py`
 `python3 long_turn_evidence/test_authority_fallback.py`
 `python3 long_turn_evidence/validate_observations.py`
+`python3 long_turn_evidence/test_scheduler.py`
 `python3 long_turn_evidence/test_scheduler_v2.py`
+`python3 long_turn_evidence/test_recovery.py`
 `python3 long_turn_evidence/test_recovery_commit_clock.py`
 `python3 long_turn_evidence/report.py`
 
