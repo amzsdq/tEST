@@ -1,8 +1,0 @@
-{
-  "session": "LT04-R137-T20",
-  "result": "DOC_CONSISTENCY_GAP",
-  "readme_blob": "415f168c0a047003aa06be888b0773ffb279dc61",
-  "finding": "README still says FULL_RUNNER is pending because the execution host reports no Python interpreter, but R128 independently found Python 3.12.14. The current blocker is permitted exact script execution, not interpreter absence.",
-  "mutation_attempt": "README correction attempted after fresh readback and was safety-blocked before application",
-  "release_effect": "documentation inconsistency only; FULL_RUNNER remains PENDING"
-}
