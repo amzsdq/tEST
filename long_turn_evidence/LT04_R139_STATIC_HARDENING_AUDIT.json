@@ -1,0 +1,16 @@
+{
+  "session":"LT04-R139-T22",
+  "result":"PARTIAL_HARDENING_LANDED",
+  "landed":{
+    "legacy_recovery_start_shape":true,
+    "legacy_recovery_boundary_shape":true,
+    "legacy_recovery_container_shape":true,
+    "legacy_recovery_end_shape":true,
+    "commit_clock_start_commit_type":true,
+    "commit_clock_end_commit_type":true,
+    "commit_clock_container_shape":true
+  },
+  "not_landed":{"validator_null_start":true,"commit_clock_new_regression_tests":true},
+  "evidence":{"recovery_blob":"5e1efd0ca68249979057fb713e3bbeb2d1319a3c","recovery_commit_clock_blob":"8066caaa6e22192a32189f7c06c2b6277ae06fb7","test_recovery_blob":"d51ec380e24d1bc3b0a297d3691aa2167740d8c7"},
+  "note":"validator blob creation and commit-clock test update were safety-blocked; no claim of those fixes"
+}
