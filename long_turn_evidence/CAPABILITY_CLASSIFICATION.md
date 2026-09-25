@@ -17,4 +17,4 @@ The >=1200-second stretch remains unproven by the 1191-second sample. Nine missi
 
 ## Release verification status
 
-R126 pins the exact canonical runner dependency closure by Git blob SHA and readback, but unchanged end-to-end runner execution remains PENDING until an exact-byte execution bridge is available. Supplemental direct/property checks do not substitute for that gate.
+R126 pins the exact canonical runner dependency closure by Git blob SHA and readback, but unchanged end-to-end runner execution remains PENDING until an exact-byte execution bridge is available. Supplemental direct/property checks do not substitute for that gate. A repository-native GitHub Actions execution path was explored but workflow mutation was safety-blocked before application; readback confirmed the probe branch contains no workflow delta.
