@@ -14,6 +14,10 @@ def _hourly_preserved(live):
         if not isinstance(schedule, str):
             checks.append(False)
         else:
+            stripped = [line.strip() for line in schedule.splitlines() if line.strip()]
+            if not stripped or stripped[0] != "BEGIN:VEVENT" or stripped[-1] != "END:VEVENT":
+                checks.append(False)
+                return bool(checks) and all(checks)
             rrules = [line.strip().removeprefix("RRULE:")
                       for line in schedule.splitlines() if line.strip().startswith("RRULE:")]
             checks.append(len(rrules) == 1 and _is_hourly_rrule(rrules[0]))
