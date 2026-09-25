@@ -12,6 +12,9 @@ def _is_hourly_rrule(value):
         if not key or not val:
             return False
         pairs.append((key, val))
+    keys = [key for key, _ in pairs]
+    if len(keys) != len(set(keys)):
+        return False
     freq = [val for key, val in pairs if key == "FREQ"]
     return len(freq) == 1 and freq[0] == "HOURLY"
 
