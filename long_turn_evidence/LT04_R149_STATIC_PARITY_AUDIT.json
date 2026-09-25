@@ -9,7 +9,7 @@
     {
       "id": "STRUCTURAL_MARKER_PARITY",
       "schema": "marker additionalProperties=false",
-      "runtime": "validator.marker and authority._marker accept extra keys",
+      "runtime": "validator.marker, authority._marker, and recovery._marker_shape accept extra marker keys",
       "status": "OPEN_STATIC_PARITY_DRIFT"
     },
     {
@@ -23,6 +23,12 @@
       "schema": "format=date-time",
       "runtime": "datetime.fromisoformat accepts a broader ISO-8601 subset",
       "status": "OPEN_NORMALIZATION_REVIEW"
+    },
+    {
+      "id": "RECOVERY_MARKER_STRUCTURAL_PARITY",
+      "schema": "main schema marker additionalProperties=false",
+      "runtime": "legacy recovery accepts extra marker fields before chronology/liveness decisions",
+      "status": "OPEN_STATIC_PARITY_DRIFT"
     }
   ],
   "docs": {
