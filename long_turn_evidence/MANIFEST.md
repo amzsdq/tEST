@@ -11,4 +11,6 @@ Admission candidate blobs: module 54e6e7eb1a08ed9ba3ef8e84a1f1797bba773146; test
 Validator/versioning candidate blobs: validator ddb4fce0a4eba78c3f0d4af3a676cc87c0ee47b9; versioning b75eeceeae115baebb6cb41d6459b6c984d19379; schema f004e260ad08408c3e2596be84a7ddd3703edfba.
 Authority candidate blob: d6d09f0781e9a37814a8cd4b9a2f73969c7edfdd.
 
+Lineage hardening candidate blobs: lineage 14463582633e50c843bb6f78e9b074eb79365497; tests db96d77a59e8c9c483d0f62547a2eca93266b5fe.
+
 Remaining release gates are full canonical regression execution, main-branch integration/readback, and an independent >=1200 useful-work sample if qualifying work remains.
