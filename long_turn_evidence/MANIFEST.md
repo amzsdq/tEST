@@ -1,9 +1,14 @@
-# LT03 artifact manifest
+# LT04 artifact manifest
 
-Core: `validator.py`, `schema.json`, `fixtures.json`, `observations.json`, lineage/recovery/scheduler/admission modules, report generator, and authority/nonclaim documentation.
+Canonical migration candidate includes admission stretch policy, evidence v1/v2 normalization, schema contract, separate exact evidence, hardened authority selection, canonical observation authority validation, generic scheduler-v2, and commit-clock recovery.
 
-Exact-byte execution evidence (local Git blob SHA == GitHub blob SHA before acceptance): validator direct 15 fixtures PASS; test_validator 3 PASS; lineage 4 PASS; hardening 14 PASS; observations PASS; report PASS over 15 fixtures; scheduler 4 PASS; recovery 7 PASS; latest admission 8 PASS; acceptance bundles 6 + 13 PASS.
+Verified runtime evidence:
+- LT03: exact 940s, >=900 PASS.
+- LT04-R118-T6B: exact 1191s, independent >=900 repeat PASS, 1200 stretch not yet passed.
+- Historical observations.json blob remains 19d020b7b5918211124f0d6ada5895318cf12854 and is not rewritten.
 
-Latest admission bytes: module `6703e5b26344e306fd277924a341fa21cfcac630`, test `d7a968c5bbd53cbc8697fdfb9240028d7b880417`. Core validator/fixture/report bytes: `e6861c9f940f8a0529b8f93dd546ebcd42c852a7`, `bc269b52a866b377e52813edb9395f1a7225d881`, `15895ec4a2b86e9e6c7680323d6ecf419c1faaec`.
+Admission candidate blobs: module 54e6e7eb1a08ed9ba3ef8e84a1f1797bba773146; tests f24d2da4ca10aa7ad2312e0d22ad5ca1ecaa4f48.
+Validator/versioning candidate blobs: validator ddb4fce0a4eba78c3f0d4af3a676cc87c0ee47b9; versioning b75eeceeae115baebb6cb41d6459b6c984d19379; schema f004e260ad08408c3e2596be84a7ddd3703edfba.
+Authority candidate blob: d6d09f0781e9a37814a8cd4b9a2f73969c7edfdd.
 
-The deterministic artifact workload is complete. The original clone path remains unavailable due container DNS but is no longer an acceptance blocker because committed bytes were reconstructed from connector readback, hash-verified, and executed. Remaining LT03 work is solely runtime-threshold preservation and exact finalization after the first GitHub START-relative boundary >=900s.
+Remaining release gates are full canonical regression execution, main-branch integration/readback, and an independent >=1200 useful-work sample if qualifying work remains.

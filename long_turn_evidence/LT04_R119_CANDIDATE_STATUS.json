@@ -1,0 +1,10 @@
+{
+  "session":"LT04-R119-T6",
+  "base_main":"4d505d164a0b7cbdae9b6872574f3c981aca38b7",
+  "historical_observations_sha":"19d020b7b5918211124f0d6ada5895318cf12854",
+  "main_integrated":false,
+  "candidate_is_single_commit_over_base":true,
+  "candidate_features":["stretch admission policy","evidence v1/v2 normalization","separate exact evidence authority","canonical observation authority selection","exact-evidence schema","VEVENT-aware scheduler readback","verified-START cold recovery","canonical regression runner","synchronized migration documentation"],
+  "verified_smokes":["admission exhaustive elapsed 0..5000 x gates","admission 100000 randomized target/stretch cases","LT03 exact authority 940 seconds","malformed authority marker fail-closed checks","representative legacy/v2 validator compatibility","schema parse/contract","VEVENT scheduler parsing","scheduler/recovery state smoke"],
+  "remaining_release_gates":["execute full canonical regression runner in repository-capable Python environment","integrate candidate to main through a permitted canonical write path","read back main identities","close independent >=1200-second useful-work sample"]
+}
