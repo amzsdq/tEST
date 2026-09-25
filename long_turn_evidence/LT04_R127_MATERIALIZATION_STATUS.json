@@ -1,0 +1,9 @@
+{
+  "session_id": "LT04-R127-T10",
+  "exact_source_branch": "lt04-r126-hardened-v32",
+  "files_materialized": 29,
+  "exact_text_readback_pass": true,
+  "python_available_on_execution_host": false,
+  "unchanged_runner_executed": false,
+  "full_runner": "PENDING"
+}
