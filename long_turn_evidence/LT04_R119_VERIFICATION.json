@@ -1,0 +1,12 @@
+{
+  "candidate_tree":"eb8c278becbbae6450c428d6500631786b0bdbcd",
+  "base_main":"4d505d164a0b7cbdae9b6872574f3c981aca38b7",
+  "compare":{"ahead":1,"behind":0,"changed_files":23},
+  "historical_observations":{"sha":"19d020b7b5918211124f0d6ada5895318cf12854","lt03_end":null,"lt03_censored_lower_bound_seconds":833},
+  "exact_authority":{"duration_seconds":940,"start_identity_equal":true,"automation_identity_equal":true},
+  "schema_contract":{"evidence_versions":[1,2],"deprecated_cross_invocation_shape_preserved":true,"exact_source":"raw_github_start_end"},
+  "admission_readback":{"module_sha":"54e6e7eb1a08ed9ba3ef8e84a1f1797bba773146","test_sha":"d94ebabca79fb6a0eb99f8e2b867313e853e268c","boundaries":[899,900,1199,1200],"unsafe_priority":true,"custom_interval_tests":true},
+  "property_checks":{"elapsed_0_5000_x_gates":"PASS","random_target_stretch_cases":100000},
+  "runtime_helper_smokes":{"vevent_scheduler":"PASS","verified_start_recovery":"PASS"},
+  "full_python_runner":"PENDING_REPOSITORY_CAPABLE_EXECUTION"
+}

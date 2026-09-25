@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 from datetime import datetime,timezone
 from pathlib import Path
+from versioning import normalize_record
 CLASSES={"VOLUNTARY_FINAL","ABRUPT_NONFINAL","TOOLPATH_LOSS_CANDIDATE","PLATFORM_RUNTIME_KILL_CANDIDATE","UNKNOWN"}
 def ts(v):
  if v is None:return None
@@ -21,7 +22,8 @@ def marker(m,kind):
  if isinstance(mid,bool) or not isinstance(mid,int) or mid<=0:raise ValueError(f"{kind}: invalid marker id")
  if "created_at" not in m or not isinstance(m["created_at"],str) or not m["created_at"]:raise ValueError(f"{kind}: missing created_at")
  ts(m["created_at"])
-def validate(r):
+def validate(record):
+ r,_source_version=normalize_record(record)
  for k in ["invocation_id","automation_id","start","scheduler_mutation_count"]:
   if k not in r:raise ValueError(f"missing {k}")
  if not isinstance(r["invocation_id"],str) or not r["invocation_id"]:raise ValueError("invalid invocation_id")
