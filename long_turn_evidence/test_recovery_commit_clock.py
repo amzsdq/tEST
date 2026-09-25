@@ -31,7 +31,7 @@ class CommitClockRecoveryTests(unittest.TestCase):
   schedule="BEGIN:VEVENT\nDTSTART:20260925T120000Z\nRRULE:FREQ=HOURLY\nRRULE:FREQ=DAILY\nEND:VEVENT"
   self.assertEqual(decide(SESSION,{"automation_id":"A","enabled":True,"timing_mode":"exact_schedule","schedule":schedule})["action"],"RECURRENCE_DEGRADED")
  def test_conflicting_rrule_representations_are_rejected(self):
-  live={"automation_id":"A","enabled":True,"timing_mode":"exact_schedule","rrule":"FREQ=HOURLY","schedule":"BEGIN:VEVENT\nRRULE:FREQ=DAILY\nEND:VEVENT"}
+  live={"automation_id":"A","enabled":True,"timing_mode":"exact_schedule","rrule":"FREQ=HOURLY","schedule":"BEGIN:VEVENT\nDTSTART:20260925T120000Z\nRRULE:FREQ=DAILY\nEND:VEVENT"}
   self.assertEqual(decide(SESSION,live)["action"],"RECURRENCE_DEGRADED")
  def test_nonexact_timing_mode_degrades(self):
   self.assertEqual(decide(SESSION,dict(LIVE,timing_mode="flexible_schedule"))["action"],"RECURRENCE_DEGRADED")
@@ -61,5 +61,5 @@ class CommitClockRecoveryTests(unittest.TestCase):
     self.assertEqual(decide(SESSION,dict(LIVE,automation_id=value))["action"],"INVALID_SESSION")
  def test_identity_mismatch_blocks(self):self.assertEqual(decide(SESSION,dict(LIVE,automation_id="B"))["action"],"AUTHORITY_BLOCK")
  def test_nonhourly_schedule_degrades(self):
-  live={"automation_id":"A","enabled":True,"timing_mode":"exact_schedule","schedule":"BEGIN:VEVENT\nRRULE:FREQ=DAILY\nEND:VEVENT"};self.assertEqual(decide(SESSION,live)["action"],"RECURRENCE_DEGRADED")
+  live={"automation_id":"A","enabled":True,"timing_mode":"exact_schedule","schedule":"BEGIN:VEVENT\nDTSTART:20260925T120000Z\nRRULE:FREQ=DAILY\nEND:VEVENT"};self.assertEqual(decide(SESSION,live)["action"],"RECURRENCE_DEGRADED")
 if __name__=="__main__":unittest.main(verbosity=2)
