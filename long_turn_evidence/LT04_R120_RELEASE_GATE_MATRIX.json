@@ -1,0 +1,52 @@
+{
+  "candidate_source_commit": "36b3350c3e3705050dbe039b2e392ed01f91a9d7",
+  "base_main": "4d505d164a0b7cbdae9b6872574f3c981aca38b7",
+  "historical_observations_sha": "19d020b7b5918211124f0d6ada5895318cf12854",
+  "gates": {
+    "main_freshness": {
+      "state": "PASS",
+      "evidence": "fresh compare main...candidate source => ahead 1 behind 0"
+    },
+    "change_scope": {
+      "state": "PASS",
+      "evidence": "candidate source changes only long_turn_evidence/"
+    },
+    "historical_immutability": {
+      "state": "PASS",
+      "evidence": "observations.json blob unchanged"
+    },
+    "admission_policy": {
+      "state": "PASS_STATIC_AND_PROPERTY",
+      "evidence": "boundary readback + prior exhaustive/randomized verification"
+    },
+    "versioning_compatibility": {
+      "state": "PASS_STATIC_SMOKE",
+      "evidence": "strict normalize_record and S5 preservation reviewed"
+    },
+    "exact_authority": {
+      "state": "PASS_STATIC_SMOKE",
+      "evidence": "identity/timestamp/ambiguity fail-closed reviewed"
+    },
+    "scheduler_recovery": {
+      "state": "PASS_STATIC_SMOKE",
+      "evidence": "VEVENT and verified START recovery reviewed"
+    },
+    "full_python_runner": {
+      "state": "PENDING",
+      "evidence": "no repository-capable execution path yet"
+    },
+    "main_integration": {
+      "state": "PENDING",
+      "evidence": "main remains preserved baseline"
+    },
+    "independent_1200": {
+      "state": "PENDING",
+      "evidence": "R120 session remains open"
+    }
+  },
+  "nonclaims": [
+    "static review is not full runner execution",
+    "release branch commits are not main integration",
+    "no duration may be inferred until END marker readback"
+  ]
+}
