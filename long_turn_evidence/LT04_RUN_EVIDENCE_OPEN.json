@@ -1,0 +1,10 @@
+{
+  "session_id":"LT04-R118-T6B",
+  "start_commit":"2e2aca28d8e68f72dcd4278cff15f666ab3237cb",
+  "start_created_at":"2026-09-25T02:57:33Z",
+  "evidence_branch":"lt04-evidence-t6",
+  "latest_boundary_commit":"d15612b6e74f588f51182306eeb46e1d867db81e",
+  "latest_boundary_created_at":"2026-09-25T03:14:55Z",
+  "state":"OPEN_SESSION",
+  "end_commit":null
+}
