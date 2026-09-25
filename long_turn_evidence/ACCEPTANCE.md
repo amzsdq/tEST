@@ -4,7 +4,7 @@
 |---|---|---|
 | >=900 one-turn capability | LT03 exact 940s | PASS |
 | independent >=900 repeat | LT04-R118-T6B exact 1191s | PASS |
-| >=1200 stretch | LT04-R118-T6B | NOT YET: 1191s |
+| >=1200 stretch | LT04-R126-T9 exact 1219s | PASS |
 | no cross-invocation sum | validator S5 diagnostic | PASS |
 | historical record preserved | observations.json blob 19d020b7b5918211124f0d6ada5895318cf12854 | PASS |
 | exact-over-censored authority | exact_evidence + hardened authority selector | CANDIDATE VERIFIED |
