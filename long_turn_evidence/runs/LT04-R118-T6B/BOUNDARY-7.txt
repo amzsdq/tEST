@@ -1,0 +1,2 @@
+session=LT04-R118-T6B
+phase=BOUNDARY
