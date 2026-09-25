@@ -1,0 +1,22 @@
+{
+  "session": "LT04-R143-T26",
+  "property": "identity_schema_non_whitespace",
+  "cases": [
+    "single-space",
+    "multi-space",
+    "tab",
+    "newline",
+    "x",
+    "space-x-space"
+  ],
+  "fields": [
+    "main.invocation_id",
+    "main.automation_id",
+    "exact.evidence_id",
+    "exact.invocation_id",
+    "exact.automation_id",
+    "exact.supersedes_observation_invocation_id"
+  ],
+  "result": "PASS_SCHEMA_PROPERTY_MATRIX",
+  "note": "schema regex .*\\\\S.* rejects whitespace-only and accepts values containing a non-whitespace character; runtime parity remains partial per LT04_R143_SCHEMA_RUNTIME_PARITY_AUDIT.json"
+}
