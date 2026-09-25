@@ -1,0 +1,4 @@
+[WORK_MARKER]
+session=LT04-R119-T6
+phase=CHECKPOINT
+state=ready candidate 5 commits ahead/0 behind; authority hardened; scheduler/recovery smoke verified; main mutation paths remain safety-blocked
