@@ -1,0 +1,9 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "type":"object",
+  "properties":{
+    "evidence_version":{"type":"integer","enum":[1,2]},
+    "cross_invocation_sum_seconds":{"type":"integer","minimum":0}
+  },
+  "additionalProperties":true
+}
