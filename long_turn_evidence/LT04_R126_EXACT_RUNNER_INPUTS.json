@@ -15,7 +15,7 @@
     "test_scheduler.py": "398d31b9fd778c108d231ef116029ca605778330",
     "test_scheduler_v2.py": "9fd07d3ec6ee913e1893963ea1bc2cd14fa0fbf5",
     "test_recovery.py": "d51ec380e24d1bc3b0a297d3691aa2167740d8c7",
-    "test_recovery_commit_clock.py": "8fbdfcc18f9a1aa685d680b94059af8f22b1facc",
+    "test_recovery_commit_clock.py": "f87ef2926f04a8a1f85186b99f3e00dff1b5c921",
     "validator.py": "ddb4fce0a4eba78c3f0d4af3a676cc87c0ee47b9",
     "report.py": "15895ec4a2b86e9e6c7680323d6ecf419c1faaec",
     "admission.py": "54e6e7eb1a08ed9ba3ef8e84a1f1797bba773146",
@@ -32,6 +32,6 @@
     "observations.json": "19d020b7b5918211124f0d6ada5895318cf12854",
     "exact_evidence.json": "2e2f24d82adea1ca656dc90f61825a0927fb6847"
   },
-  "pinned_source_branch": "lt04-r139-evidence-shape-hardening",
-  "pinned_source_commit": "2e8c160d4fe22b9bf9a5c8d85c977ceb3de6e0c1"
+  "pinned_source_branch": "lt04-r140-validator-closure",
+  "pinned_source_commit": "d16e94f05cacd6e85d7b10d560d38e3a66027248"
 }
