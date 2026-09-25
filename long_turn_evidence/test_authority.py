@@ -17,7 +17,7 @@ class AuthorityTests(unittest.TestCase):
   with self.assertRaisesRegex(ValueError,"AMBIGUOUS_EXACT_AUTHORITY"):select_authority(LT03,EXACT+[dict(EXACT[0],evidence_id="duplicate")])
  def test_missing_end_fails_closed(self):
   bad=dict(EXACT[0]);bad.pop("end")
-  with self.assertRaisesRegex(ValueError,"EXACT_END_INVALID"):select_authority(LT03,[bad])
+  with self.assertRaisesRegex(ValueError,"EXACT_RECORD_FIELDS_INVALID"):select_authority(LT03,[bad])
  def test_bool_end_id_fails_closed(self):
   bad=[dict(EXACT[0],end={"id":True,"created_at":"2026-09-24T15:32:04Z"})]
   with self.assertRaisesRegex(ValueError,"EXACT_END_ID_INVALID"):select_authority(LT03,bad)
