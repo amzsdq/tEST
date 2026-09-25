@@ -17,7 +17,7 @@ class LineageTests(unittest.TestCase):
     def test_bool_baton_input(self):
         with self.assertRaisesRegex(ValueError,"INVALID_FINAL_BATON_ID"): resolve_end(1,True,[VALID])
     def test_bool_backlink_fails_closed(self):
-        with self.assertRaisesRegex(ValueError,"NO_MATCHING_END"): resolve_end(1,2,[dict(VALID,start_id=True)])
+        with self.assertRaisesRegex(ValueError,"INVALID_START_ID"): resolve_end(1,2,[dict(VALID,start_id=True)])
     def test_naive_timestamp_fails_closed(self):
         with self.assertRaisesRegex(ValueError,"INVALID_END_TIMESTAMP"): resolve_end(1,2,[dict(VALID,created_at="2026-09-24T00:01:00")])
 if __name__=="__main__": unittest.main(verbosity=2)
