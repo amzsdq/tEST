@@ -21,9 +21,15 @@ def _marker(value, label):
     _ts(value.get("created_at"))
     return value
 
+def _identity(value, label):
+    if not isinstance(value, str) or not value.strip(): raise ValueError(label)
+    return value
+
 def select_authority(observation, exact_records):
     if not isinstance(observation, dict) or not isinstance(exact_records, list):
         raise ValueError("AUTHORITY_INPUT_INVALID")
+    observation_invocation = _identity(observation.get("invocation_id"), "OBSERVATION_INVOCATION_ID_INVALID")
+    observation_automation = _identity(observation.get("automation_id"), "OBSERVATION_AUTOMATION_ID_INVALID")
     target = observation.get("target_seconds", 900)
     if isinstance(target, bool) or not isinstance(target, int) or target <= 0:
         raise ValueError("AUTHORITY_TARGET_INVALID")
@@ -32,17 +38,18 @@ def select_authority(observation, exact_records):
     for exact in exact_records:
         if not isinstance(exact, dict):
             raise ValueError("EXACT_RECORD_INVALID")
-        if exact.get("supersedes_observation_invocation_id") != observation.get("invocation_id"):
-            continue
-        if exact.get("invocation_id") != observation.get("invocation_id"):
-            continue
+        supersedes = _identity(exact.get("supersedes_observation_invocation_id"), "EXACT_SUPERSEDES_INVOCATION_ID_INVALID")
+        exact_invocation = _identity(exact.get("invocation_id"), "EXACT_INVOCATION_ID_INVALID")
+        exact_automation = _identity(exact.get("automation_id"), "EXACT_AUTOMATION_ID_INVALID")
+        if supersedes != observation_invocation: continue
+        if exact_invocation != observation_invocation: continue
         evidence_id = exact.get("evidence_id")
         if not isinstance(evidence_id, str) or not evidence_id:
             raise ValueError("EXACT_EVIDENCE_ID_INVALID")
         if evidence_id in seen_ids:
             raise ValueError("DUPLICATE_EXACT_EVIDENCE_ID")
         seen_ids.add(evidence_id)
-        if exact.get("automation_id") != observation.get("automation_id"):
+        if exact_automation != observation_automation:
             raise ValueError("EXACT_AUTOMATION_MISMATCH")
         if exact.get("source") != "raw_github_start_end":
             continue
@@ -60,5 +67,5 @@ def select_authority(observation, exact_records):
         exact, seconds = matches[0]
         return {"kind":"exact","evidence_id":exact["evidence_id"],"exact_duration_seconds":seconds,
                 "target_crossed":seconds >= target}
-    return {"kind":"historical_record","invocation_id":observation["invocation_id"],
+    return {"kind":"historical_record","invocation_id":observation_invocation,
             "historical_end_present":observation.get("end") is not None}

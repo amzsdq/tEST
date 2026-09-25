@@ -23,6 +23,15 @@ class AuthorityTests(unittest.TestCase):
   with self.assertRaisesRegex(ValueError,"EXACT_END_ID_INVALID"):select_authority(LT03,bad)
  def test_bool_target_fails_closed(self):
   with self.assertRaisesRegex(ValueError,"AUTHORITY_TARGET_INVALID"):select_authority(dict(LT03,target_seconds=True),EXACT)
+ def test_runtime_identity_shapes_fail_closed(self):
+  for value in (None,'','   ',True,7,{}):
+   with self.subTest(side='observation_invocation',value=value):
+    with self.assertRaises(ValueError):select_authority(dict(LT03,invocation_id=value),EXACT)
+   with self.subTest(side='observation_automation',value=value):
+    with self.assertRaises(ValueError):select_authority(dict(LT03,automation_id=value),EXACT)
+   for key in ('supersedes_observation_invocation_id','invocation_id','automation_id'):
+    with self.subTest(side=key,value=value):
+     with self.assertRaises(ValueError):select_authority(LT03,[dict(EXACT[0],**{key:value})])
  def test_nonpositive_target_fails_closed(self):
   with self.assertRaisesRegex(ValueError,"AUTHORITY_TARGET_INVALID"):select_authority(dict(LT03,target_seconds=0),EXACT)
 if __name__=="__main__":unittest.main(verbosity=2)
