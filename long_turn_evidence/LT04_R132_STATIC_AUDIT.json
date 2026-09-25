@@ -1,0 +1,16 @@
+{
+  "session_id": "LT04-R132-T15",
+  "audit_type": "static_differential_recovery_parity",
+  "candidate_base": "48a3cf1623f8e8255c2ba4116fd51c33a6f2719e",
+  "finding": "legacy recovery.py does not require record.start_verified == true, while recovery_commit_clock.py does",
+  "impact": "an unverified legacy START can reach RESUME_CENSORED when the boundary and live scheduler checks pass",
+  "classification": "FAIL_CLOSED_GAP",
+  "proposed_fix": "require START presence and start_verified is true before END/boundary/live recurrence decisions; add missing/false start_verified tests",
+  "mutation_status": "PENDING_SAFETY_BLOCK",
+  "full_runner": "PENDING",
+  "pin_metadata_analysis": {
+    "current_candidate_commit": "9c5d9339b892e70b65010f06404890bf88690c96",
+    "current_candidate_branch": "lt04-r131-recovery-parity",
+    "note": "The 29-file SHA map is exact. Making candidate_commit point to a commit that itself contains this JSON would create a self-referential Git hash requirement. Treat the field as the pinned source/code commit or rename its semantics; do not chase an impossible self-reference."
+  }
+}
