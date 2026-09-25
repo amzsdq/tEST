@@ -1,4 +1,0 @@
-[WORK_MARKER]
-session=APPLY-PROTOCOLS-R1
-phase=START
-purpose=apply GitHub server clock + anti-loop protocol to canonical runtime
