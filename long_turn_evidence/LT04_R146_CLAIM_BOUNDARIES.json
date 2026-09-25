@@ -1,0 +1,8 @@
+{
+  "exact_materialization": "CONTENT_CURRENT_READBACK; no local blob SHA",
+  "pin_audit": "R145 PASS_29_OF_29 applicable by exact-set unchanged proof; R146 fresh full audit incomplete",
+  "manifest": "FORMAT_CLEAN but identity stale",
+  "acceptance": "stale",
+  "full_runner": "PENDING",
+  "main": "not integrated"
+}
