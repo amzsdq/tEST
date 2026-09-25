@@ -1,0 +1,25 @@
+{
+  "session": "LT04-R137-T20",
+  "result": "STATIC_REVIEW_FINDINGS",
+  "findings": [
+    {
+      "component": "validator.py",
+      "case": "start=null",
+      "effect": "required start passes marker(None) and is later dereferenced; deterministic ValueError contract is not preserved",
+      "coverage": "no null-start regression"
+    },
+    {
+      "component": "recovery.py",
+      "case": "start_verified=true with missing start",
+      "effect": "legacy recovery can reach resume path without an actual START object",
+      "coverage": "tests cover unverified/missing start_verified flag, not missing start object"
+    },
+    {
+      "component": "recovery_commit_clock.py",
+      "case": "truthy non-string start_commit",
+      "effect": "start_commit existence gate does not validate commit-id type before resume",
+      "coverage": "tests cover None start_commit, not malformed truthy types"
+    }
+  ],
+  "full_runner": "PENDING"
+}
