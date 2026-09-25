@@ -1,0 +1,26 @@
+{
+  "lt04_session":"LT04-R118-T6B",
+  "work_branch":"lt04-work-t6-clean",
+  "clock_branch":"long-turn-clock",
+  "historical_observations_unchanged":true,
+  "staged":{
+    "authority_selector":true,
+    "exact_evidence":true,
+    "versioning_helper":true,
+    "schema_delta":true,
+    "admission_case_matrix":true,
+    "scheduler_v2":true,
+    "commit_clock_recovery":true
+  },
+  "pending_main_integration":[
+    "admission.py",
+    "test_admission.py",
+    "validator.py",
+    "schema.json",
+    "validate_observations.py",
+    "README.md",
+    "MANIFEST.md",
+    "ACCEPTANCE.md",
+    "CAPABILITY_CLASSIFICATION.md"
+  ]
+}
