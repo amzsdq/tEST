@@ -1,0 +1,26 @@
+{
+  "session_id": "LT04-R132-T15",
+  "audit_type": "static_recurrence_parser_adversarial_review",
+  "source_blob": "52ce602ae97616f13306d72e0a34ec298fc03567",
+  "findings": [
+    {
+      "id": "R132-RCC-1",
+      "severity": "hardening",
+      "condition": "schedule-form readback has BEGIN:VEVENT and END:VEVENT plus exactly one RRULE:FREQ=HOURLY but no DTSTART",
+      "current_behavior": "_hourly_preserved returns true",
+      "risk": "recovery accepts a structurally incomplete exact_schedule readback that scheduler_v2 verification would reject",
+      "recommended_test": "missing DTSTART in a VEVENT envelope must degrade recurrence"
+    },
+    {
+      "id": "R132-RCC-2",
+      "severity": "hardening",
+      "condition": "nested/duplicate BEGIN:VEVENT or END:VEVENT lines occur while first/last envelope and one hourly RRULE remain",
+      "current_behavior": "_hourly_preserved can return true",
+      "risk": "malformed VEVENT structure is not fail-closed",
+      "recommended_test": "require exactly one BEGIN:VEVENT and exactly one END:VEVENT"
+    }
+  ],
+  "status": "UNPATCHED",
+  "reason": "recovery.py update path was safety-blocked twice in materially separated attempts; no further identical mutation attempted",
+  "full_runner": "PENDING"
+}
