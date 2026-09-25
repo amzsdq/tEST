@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+import json,unittest
+from pathlib import Path
+from authority import select_authority
+ROOT=Path(__file__).resolve().parent
+OBS=json.loads((ROOT/"observations.json").read_text());EXACT=json.loads((ROOT/"exact_evidence.json").read_text())
+LT03=next(x for x in OBS if x["invocation_id"]=="LT03-DETERMINISTIC-ARTIFACT-CONTEXT-VOLUME-01")
+class AuthorityTests(unittest.TestCase):
+ def test_exact_940_preferred_without_rewriting_history(self):
+  self.assertIsNone(LT03["end"]);r=select_authority(LT03,EXACT);self.assertEqual(r["exact_duration_seconds"],940);self.assertTrue(r["target_crossed"])
+ def test_start_mismatch_fails_closed(self):
+  bad=[dict(EXACT[0],start={"id":999,"created_at":"2026-09-24T15:16:24Z"})]
+  with self.assertRaisesRegex(ValueError,"EXACT_START_MISMATCH"):select_authority(LT03,bad)
+ def test_automation_mismatch_fails_closed(self):
+  with self.assertRaisesRegex(ValueError,"EXACT_AUTOMATION_MISMATCH"):select_authority(LT03,[dict(EXACT[0],automation_id="wrong")])
+ def test_ambiguous_exact_fails_closed(self):
+  with self.assertRaisesRegex(ValueError,"AMBIGUOUS_EXACT_AUTHORITY"):select_authority(LT03,EXACT+[dict(EXACT[0],evidence_id="duplicate")])
+ def test_missing_end_fails_closed(self):
+  bad=dict(EXACT[0]);bad.pop("end")
+  with self.assertRaisesRegex(ValueError,"EXACT_END_INVALID"):select_authority(LT03,[bad])
+ def test_bool_end_id_fails_closed(self):
+  bad=[dict(EXACT[0],end={"id":True,"created_at":"2026-09-24T15:32:04Z"})]
+  with self.assertRaisesRegex(ValueError,"EXACT_END_ID_INVALID"):select_authority(LT03,bad)
+if __name__=="__main__":unittest.main(verbosity=2)
