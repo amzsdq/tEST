@@ -13,3 +13,8 @@ LT03 exact one-turn WORKED=940s proves the >=900-second target for that sample. 
 Therefore >=900 is no longer UNPROVEN. The broader capability remains `CONSTRAINED` because evidence is workload/tool-path specific, but it is neither `PHYSICALLY_IMPOSSIBLE` nor `DIRECT_UNAVAILABLE`.
 
 The >=1200-second stretch remains unproven by the 1191-second sample. Nine missing seconds must not be rounded away.
+
+
+## Release verification status
+
+R126 pins the exact canonical runner dependency closure by Git blob SHA and readback, but unchanged end-to-end runner execution remains PENDING until an exact-byte execution bridge is available. Supplemental direct/property checks do not substitute for that gate.
