@@ -1,4 +1,0 @@
-[WORK_MARKER]
-session=RELAY-RESUME-R1
-phase=START
-purpose=resume canonical long-turn relay after protocol application
