@@ -8,7 +8,7 @@
     "test_lineage.py": "db96d77a59e8c9c483d0f62547a2eca93266b5fe",
     "test_hardening.py": "19bc1f52d5b8195834a96b291be906547eb01c3d",
     "test_versioning.py": "e13399b4576e8f9f15653fb03b61558de39ed071",
-    "test_schema_contract.py": "63994d4bb2c18d974dc5acba6956b8e54ecea997",
+    "test_schema_contract.py": "6fb4ab280c77149e0a9172ba9766a27a753445eb",
     "test_authority.py": "60bb77a0270615e7b47e48562cb3f593944c0012",
     "test_authority_fallback.py": "61775044820abbb2c1cae949caa240ae7def7bbe",
     "validate_observations.py": "0d75b3bfa1c7cef70e2ec80dda1c18ef743df991",
@@ -27,11 +27,11 @@
     "recovery.py": "7ea60695f642fb44f12fc1cafdbfa8b688c7ff10",
     "recovery_commit_clock.py": "6bd21ca7c32063d897e5829165fad5757f8afdf4",
     "fixtures.json": "bc269b52a866b377e52813edb9395f1a7225d881",
-    "schema.json": "2d6be7cb9bd5ae810b27178ee1f11927eeee49aa",
-    "exact_evidence.schema.json": "44715e7c541eacb340320075a4e21287213909ef",
+    "schema.json": "b4f71d37ce619d8939d849a036ec5906a4475485",
+    "exact_evidence.schema.json": "ad5ddcdd42bdd4513bdc9e5a42e5b862c49d14e5",
     "observations.json": "19d020b7b5918211124f0d6ada5895318cf12854",
     "exact_evidence.json": "2e2f24d82adea1ca656dc90f61825a0927fb6847"
   },
   "pinned_source_branch": "lt04-r152-shared-github-ts",
-  "pinned_source_commit": "9176c3670c8ed230dc97c557b7cabc1b62ade108"
+  "pinned_source_commit": "6a3410f175894a8802e24eb96befc1de02038f73"
 }
