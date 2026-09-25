@@ -1,4 +1,5 @@
 """Cold recovery for commit-backed clock sessions."""
+from scheduler_v2 import parse_live_dtstart
 
 def _is_hourly_rrule(value):
     # Canonical relay requires an unbounded one-hour recurrence. Parameters such
@@ -30,6 +31,11 @@ def _hourly_preserved(live):
                        or line.startswith("DTSTART:") or line.startswith("DTSTART;TZID=")
                        or line.startswith("RRULE:")]
             if len(allowed) != len(stripped):
+                checks.append(False)
+                return bool(checks) and all(checks)
+            try:
+                parse_live_dtstart(schedule)
+            except (ValueError, TypeError, KeyError):
                 checks.append(False)
                 return bool(checks) and all(checks)
             rrules = [line.removeprefix("RRULE:") for line in stripped if line.startswith("RRULE:")]
