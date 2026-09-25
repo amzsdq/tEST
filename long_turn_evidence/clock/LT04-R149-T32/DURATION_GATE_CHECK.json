@@ -1,0 +1,8 @@
+{
+  "session": "LT04-R149-T32",
+  "type": "DURATION_GATE_CHECK",
+  "start_commit": "1c8a5f1832abb427ba5df390ac5c7ba0cd319ae3",
+  "start_created_at": "2026-09-25T08:53:28Z",
+  "required_seconds": 600,
+  "clock_source": "GITHUB_COMMIT_CREATED_AT"
+}
