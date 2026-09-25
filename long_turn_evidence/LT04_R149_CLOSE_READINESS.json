@@ -1,0 +1,23 @@
+{
+  "session": "LT04-R149-T32",
+  "start_commit": "1c8a5f1832abb427ba5df390ac5c7ba0cd319ae3",
+  "exact_source_commit": "9a65ade97cb14a890d79785c2411793820696825",
+  "pin_blob": "102c7b5a968883d38d28422f9754a5bbb3940f84",
+  "pin_audit": "PASS_29_OF_29",
+  "scheduler_hardening": {
+    "source": "b7f6edc9efdfe1ac03d40dcd24d47cb56224c019",
+    "test": "a972ff6250094f3f835ae29b96503e56f44650ee",
+    "materialized_changed_files": true
+  },
+  "docs": {
+    "manifest_corrected": false,
+    "acceptance_gate_accurate": true
+  },
+  "full_runner": "PENDING",
+  "runner_mechanisms": {
+    "github_statuses": 0,
+    "workflow_runs": 0,
+    "remote_active_sessions": 0
+  },
+  "canonical_main_integrated": false
+}
