@@ -9,7 +9,7 @@
     "test_hardening.py": "19bc1f52d5b8195834a96b291be906547eb01c3d",
     "test_versioning.py": "e13399b4576e8f9f15653fb03b61558de39ed071",
     "test_schema_contract.py": "63994d4bb2c18d974dc5acba6956b8e54ecea997",
-    "test_authority.py": "c7c0f47532978a2719b9138b6b496eb12faf7423",
+    "test_authority.py": "60bb77a0270615e7b47e48562cb3f593944c0012",
     "test_authority_fallback.py": "61775044820abbb2c1cae949caa240ae7def7bbe",
     "validate_observations.py": "0d75b3bfa1c7cef70e2ec80dda1c18ef743df991",
     "test_scheduler.py": "a972ff6250094f3f835ae29b96503e56f44650ee",
@@ -21,7 +21,7 @@
     "admission.py": "54e6e7eb1a08ed9ba3ef8e84a1f1797bba773146",
     "lineage.py": "14463582633e50c843bb6f78e9b074eb79365497",
     "versioning.py": "b75eeceeae115baebb6cb41d6459b6c984d19379",
-    "authority.py": "b497dcaaf3a4581c286b0e00f0c500363f00db7f",
+    "authority.py": "f27e766a2b49b42f73ae9d0670ad0c4d1dbe8c5d",
     "scheduler.py": "b7f6edc9efdfe1ac03d40dcd24d47cb56224c019",
     "scheduler_v2.py": "6bf4ea365700699cd3fb725844483799cbbe848b",
     "recovery.py": "7ea60695f642fb44f12fc1cafdbfa8b688c7ff10",
@@ -33,5 +33,5 @@
     "exact_evidence.json": "2e2f24d82adea1ca656dc90f61825a0927fb6847"
   },
   "pinned_source_branch": "lt04-r152-shared-github-ts",
-  "pinned_source_commit": "553c7888e5e09c4d28635232d86ee0a01c5f0e8b"
+  "pinned_source_commit": "9176c3670c8ed230dc97c557b7cabc1b62ade108"
 }
