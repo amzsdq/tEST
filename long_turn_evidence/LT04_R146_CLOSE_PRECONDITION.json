@@ -1,0 +1,7 @@
+{
+  "start_commit": "83916c5fc904d77ad4c861026d6aa38b00b75496",
+  "start_created_at": "2026-09-25T07:57:35Z",
+  "minimum_seconds": 600,
+  "end_creation_allowed": false,
+  "reason": "No GitHub checkpoint has yet reached START+600s; continue substantive work."
+}
