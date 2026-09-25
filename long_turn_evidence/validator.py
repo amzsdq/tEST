@@ -2,16 +2,13 @@
 """Deterministic validator for explicit long-turn relay evidence fixtures."""
 from __future__ import annotations
 import json
-from datetime import datetime,timezone
 from pathlib import Path
 from versioning import normalize_record
+from scheduler_v2 import parse_github_commit_created_at
 CLASSES={"VOLUNTARY_FINAL","ABRUPT_NONFINAL","TOOLPATH_LOSS_CANDIDATE","PLATFORM_RUNTIME_KILL_CANDIDATE","UNKNOWN"}
 def ts(v):
  if v is None:return None
- if not isinstance(v,str) or not v:raise ValueError("timestamp must be a non-empty string")
- d=datetime.fromisoformat(v.replace("Z","+00:00"))
- if d.tzinfo is None:raise ValueError("timestamp must be timezone-aware")
- return d.astimezone(timezone.utc)
+ return parse_github_commit_created_at(v)
 def strict_int(v,name,positive=False):
  if isinstance(v,bool) or not isinstance(v,int) or (v<=0 if positive else v<0):raise ValueError(f"invalid {name}")
  return v

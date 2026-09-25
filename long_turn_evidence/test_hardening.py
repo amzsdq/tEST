@@ -15,7 +15,7 @@ class HardeningTests(unittest.TestCase):
  def test_missing_created_at(self):self.bad({"start":{"id":1}},"start: missing created_at")
  def test_bool_marker_id(self):self.bad({"start":{"id":True,"created_at":"2026-09-24T00:00:00Z"}},"start: invalid marker id")
  def test_bool_mutation(self):self.bad({"scheduler_mutation_count":True},"invalid scheduler_mutation_count")
- def test_naive_timestamp(self):self.bad({"start":{"id":1,"created_at":"2026-09-24T00:00:00"}},"timezone-aware")
+ def test_naive_timestamp(self):self.bad({"start":{"id":1,"created_at":"2026-09-24T00:00:00"}},"canonical UTC Z timestamp")
  def test_nonpositive_target(self):self.bad({"target_seconds":0},"invalid target_seconds")
  def test_string_false_not_boolean(self):self.bad({"finalization_signature":"false"},"invalid finalization_signature")
  def test_string_claim_bool(self):self.bad({"claimed_target_crossed":"true"},"invalid claimed_target_crossed")
@@ -28,4 +28,8 @@ class HardeningTests(unittest.TestCase):
  def test_active_censored_is_unknown(self):
   r=dict(BASE);r.update({"last_durable_boundary":{"id":2,"created_at":"2026-09-24T00:05:00Z"},"observation_state":"active"})
   x=validate(r);self.assertEqual(x["classification"],"UNKNOWN");self.assertEqual(x["censored_lower_bound_seconds"],300)
+
+ def test_noncanonical_raw_marker_timestamps_fail_closed(self):
+  for value in ("2026-09-24T00:00:00+00:00","2026-09-24T00:00:00.000Z","2026-W39-4T00:00:00Z","2026-09-24 00:00:00Z"):
+   with self.subTest(value=value):self.bad({"start":{"id":1,"created_at":value}},"canonical UTC Z timestamp")
 if __name__=="__main__":unittest.main(verbosity=2)
