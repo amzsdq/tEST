@@ -11,7 +11,7 @@
 | evidence v1/v2 normalization | versioning + validator | CANDIDATE VERIFIED |
 | 899/900/1199/1200 admission policy | admission + expanded tests/property check | CANDIDATE VERIFIED |
 | commit-clock recovery | commit-backed and legacy recovery paths both require exact_schedule + exact unbounded FREQ=HOURLY; VEVENT envelope/conflicting-readback fail closed | CANDIDATE VERIFIED |
-| exact canonical runner blob set | LT04_R126_EXACT_RUNNER_INPUTS.json blob b5da8640defe9e522b5a67f2a757603b474faf50, fresh R145 29/29 recursive-tree SHA audit | PASS |
+| exact canonical runner blob set | R149 repin landed; canonical ACCEPTANCE pin binding awaits verified refresh | PENDING |
 | unchanged exact canonical runner execution | run_canonical_checks.py rc=0 + sentinel | PENDING |
 | schema/runtime identity parity | schemas and validator/authority runtime reject whitespace-only identities; validator/authority regressions cover runtime behavior | CANDIDATE VERIFIED |
 | MANIFEST identity current | Canonical MANIFEST was rebound in R149; ACCEPTANCE binding awaits verified refresh | PENDING |
