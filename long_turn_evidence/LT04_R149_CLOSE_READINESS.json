@@ -19,5 +19,13 @@
     "workflow_runs": 0,
     "remote_active_sessions": 0
   },
-  "canonical_main_integrated": false
+  "canonical_main_integrated": false,
+  "fresh_close_recheck": {
+    "pin_audit": "PASS_29_OF_29",
+    "candidate_ahead": 260,
+    "candidate_behind": 0,
+    "observations_blob": "19d020b7b5918211124f0d6ada5895318cf12854",
+    "acceptance_gate_accurate": true,
+    "manifest_corrected": false
+  }
 }
