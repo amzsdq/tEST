@@ -1,0 +1,4 @@
+[WORK_MARKER]
+session=RELAY-RESUME-R1
+phase=END
+result=canonical enabled and live-verified for relay resume
