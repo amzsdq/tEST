@@ -14,15 +14,16 @@ def parse_live_dtstart(value):
         raise ValueError("live DTSTART must be non-empty string")
     if "\n" not in value and not value.startswith("BEGIN:VEVENT"):
         return parse(value)
-    line = next((x.strip() for x in value.splitlines() if x.strip().startswith("DTSTART")), None)
-    if line is None or ":" not in line:
-        raise ValueError("DTSTART missing from live schedule")
-    head, raw = line.split(":", 1)
-    if ";TZID=" in head:
-        tzid = head.split(";TZID=", 1)[1]
+    lines = [x.strip() for x in value.splitlines() if x.strip().startswith("DTSTART")]
+    valid = [x for x in lines if x.startswith("DTSTART:") or x.startswith("DTSTART;TZID=")]
+    if len(valid) != 1 or len(lines) != 1:
+        raise ValueError("DTSTART missing or ambiguous in live schedule")
+    head, raw = valid[0].split(":", 1)
+    if head.startswith("DTSTART;TZID="):
+        tzid = head.split("=", 1)[1]
         dt = datetime.strptime(raw, "%Y%m%dT%H%M%S").replace(tzinfo=ZoneInfo(tzid))
         return dt.astimezone(timezone.utc)
-    if raw.endswith("Z"):
+    if head == "DTSTART" and raw.endswith("Z"):
         return datetime.strptime(raw, "%Y%m%dT%H%M%SZ").replace(tzinfo=timezone.utc)
     raise ValueError("live DTSTART must carry TZID or Z")
 
