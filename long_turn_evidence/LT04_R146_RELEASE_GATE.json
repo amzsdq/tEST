@@ -1,0 +1,11 @@
+{
+  "session": "LT04-R146-T29",
+  "pin_audit": "PASS_29_OF_29_R145_APPLICABLE_NO_EXACT_SOURCE_CHANGES",
+  "exact_materialization": "WHOLE_CONTENT_CURRENT_FOR_PREVIOUSLY_NONEXACT_TRIO",
+  "manifest_duplicate_clean": true,
+  "manifest_identity_current": false,
+  "acceptance_identity_current": false,
+  "full_runner": "PENDING",
+  "main_integrated": false,
+  "promotion_allowed": false
+}
