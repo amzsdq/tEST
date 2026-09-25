@@ -1,0 +1,8 @@
+{
+  "authority": "WHOLE_CONTENT_READBACK_MATCH",
+  "exact_evidence_schema": "WHOLE_CONTENT_READBACK_MATCH",
+  "test_schema_contract": "WHOLE_CONTENT_READBACK_MATCH",
+  "known_stale_files_remaining_from_R145_materialization_audit": [],
+  "byte_blob_hash_proof": false,
+  "conclusion": "CONTENT_CURRENT_READBACK"
+}
