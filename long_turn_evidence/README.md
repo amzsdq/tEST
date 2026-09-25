@@ -4,32 +4,32 @@ This directory contains deterministic LT03/LT04 evidence and runtime-policy arti
 
 ## Authority
 
-1. Recognized GitHub START/END `created_at` values are the exact WORKED clock.
-2. A durable boundary without END is only a censored lower bound.
-3. Later recognized exact same-lineage evidence may supersede a historical censored observation for authority selection without rewriting history.
-4. Missing END never licenses cross-invocation summing.
-5. Runtime/toolpath causal classes remain hypotheses unless independently established.
+Recognized GitHub START/END `created_at` values are the exact WORKED clock. A durable boundary without END is only a censored lower bound. Later recognized exact same-lineage evidence may supersede a historical censored observation for authority selection without rewriting that historical record. Missing END never licenses cross-invocation summing.
 
-## Evidence version migration
+## Evidence versions
 
-`evidence_version` is optional. Missing version normalizes to legacy v1. Explicit versions 1 and 2 are supported. Boolean, non-integer, and unsupported versions are rejected before ordinary validation.
+`evidence_version` is optional. Missing version normalizes to legacy v1. Explicit v1/v2 are supported; bool, non-integer, and unsupported versions are rejected before ordinary validation.
 
-`schema.json` is a contract artifact; runtime enforcement is `versioning.normalize_record` plus `validator.validate`. Deprecated `cross_invocation_sum_seconds` remains shape-visible for compatibility but is semantically forbidden and still produces `CROSS_INVOCATION_SUM_FORBIDDEN`.
+`schema.json` is a contract artifact. Runtime semantics are enforced by `versioning.normalize_record` plus `validator.validate`. Deprecated `cross_invocation_sum_seconds` remains shape-visible but is semantically forbidden and produces `CROSS_INVOCATION_SUM_FORBIDDEN`.
 
-## Historical and later-exact evidence
+## Historical vs exact evidence
 
-`observations.json` remains immutable historical evidence. `exact_evidence.json` stores later exact evidence. `authority.py` validates invocation, automation, START identity, source, marker shape, timestamp ordering, and ambiguity before selecting exact evidence.
+`observations.json` remains historical evidence. `exact_evidence.json` and `exact_evidence.schema.json` define later exact evidence. `authority.py` validates evidence ID, invocation, automation, START identity, source, marker shape, timestamp ordering, and ambiguity before exact evidence wins.
 
-LT03 therefore retains its historical 833-second censored lower bound while separately selecting recognized exact START/END evidence of 940 seconds.
+LT03 keeps its historical 833-second censored lower bound while canonical observation validation separately selects recognized exact START/END evidence of 940 seconds.
 
-## Admission policy
+## Admission
 
 - elapsed < target: qualifying => `CONTINUE`; no-work => `WORKLOAD_EXHAUSTED`.
 - target <= elapsed < stretch: unsafe => `FINALIZATION_BLOCKED`; safe+qualifying => `CONTINUE_STRETCH`; safe+no-work => `RESERVE_ENTRY`.
 - elapsed >= stretch: unsafe => `FINALIZATION_BLOCKED`; safe => `RESERVE_ENTRY`.
-- Stretch admits useful work only; never padding.
+- Stretch is useful work only; never padding.
 
-Boundary coverage is 899/900/1199/1200 plus strict input validation.
+Boundary coverage: 899/900/1199/1200 plus strict type and relationship checks.
+
+## Runtime helpers
+
+`scheduler_v2.py` computes END+180 and verifies either ISO timestamps or live VEVENT DTSTART readback, including TZID schedules. `recovery_commit_clock.py` requires a verified START before cold resume, distinguishes unverified/verified END, validates automation authority, and accepts normalized or full-VEVENT hourly recurrence.
 
 ## Run
 
@@ -39,6 +39,7 @@ Boundary coverage is 899/900/1199/1200 plus strict input validation.
 `python3 long_turn_evidence/test_hardening.py`
 `python3 long_turn_evidence/test_admission.py`
 `python3 long_turn_evidence/test_versioning.py`
+`python3 long_turn_evidence/test_schema_contract.py`
 `python3 long_turn_evidence/test_authority.py`
 `python3 long_turn_evidence/test_authority_fallback.py`
 `python3 long_turn_evidence/validate_observations.py`
@@ -48,4 +49,4 @@ Boundary coverage is 899/900/1199/1200 plus strict input validation.
 
 ## Runtime evidence
 
-LT03 exact WORKED=940s proves the >=900 target. LT04-R118-T6B independently measured WORKED=1191s, independently repeating >=900 but remaining 9 seconds short of the 1200 stretch. Never round 1191 to 1200.
+LT03 exact WORKED=940s proves >=900. LT04-R118-T6B independently measured WORKED=1191s, repeating >=900 but remaining exactly 9 seconds short of 1200. Never round 1191 to 1200.
