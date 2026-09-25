@@ -1,0 +1,16 @@
+{
+  "priority_order":[
+    "use long-turn-clock branch for START marker",
+    "verify START commit timestamp",
+    "attempt canonical admission integration using a materially changed write path",
+    "run boundary matrix",
+    "integrate validator versioning and schema delta",
+    "integrate exact authority into observation validation",
+    "run staged and legacy regressions",
+    "synchronize stale documentation",
+    "read back main SHAs"
+  ],
+  "staging_branch":"lt04-work-t6-clean",
+  "clock_branch":"long-turn-clock",
+  "historical_observations_sha":"19d020b7b5918211124f0d6ada5895318cf12854"
+}
