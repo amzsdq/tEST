@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import unittest
 from recovery import decide
-R={'automation_id':'A','start':{'id':1},'start_verified':True,'end':None,'last_durable_boundary':{'id':2}};L={'automation_id':'A','enabled':True,'timing_mode':'exact_schedule','rrule':'FREQ=HOURLY'}
+R={'automation_id':'A','start':{'id':1,'created_at':'2026-09-25T00:00:00Z'},'start_verified':True,'end':None,'last_durable_boundary':{'id':2,'created_at':'2026-09-25T00:01:00Z'}};L={'automation_id':'A','enabled':True,'timing_mode':'exact_schedule','rrule':'FREQ=HOURLY'}
 class RecoveryTests(unittest.TestCase):
  def test_resume_censored(self):self.assertEqual(decide(R,L)['action'],'RESUME_CENSORED')
  def test_unverified_start_requires_verification(self):
@@ -12,16 +12,23 @@ class RecoveryTests(unittest.TestCase):
   r=dict(R);r.pop('start');self.assertEqual(decide(r,L)['action'],'INVALID_SESSION')
  def test_malformed_start_object_is_invalid(self):
   r=dict(R);r['start']='start';self.assertEqual(decide(r,L)['action'],'INVALID_SESSION')
+ def test_marker_without_timestamp_is_rejected(self):
+  r=dict(R);r['start']={'id':1};self.assertEqual(decide(r,L)['action'],'INVALID_SESSION')
+  r=dict(R);r['last_durable_boundary']={'id':2};self.assertEqual(decide(r,L)['action'],'RECONSTRUCT_BEFORE_RESUME')
+ def test_naive_or_invalid_marker_timestamp_is_rejected(self):
+  for value in ('2026-09-25T00:00:00','not-a-time',None):
+   with self.subTest(value=value):
+    r=dict(R);r['start']={'id':1,'created_at':value};self.assertEqual(decide(r,L)['action'],'INVALID_SESSION')
  def test_malformed_boundary_reconstructs(self):
   r=dict(R);r['last_durable_boundary']='boundary';self.assertEqual(decide(r,L)['action'],'RECONSTRUCT_BEFORE_RESUME')
  def test_nonmapping_record_is_invalid(self):self.assertEqual(decide([],L)['action'],'INVALID_SESSION')
  def test_nonmapping_live_is_invalid(self):self.assertEqual(decide(R,[])['action'],'INVALID_SESSION')
  def test_verified_finalized_not_resumed(self):
-  r=dict(R);r.update({'end':{'id':3},'end_verified':True});self.assertEqual(decide(r,L)['action'],'DO_NOT_RESUME_FINALIZED')
+  r=dict(R);r.update({'end':{'id':3,'created_at':'2026-09-25T00:02:00Z'},'end_verified':True});self.assertEqual(decide(r,L)['action'],'DO_NOT_RESUME_FINALIZED')
  def test_malformed_end_reconstructs(self):
   r=dict(R);r['end']='end';r['end_verified']=True;self.assertEqual(decide(r,L)['action'],'RECONSTRUCT_BEFORE_RESUME')
  def test_unverified_end_reconstructs(self):
-  r=dict(R);r['end']={'id':3};self.assertEqual(decide(r,L)['action'],'RECONSTRUCT_BEFORE_RESUME')
+  r=dict(R);r['end']={'id':3,'created_at':'2026-09-25T00:02:00Z'};self.assertEqual(decide(r,L)['action'],'RECONSTRUCT_BEFORE_RESUME')
  def test_missing_or_malformed_automation_identity_is_invalid(self):
   for value in (None, "", "   ", True, 7, {}):
    with self.subTest(side="record",value=value):

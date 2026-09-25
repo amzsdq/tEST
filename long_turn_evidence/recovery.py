@@ -1,8 +1,12 @@
 """Cold-recovery decision helper. Explicit evidence only."""
 from recovery_commit_clock import _hourly_preserved
+from scheduler_v2 import parse
 
 def _marker_shape(value):
- return isinstance(value,dict) and isinstance(value.get('id'),int) and not isinstance(value.get('id'),bool) and value.get('id')>0
+ if not (isinstance(value,dict) and isinstance(value.get('id'),int) and not isinstance(value.get('id'),bool) and value.get('id')>0):return False
+ try:parse(value.get('created_at'))
+ except (ValueError,TypeError):return False
+ return True
 
 def _identity(value):
  return isinstance(value,str) and bool(value.strip())
