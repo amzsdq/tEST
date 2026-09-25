@@ -1,0 +1,22 @@
+{
+  "session": "LT04-R146-T29",
+  "completed": [
+    "durable START/readback",
+    "manifest duplicate cleanup",
+    "materialization whole-content readback for authority/exact schema/schema test",
+    "doc binding audit",
+    "release gate audit",
+    "diff audit",
+    "runner mechanism audit",
+    "main compare",
+    "RRULE specificity recheck",
+    "pin applicability audit"
+  ],
+  "open": [
+    "MANIFEST final identity rebind",
+    "ACCEPTANCE final rebind",
+    "FULL_RUNNER exact execution",
+    "main integration"
+  ],
+  "no_padding": true
+}
