@@ -11,9 +11,9 @@
 | evidence v1/v2 normalization | versioning + validator | CANDIDATE VERIFIED |
 | 899/900/1199/1200 admission policy | admission + expanded tests/property check | CANDIDATE VERIFIED |
 | commit-clock recovery | commit-backed and legacy recovery paths both require exact_schedule + exact unbounded FREQ=HOURLY; VEVENT envelope/conflicting-readback fail closed | CANDIDATE VERIFIED |
-| exact canonical runner blob set | LT04_R126_EXACT_RUNNER_INPUTS.json, 29/29 SHA readback | PASS |
+| exact canonical runner blob set | LT04_R126_EXACT_RUNNER_INPUTS.json blob b5da8640defe9e522b5a67f2a757603b474faf50, fresh R145 29/29 recursive-tree SHA audit | PASS |
 | unchanged exact canonical runner execution | run_canonical_checks.py rc=0 + sentinel | PENDING |
-| schema/runtime identity parity | main/exact schemas require a non-whitespace character; schema-contract regression pins this invariant | CANDIDATE VERIFIED |
-| MANIFEST identity current | R143 readback confirms current recovery, authority, schema, schema-contract test, runner and corrected pin identities in MANIFEST blob c6503f21479027a6c3534d9abff49a3e039349f8 | PASS |
+| schema/runtime identity parity | schemas and validator/authority runtime reject whitespace-only identities; validator/authority regressions cover runtime behavior | CANDIDATE VERIFIED |
+| MANIFEST identity current | R145 readback confirms current validator, authority, authority test, commit-clock test and pin identities in MANIFEST blob 21b3cfa48d08fed0161e6813a44e9500381df0a5 | PASS |
 
 Runtime rule: preserve every exact >=900 success. Between target and stretch, continue only safe qualifying useful work; no-work enters reserve. At or above stretch, safe finalization enters reserve. Never pad and never round measured duration.
