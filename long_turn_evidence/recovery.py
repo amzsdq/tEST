@@ -4,8 +4,12 @@ from recovery_commit_clock import _hourly_preserved
 def _marker_shape(value):
  return isinstance(value,dict) and isinstance(value.get('id'),int) and not isinstance(value.get('id'),bool) and value.get('id')>0
 
+def _identity(value):
+ return isinstance(value,str) and bool(value.strip())
+
 def decide(record,live):
  if not isinstance(record,dict) or not isinstance(live,dict):return {'action':'INVALID_SESSION','reason':'record/live must be objects'}
+ if not _identity(record.get('automation_id')) or not _identity(live.get('automation_id')):return {'action':'INVALID_SESSION','reason':'missing or malformed automation identity'}
  if not _marker_shape(record.get('start')):return {'action':'INVALID_SESSION','reason':'missing or malformed START marker'}
  if record.get('start_verified') is not True:return {'action':'VERIFY_START_BEFORE_RESUME','reason':'START exists but readback is not verified'}
  if record.get('end') is not None:

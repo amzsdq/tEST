@@ -53,6 +53,12 @@ class CommitClockRecoveryTests(unittest.TestCase):
  def test_nonmapping_containers_are_invalid(self):
   self.assertEqual(decide([],LIVE)["action"],"INVALID_SESSION")
   self.assertEqual(decide(SESSION,[])["action"],"INVALID_SESSION")
+ def test_missing_or_malformed_automation_identity_is_invalid(self):
+  for value in (None, "", "   ", True, 7, {}):
+   with self.subTest(side="session",value=value):
+    self.assertEqual(decide(dict(SESSION,automation_id=value),LIVE)["action"],"INVALID_SESSION")
+   with self.subTest(side="live",value=value):
+    self.assertEqual(decide(SESSION,dict(LIVE,automation_id=value))["action"],"INVALID_SESSION")
  def test_identity_mismatch_blocks(self):self.assertEqual(decide(SESSION,dict(LIVE,automation_id="B"))["action"],"AUTHORITY_BLOCK")
  def test_nonhourly_schedule_degrades(self):
   live={"automation_id":"A","enabled":True,"timing_mode":"exact_schedule","schedule":"BEGIN:VEVENT\nRRULE:FREQ=DAILY\nEND:VEVENT"};self.assertEqual(decide(SESSION,live)["action"],"RECURRENCE_DEGRADED")

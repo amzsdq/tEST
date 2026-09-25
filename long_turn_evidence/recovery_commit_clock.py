@@ -43,9 +43,14 @@ def _hourly_preserved(live):
 def _commit_id(value):
     return isinstance(value,str) and bool(value.strip())
 
+def _identity(value):
+    return isinstance(value,str) and bool(value.strip())
+
 def decide(session, live):
     if not isinstance(session,dict) or not isinstance(live,dict):
         return {"action":"INVALID_SESSION","reason":"session/live must be objects"}
+    if not _identity(session.get("automation_id")) or not _identity(live.get("automation_id")):
+        return {"action":"INVALID_SESSION","reason":"missing or malformed automation identity"}
     if not _commit_id(session.get("start_commit")):
         return {"action":"INVALID_SESSION","reason":"missing or malformed START commit"}
     if session.get("start_verified") is not True:

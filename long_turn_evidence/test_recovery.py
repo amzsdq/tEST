@@ -22,6 +22,12 @@ class RecoveryTests(unittest.TestCase):
   r=dict(R);r['end']='end';r['end_verified']=True;self.assertEqual(decide(r,L)['action'],'RECONSTRUCT_BEFORE_RESUME')
  def test_unverified_end_reconstructs(self):
   r=dict(R);r['end']={'id':3};self.assertEqual(decide(r,L)['action'],'RECONSTRUCT_BEFORE_RESUME')
+ def test_missing_or_malformed_automation_identity_is_invalid(self):
+  for value in (None, "", "   ", True, 7, {}):
+   with self.subTest(side="record",value=value):
+    r=dict(R);r["automation_id"]=value;self.assertEqual(decide(r,L)["action"],"INVALID_SESSION")
+   with self.subTest(side="live",value=value):
+    l=dict(L);l["automation_id"]=value;self.assertEqual(decide(R,l)["action"],"INVALID_SESSION")
  def test_identity_mismatch(self):
   l=dict(L);l['automation_id']='B';self.assertEqual(decide(R,l)['action'],'AUTHORITY_BLOCK')
  def test_disabled_fallback(self):
