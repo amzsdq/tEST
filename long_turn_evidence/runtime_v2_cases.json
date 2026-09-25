@@ -1,0 +1,12 @@
+{
+  "scheduler":[
+    {"reference":"2026-09-25T03:12:33Z","lead_seconds":180,"expected":"2026-09-25T03:15:33+00:00"},
+    {"reference":"2026-09-25T03:12:33Z","lead_seconds":true,"expected_error":"invalid lead_seconds"}
+  ],
+  "recovery":[
+    {"start_commit":"s","end_commit":null,"end_verified":false,"live_ok":true,"expected":"RESUME_OPEN_SESSION"},
+    {"start_commit":"s","end_commit":"e","end_verified":true,"live_ok":true,"expected":"DO_NOT_RESUME_FINALIZED"},
+    {"start_commit":"s","end_commit":"e","end_verified":false,"live_ok":true,"expected":"VERIFY_END_BEFORE_RESUME"},
+    {"start_commit":null,"end_commit":null,"end_verified":false,"live_ok":true,"expected":"INVALID_SESSION"}
+  ]
+}
