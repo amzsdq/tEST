@@ -1,6 +1,7 @@
 from datetime import datetime,timedelta,timezone
 
 def parse(v):
+ if not isinstance(v,str) or not v:raise ValueError('timestamp must be non-empty string')
  d=datetime.fromisoformat(v.replace('Z','+00:00'))
  if d.tzinfo is None:raise ValueError('timezone-aware timestamp required')
  return d.astimezone(timezone.utc)
