@@ -14,9 +14,9 @@ Authority candidate blob: db7c5755bd0d99de2752f83f0279981a27ed3aaa; tests c107fc
 
 Lineage hardening candidate blobs: lineage 14463582633e50c843bb6f78e9b074eb79365497; tests db96d77a59e8c9c483d0f62547a2eca93266b5fe.
 
-Commit-clock recurrence hardening release-current blobs: recovery 52ce602ae97616f13306d72e0a34ec298fc03567; tests 5531c513ddbc49c29edf6540f61df0e845c6f95a. Verified START, exact_schedule, enabled state, and exactly one unbounded FREQ=HOURLY recurrence are required; COUNT/UNTIL/INTERVAL, prefix spoofing, conflicting representations, and malformed VEVENT readback fail closed.
+Commit-clock recurrence hardening release-current blobs: recovery dcac4c9dd3fa9bb0e9fc665e5eb5c19131e4027a; tests 8fbdfcc18f9a1aa685d680b94059af8f22b1facc. Verified START, exact_schedule, enabled state, and exactly one unbounded FREQ=HOURLY recurrence are required; COUNT/UNTIL/INTERVAL, prefix spoofing, conflicting representations, and malformed VEVENT readback fail closed.
 
-Scheduler-v2 DTSTART hardening blobs: scheduler f876c48a9e4f1ad587e5cff4f07eae4e8c54b6a7; tests 8d3291704bc0373c14bc89a41efcebb9690cf88b. Duplicate/spoofed DTSTART is fail-closed.
-Earlier commit-clock parser identities 1475705f2a21b3d0c986c37df7cfeb71d620e3a0 / cef6ef5bffb7d448c42a8e9af175e39c375e05b5 are superseded by the release-current recurrence identities above.
+Scheduler-v2 DTSTART hardening blobs: scheduler 3e6eb460435cb79ccbe5b3fa1315fa3eed074807; tests 9fd07d3ec6ee913e1893963ea1bc2cd14fa0fbf5. Duplicate/spoofed DTSTART is fail-closed.
+Legacy recovery release-current blobs: recovery 2e3933a045a5d5fd665101f487f12f79509d5102; tests 898c0d247f7e84df2be115632fb06ce34b982c2e.\nExact canonical runner blob: e1f6cee2b42951333797d27cd7b8e12436133b19. Exact input pin manifest blob: 877906659c1f47aa02f0c11e592f04beed1dfe4d; fresh R137 recursive-tree audit confirms 29/29 identities.
 
 Remaining release gates are full canonical regression execution and main-branch integration/readback. The independent >=1200 useful-work sample gate is PASS via LT04-R126-T9.
