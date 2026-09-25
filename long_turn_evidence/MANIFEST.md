@@ -10,7 +10,7 @@ Verified runtime evidence:
 
 Admission candidate blobs: module 54e6e7eb1a08ed9ba3ef8e84a1f1797bba773146; tests d94ebabca79fb6a0eb99f8e2b867313e853e268c.
 Validator/versioning candidate blobs: validator 13d59d68b2d706ec435321a7c2c1f5a1b9d9f743; versioning b75eeceeae115baebb6cb41d6459b6c984d19379; schema 2d6be7cb9bd5ae810b27178ee1f11927eeee49aa; exact-evidence schema 44715e7c541eacb340320075a4e21287213909ef; schema-contract tests 63994d4bb2c18d974dc5acba6956b8e54ecea997. Identity schemas reject whitespace-only identifiers.
-Authority candidate blob: b497dcaaf3a4581c286b0e00f0c500363f00db7f; tests c7c0f47532978a2719b9138b6b496eb12faf7423. Runtime invocation/automation/supersedes/evidence identities fail closed when missing, whitespace-only, or malformed. Runtime invocation/automation/supersedes identities fail closed when missing, blank, or malformed.
+Authority candidate blob: b497dcaaf3a4581c286b0e00f0c500363f00db7f; tests c7c0f47532978a2719b9138b6b496eb12faf7423. Runtime invocation/automation/supersedes/evidence identities fail closed when missing, whitespace-only, or malformed.
 
 Lineage hardening candidate blobs: lineage 14463582633e50c843bb6f78e9b074eb79365497; tests db96d77a59e8c9c483d0f62547a2eca93266b5fe.
 
