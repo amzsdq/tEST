@@ -1,0 +1,21 @@
+{
+  "before_end": [
+    "obtain GitHub checkpoint >= START+600s",
+    "fresh-read main/candidate",
+    "fresh-read observations",
+    "persist final state",
+    "create END",
+    "read back END"
+  ],
+  "after_end": [
+    "compute exact delta from GitHub created_at only",
+    "rearm same automation END+180s",
+    "verify live readback"
+  ],
+  "do_not_claim": [
+    "FULL_RUNNER PASS",
+    "MANIFEST_CORRECTED",
+    "fresh R146 29/29"
+  ],
+  "status": "CONTINUE"
+}
