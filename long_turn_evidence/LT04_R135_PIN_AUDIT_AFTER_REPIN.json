@@ -1,9 +1,0 @@
-{
-  "session": "LT04-R135-T18",
-  "branch": "lt04-r135-legacy-test-parity-v2",
-  "result": "PASS",
-  "checked": 29,
-  "mismatches": [],
-  "pin_blob": "877906659c1f47aa02f0c11e592f04beed1dfe4d",
-  "note": "Fresh post-repin GitHub fetch audit: 29/29 exact runner/input blob identities match."
-}
