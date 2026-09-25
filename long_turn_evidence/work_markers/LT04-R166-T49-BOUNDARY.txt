@@ -1,0 +1,4 @@
+[WORK_MARKER]
+session=LT04-R166-T49
+phase=BOUNDARY
+note=fresh pin 29/29; runner gate remains pending; semantic audit no new contract mismatch
