@@ -53,6 +53,10 @@ class RecoveryTests(unittest.TestCase):
   l={'automation_id':'A','enabled':True,'timing_mode':'exact_schedule','schedule':'BEGIN:VEVENT\nDTSTART:20260925T120000\nRRULE:FREQ=HOURLY\nEND:VEVENT'};self.assertEqual(decide(R,l)['action'],'RECURRENCE_DEGRADED')
  def test_schedule_fragment_rejected(self):
   l={'automation_id':'A','enabled':True,'timing_mode':'exact_schedule','schedule':'RRULE:FREQ=HOURLY'};self.assertEqual(decide(R,l)['action'],'RECURRENCE_DEGRADED')
+ def test_boundary_before_start_reconstructs(self):
+  r=dict(R);r['last_durable_boundary']={'id':2,'created_at':'2026-09-24T23:59:59Z'};self.assertEqual(decide(r,L)['action'],'RECONSTRUCT_BEFORE_RESUME')
+ def test_verified_end_before_start_reconstructs(self):
+  r=dict(R);r.update({'end':{'id':3,'created_at':'2026-09-24T23:59:59Z'},'end_verified':True});self.assertEqual(decide(r,L)['action'],'RECONSTRUCT_BEFORE_RESUME')
  def test_no_boundary_reconstructs(self):
   r=dict(R);r['last_durable_boundary']=None;self.assertEqual(decide(r,L)['action'],'RECONSTRUCT_BEFORE_RESUME')
 if __name__=='__main__':unittest.main(verbosity=2)

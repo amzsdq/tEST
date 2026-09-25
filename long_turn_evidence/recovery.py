@@ -18,9 +18,11 @@ def decide(record,live):
  if record.get('start_verified') is not True:return {'action':'VERIFY_START_BEFORE_RESUME','reason':'START exists but readback is not verified'}
  if record.get('end') is not None:
   if not _marker_shape(record.get('end')):return {'action':'RECONSTRUCT_BEFORE_RESUME','reason':'END present but malformed'}
+  if parse(record['end']['created_at']) < parse(record['start']['created_at']):return {'action':'RECONSTRUCT_BEFORE_RESUME','reason':'END precedes START'}
   if record.get('end_verified') is True:return {'action':'DO_NOT_RESUME_FINALIZED','reason':'verified matching END already present'}
   return {'action':'RECONSTRUCT_BEFORE_RESUME','reason':'END present but exact baton backlink/lineage not verified'}
  if not _marker_shape(record.get('last_durable_boundary')):return {'action':'RECONSTRUCT_BEFORE_RESUME','reason':'missing or malformed durable post-START boundary'}
+ if parse(record['last_durable_boundary']['created_at']) < parse(record['start']['created_at']):return {'action':'RECONSTRUCT_BEFORE_RESUME','reason':'durable boundary precedes START'}
  if live.get('automation_id')!=record.get('automation_id'):return {'action':'AUTHORITY_BLOCK','reason':'automation identity mismatch'}
  if live.get('enabled') is not True:return {'action':'RECURRENCE_DEGRADED','reason':'canonical automation disabled'}
  if live.get('timing_mode')!='exact_schedule':return {'action':'RECURRENCE_DEGRADED','reason':'canonical automation timing_mode is not exact_schedule'}
