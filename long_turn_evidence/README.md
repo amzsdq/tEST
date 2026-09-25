@@ -29,7 +29,7 @@ Boundary coverage: 899/900/1199/1200 plus strict type and relationship checks.
 
 ## Runtime helpers
 
-`scheduler_v2.py` computes END+180 and verifies either ISO timestamps or live VEVENT DTSTART readback, including TZID schedules; duplicate or spoofed DTSTART fields fail closed. `recovery_commit_clock.py` requires a verified START before cold resume, distinguishes unverified/verified END, validates automation authority, and accepts exactly one syntactically unambiguous hourly RRULE; spoofed, duplicate-key, conflicting-FREQ, or multiple-RRULE schedules fail closed.
+`scheduler_v2.py` computes END+180 and verifies either ISO timestamps or live VEVENT DTSTART readback, including TZID schedules; duplicate or spoofed DTSTART fields fail closed. `recovery_commit_clock.py` requires a verified START before cold resume, distinguishes unverified/verified END, validates automation authority, and requires exactly one unbounded `FREQ=HOURLY` RRULE; parameterized rules such as COUNT/UNTIL/INTERVAL, spoofed frequencies, or multiple RRULE lines fail closed because they can truncate or alter relay liveness.
 
 ## Run
 
