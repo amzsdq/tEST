@@ -7,7 +7,7 @@ Verified runtime evidence:
 - LT04-R118-T6B: exact 1191s, independent >=900 repeat PASS, 1200 stretch not yet passed.
 - Historical observations.json blob remains 19d020b7b5918211124f0d6ada5895318cf12854 and is not rewritten.
 
-Admission candidate blobs: module 54e6e7eb1a08ed9ba3ef8e84a1f1797bba773146; tests f24d2da4ca10aa7ad2312e0d22ad5ca1ecaa4f48.
+Admission candidate blobs: module 54e6e7eb1a08ed9ba3ef8e84a1f1797bba773146; tests d94ebabca79fb6a0eb99f8e2b867313e853e268c.
 Validator/versioning candidate blobs: validator ddb4fce0a4eba78c3f0d4af3a676cc87c0ee47b9; versioning b75eeceeae115baebb6cb41d6459b6c984d19379; schema f004e260ad08408c3e2596be84a7ddd3703edfba.
 Authority candidate blob: d6d09f0781e9a37814a8cd4b9a2f73969c7edfdd.
 
