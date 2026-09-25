@@ -1,0 +1,20 @@
+{
+  "session_id": "LT04-R132-T15",
+  "audit_type": "scheduler_v2_structure_review",
+  "source_blob": "f876c48a9e4f1ad587e5cff4f07eae4e8c54b6a7",
+  "finding": {
+    "id": "R132-SCHED-1",
+    "classification": "FAIL_CLOSED_GAP",
+    "condition": "multi-line live_schedule_or_dtstart contains exactly one syntactically valid DTSTART but lacks a valid BEGIN:VEVENT/END:VEVENT envelope",
+    "current_behavior": "parse_live_dtstart accepts the DTSTART because it validates DTSTART cardinality but not VEVENT envelope structure",
+    "cross_module_inconsistency": "recovery_commit_clock requires VEVENT first/last envelope for schedule-form recurrence while scheduler_v2 does not",
+    "recommended_fix": "for multi-line schedule input require exactly one BEGIN:VEVENT and END:VEVENT at the outer envelope before parsing DTSTART; preserve direct single ISO timestamp mode separately",
+    "recommended_tests": [
+      "junk + newline + valid DTSTART must reject",
+      "valid DTSTART + newline + junk must reject",
+      "nested/duplicate VEVENT envelope must reject"
+    ]
+  },
+  "status": "UNPATCHED",
+  "full_runner": "PENDING"
+}
