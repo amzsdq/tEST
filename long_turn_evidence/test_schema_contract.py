@@ -14,6 +14,10 @@ class SchemaContractTests(unittest.TestCase):
   exact=json.loads((ROOT/"exact_evidence.schema.json").read_text())
   for key in ("evidence_id","invocation_id","automation_id","supersedes_observation_invocation_id"):
    self.assertEqual(exact["items"]["properties"][key]["pattern"],".*\\S.*")
+ def test_marker_timestamp_pattern_is_canonical_github_shape(self):
+  expected=r"^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+  self.assertEqual(json.loads((ROOT/"schema.json").read_text())["$defs"]["marker"]["properties"]["created_at"]["pattern"],expected)
+  self.assertEqual(json.loads((ROOT/"exact_evidence.schema.json").read_text())["$defs"]["marker"]["properties"]["created_at"]["pattern"],expected)
  def test_exact_evidence_contract_requires_lineage_and_markers(self):
   s=json.loads((ROOT/"exact_evidence.schema.json").read_text());req=set(s["items"]["required"])
   self.assertTrue({"evidence_id","invocation_id","automation_id","source","supersedes_observation_invocation_id","start","end"}<=req)
