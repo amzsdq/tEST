@@ -11,6 +11,7 @@ class HardeningTests(unittest.TestCase):
   for key in ("invocation_id","automation_id"):
    for value in (" ","   ","\t","\n"):
     with self.subTest(key=key,value=repr(value)):self.bad({key:value},f"invalid {key}")
+ def test_unknown_marker_field_fails_closed(self):self.bad({"start":{"id":1,"created_at":"2026-09-24T00:00:00Z","extra":"x"}},"unexpected marker fields")
  def test_missing_created_at(self):self.bad({"start":{"id":1}},"start: missing created_at")
  def test_bool_marker_id(self):self.bad({"start":{"id":True,"created_at":"2026-09-24T00:00:00Z"}},"start: invalid marker id")
  def test_bool_mutation(self):self.bad({"scheduler_mutation_count":True},"invalid scheduler_mutation_count")
