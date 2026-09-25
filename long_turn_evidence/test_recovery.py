@@ -25,7 +25,9 @@ class RecoveryTests(unittest.TestCase):
  def test_parameterized_hourly_rejected(self):
   l=dict(L);l['rrule']='FREQ=HOURLY;COUNT=3';self.assertEqual(decide(R,l)['action'],'RECURRENCE_DEGRADED')
  def test_full_vevent_schedule_accepted(self):
-  l={'automation_id':'A','enabled':True,'timing_mode':'exact_schedule','schedule':'BEGIN:VEVENT\nDTSTART:20260925T120000\nRRULE:FREQ=HOURLY\nEND:VEVENT'};self.assertEqual(decide(R,l)['action'],'RESUME_CENSORED')
+  l={'automation_id':'A','enabled':True,'timing_mode':'exact_schedule','schedule':'BEGIN:VEVENT\nDTSTART:20260925T120000Z\nRRULE:FREQ=HOURLY\nEND:VEVENT'};self.assertEqual(decide(R,l)['action'],'RESUME_CENSORED')
+ def test_floating_dtstart_rejected(self):
+  l={'automation_id':'A','enabled':True,'timing_mode':'exact_schedule','schedule':'BEGIN:VEVENT\\nDTSTART:20260925T120000\\nRRULE:FREQ=HOURLY\\nEND:VEVENT'};self.assertEqual(decide(R,l)['action'],'RECURRENCE_DEGRADED')
  def test_schedule_fragment_rejected(self):
   l={'automation_id':'A','enabled':True,'timing_mode':'exact_schedule','schedule':'RRULE:FREQ=HOURLY'};self.assertEqual(decide(R,l)['action'],'RECURRENCE_DEGRADED')
  def test_no_boundary_reconstructs(self):
