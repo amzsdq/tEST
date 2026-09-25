@@ -1,8 +1,0 @@
-{
-  "pin_blob": "fa366013f81ea4ef95f4f50a580bdaf2b733858a",
-  "entries": 29,
-  "fresh_reaudit": "INCOMPLETE",
-  "reason": "Code Mode maximum tool-call limit reached during batched fetch",
-  "last_complete": "R145 PASS_29_OF_29",
-  "exact_set_changed_since_r145": false
-}

@@ -1,7 +1,0 @@
-[WORK_MARKER]
-session=LT04-R144-T27
-phase=CHECKPOINT
-runtime_identity_source=LANDED
-materialization=READBACK_VERIFIED
-pin_repin=PENDING_BLOCKED
-full_runner=PENDING
