@@ -1,9 +1,0 @@
-{
-  "clock_source": "GITHUB_COMMIT_CREATED_AT",
-  "start_readback": true,
-  "never_sum": true,
-  "end_created": false,
-  "end_gate_seconds": 600,
-  "anti_loop_respected": true,
-  "blocked_identity_mutation_not_repeated_identically_after_confirmation": true
-}
