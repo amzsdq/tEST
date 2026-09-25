@@ -13,6 +13,6 @@
 | commit-clock recovery | commit-backed and legacy recovery paths both require exact_schedule + exact unbounded FREQ=HOURLY; VEVENT envelope/conflicting-readback fail closed | CANDIDATE VERIFIED |
 | exact canonical runner blob set | LT04_R126_EXACT_RUNNER_INPUTS.json, 29/29 SHA readback | PASS |
 | unchanged exact canonical runner execution | run_canonical_checks.py rc=0 + sentinel | PENDING |
-| MANIFEST identity current | R137 readback confirms current recovery, scheduler-v2, runner and pin identities in MANIFEST | PASS |
+| MANIFEST identity current | R140 readback confirms current recovery, scheduler-v2, runner, regression-test and pin identities in MANIFEST blob fcfa2ee763aafebee1c910ba7115651351b153af | PASS |
 
 Runtime rule: preserve every exact >=900 success. Between target and stretch, continue only safe qualifying useful work; no-work enters reserve. At or above stretch, safe finalization enters reserve. Never pad and never round measured duration.
