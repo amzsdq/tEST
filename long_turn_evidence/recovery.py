@@ -1,10 +1,10 @@
 """Cold-recovery decision helper. Explicit evidence only."""
 from recovery_commit_clock import _hourly_preserved
-from scheduler_v2 import parse
+from scheduler_v2 import parse_github_commit_created_at
 
 def _marker_shape(value):
- if not (isinstance(value,dict) and isinstance(value.get('id'),int) and not isinstance(value.get('id'),bool) and value.get('id')>0):return False
- try:parse(value.get('created_at'))
+ if not (isinstance(value,dict) and set(value)=={'id','created_at'} and isinstance(value.get('id'),int) and not isinstance(value.get('id'),bool) and value.get('id')>0):return False
+ try:parse_github_commit_created_at(value.get('created_at'))
  except (ValueError,TypeError):return False
  return True
 
@@ -18,11 +18,11 @@ def decide(record,live):
  if record.get('start_verified') is not True:return {'action':'VERIFY_START_BEFORE_RESUME','reason':'START exists but readback is not verified'}
  if record.get('end') is not None:
   if not _marker_shape(record.get('end')):return {'action':'RECONSTRUCT_BEFORE_RESUME','reason':'END present but malformed'}
-  if parse(record['end']['created_at']) < parse(record['start']['created_at']):return {'action':'RECONSTRUCT_BEFORE_RESUME','reason':'END precedes START'}
+  if parse_github_commit_created_at(record['end']['created_at']) < parse_github_commit_created_at(record['start']['created_at']):return {'action':'RECONSTRUCT_BEFORE_RESUME','reason':'END precedes START'}
   if record.get('end_verified') is True:return {'action':'DO_NOT_RESUME_FINALIZED','reason':'verified matching END already present'}
   return {'action':'RECONSTRUCT_BEFORE_RESUME','reason':'END present but exact baton backlink/lineage not verified'}
  if not _marker_shape(record.get('last_durable_boundary')):return {'action':'RECONSTRUCT_BEFORE_RESUME','reason':'missing or malformed durable post-START boundary'}
- if parse(record['last_durable_boundary']['created_at']) < parse(record['start']['created_at']):return {'action':'RECONSTRUCT_BEFORE_RESUME','reason':'durable boundary precedes START'}
+ if parse_github_commit_created_at(record['last_durable_boundary']['created_at']) < parse_github_commit_created_at(record['start']['created_at']):return {'action':'RECONSTRUCT_BEFORE_RESUME','reason':'durable boundary precedes START'}
  if live.get('automation_id')!=record.get('automation_id'):return {'action':'AUTHORITY_BLOCK','reason':'automation identity mismatch'}
  if live.get('enabled') is not True:return {'action':'RECURRENCE_DEGRADED','reason':'canonical automation disabled'}
  if live.get('timing_mode')!='exact_schedule':return {'action':'RECURRENCE_DEGRADED','reason':'canonical automation timing_mode is not exact_schedule'}

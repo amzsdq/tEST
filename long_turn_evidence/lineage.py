@@ -1,5 +1,5 @@
 """Resolve an END from explicit candidate markers without guessing."""
-from datetime import datetime
+from scheduler_v2 import parse_github_commit_created_at
 from typing import Any
 
 def _positive_int(value: Any, label: str) -> int:
@@ -8,14 +8,10 @@ def _positive_int(value: Any, label: str) -> int:
     return value
 
 def _timestamp(value: Any) -> str:
-    if not isinstance(value, str) or not value:
-        raise ValueError("INVALID_END_TIMESTAMP")
     try:
-        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
-    except ValueError as exc:
+        parse_github_commit_created_at(value)
+    except (ValueError, TypeError) as exc:
         raise ValueError("INVALID_END_TIMESTAMP") from exc
-    if parsed.tzinfo is None:
-        raise ValueError("INVALID_END_TIMESTAMP")
     return value
 
 def resolve_end(start_id: int, final_baton_id: int, candidates: list[dict[str, Any]]) -> dict[str, Any]:
