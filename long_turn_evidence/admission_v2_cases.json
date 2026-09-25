@@ -1,0 +1,13 @@
+[
+  {"elapsed":899,"work":true,"safe":true,"expected":"CONTINUE"},
+  {"elapsed":899,"work":false,"safe":true,"expected":"WORKLOAD_EXHAUSTED"},
+  {"elapsed":900,"work":true,"safe":true,"expected":"CONTINUE_STRETCH"},
+  {"elapsed":900,"work":false,"safe":true,"expected":"RESERVE_ENTRY"},
+  {"elapsed":900,"work":true,"safe":false,"expected":"FINALIZATION_BLOCKED"},
+  {"elapsed":1199,"work":true,"safe":true,"expected":"CONTINUE_STRETCH"},
+  {"elapsed":1199,"work":false,"safe":true,"expected":"RESERVE_ENTRY"},
+  {"elapsed":1199,"work":true,"safe":false,"expected":"FINALIZATION_BLOCKED"},
+  {"elapsed":1200,"work":true,"safe":true,"expected":"RESERVE_ENTRY"},
+  {"elapsed":1200,"work":false,"safe":true,"expected":"RESERVE_ENTRY"},
+  {"elapsed":1200,"work":true,"safe":false,"expected":"FINALIZATION_BLOCKED"}
+]
