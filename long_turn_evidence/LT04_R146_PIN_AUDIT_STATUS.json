@@ -1,7 +1,0 @@
-{
-  "pin_blob": "fa366013f81ea4ef95f4f50a580bdaf2b733858a",
-  "last_complete_pass": "R145_29_OF_29",
-  "r146_batched_attempt": "INCOMPLETE_TOOL_CALL_LIMIT",
-  "r146_exact_set_diff": "UNCHANGED",
-  "effective_status": "PASS_29_OF_29_LAST_COMPLETE_APPLICABLE"
-}
