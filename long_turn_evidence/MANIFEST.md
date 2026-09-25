@@ -18,6 +18,7 @@ Commit-clock recurrence hardening release-current blobs: recovery 6bd21ca7c32063
 
 Scheduler-v2 DTSTART hardening blobs: scheduler 3e6eb460435cb79ccbe5b3fa1315fa3eed074807; tests 9fd07d3ec6ee913e1893963ea1bc2cd14fa0fbf5. Duplicate/spoofed DTSTART is fail-closed.
 Legacy recovery release-current blobs: recovery 7ea60695f642fb44f12fc1cafdbfa8b688c7ff10; tests 7ef058c6a41fb581625f31c41c605160dfff2c9e. Shape-valid END and durable-boundary timestamps must not precede START.
-Legacy scheduler deterministic-error hardening blobs: scheduler b7f6edc9efdfe1ac03d40dcd24d47cb56224c019; tests a972ff6250094f3f835ae29b96503e56f44650ee. Non-string and empty timestamp inputs fail closed with ValueError.\nExact canonical runner blob: e1f6cee2b42951333797d27cd7b8e12436133b19. Exact input pin manifest blob: 102c7b5a968883d38d28422f9754a5bbb3940f84; fresh R150 29/29 audit confirms zero mismatches. Validator whitespace regression blob 573905f1c51c3f12c056871ee45a83bd593b892b.
+Legacy scheduler deterministic-error hardening blobs: scheduler b7f6edc9efdfe1ac03d40dcd24d47cb56224c019; tests a972ff6250094f3f835ae29b96503e56f44650ee. Non-string and empty timestamp inputs fail closed with ValueError.
+Exact canonical runner blob: e1f6cee2b42951333797d27cd7b8e12436133b19. Exact input pin manifest blob: 102c7b5a968883d38d28422f9754a5bbb3940f84; fresh R150 29/29 audit confirms zero mismatches. Validator whitespace regression blob 573905f1c51c3f12c056871ee45a83bd593b892b.
 
 Remaining release gates are full canonical regression execution and main-branch integration/readback. The independent >=1200 useful-work sample gate is PASS via LT04-R126-T9.
