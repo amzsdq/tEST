@@ -55,7 +55,7 @@ Individual checks:
 
 ## Runtime evidence
 
-LT03 exact WORKED=940s proves >=900. LT04-R118-T6B independently measured WORKED=1191s, repeating >=900 but remaining exactly 9 seconds short of 1200. Never round 1191 to 1200.
+LT03 exact WORKED=940s proves >=900. LT04-R118-T6B independently measured WORKED=1191s and therefore remained 9 seconds short of 1200. A later independent same-branch sample, LT04-R126-T9, measured exactly 1219s (20:19) and proves the >=1200 stretch gate. Individual invocations are never rounded or summed.
 
 ## R126/R127 verification update
 

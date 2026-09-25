@@ -4,7 +4,8 @@ Canonical migration candidate includes admission stretch policy, evidence v1/v2 
 
 Verified runtime evidence:
 - LT03: exact 940s, >=900 PASS.
-- LT04-R118-T6B: exact 1191s, independent >=900 repeat PASS, 1200 stretch not yet passed.
+- LT04-R118-T6B: exact 1191s, independent >=900 repeat PASS; this invocation remained 9s short of 1200.
+- LT04-R126-T9: exact 1219s (20:19), independent same-branch >=1200 stretch PASS.
 - Historical observations.json blob remains 19d020b7b5918211124f0d6ada5895318cf12854 and is not rewritten.
 
 Admission candidate blobs: module 54e6e7eb1a08ed9ba3ef8e84a1f1797bba773146; tests d94ebabca79fb6a0eb99f8e2b867313e853e268c.
@@ -13,9 +14,9 @@ Authority candidate blob: db7c5755bd0d99de2752f83f0279981a27ed3aaa; tests c107fc
 
 Lineage hardening candidate blobs: lineage 14463582633e50c843bb6f78e9b074eb79365497; tests db96d77a59e8c9c483d0f62547a2eca93266b5fe.
 
-Commit-clock recurrence hardening blobs: recovery ed81dd73cb2e7fec81610caadab03fc06c901d8b; tests 45201ea86972839bdbabdd13c6ee8b7a09fbeb11. Prefix-spoof RRULE values are fail-closed.
+Commit-clock recurrence hardening release-current blobs: recovery 52ce602ae97616f13306d72e0a34ec298fc03567; tests 5531c513ddbc49c29edf6540f61df0e845c6f95a. Verified START, exact_schedule, enabled state, and exactly one unbounded FREQ=HOURLY recurrence are required; COUNT/UNTIL/INTERVAL, prefix spoofing, conflicting representations, and malformed VEVENT readback fail closed.
 
 Scheduler-v2 DTSTART hardening blobs: scheduler f876c48a9e4f1ad587e5cff4f07eae4e8c54b6a7; tests 8d3291704bc0373c14bc89a41efcebb9690cf88b. Duplicate/spoofed DTSTART is fail-closed.
-Commit-clock exact RRULE parser blobs: recovery 1475705f2a21b3d0c986c37df7cfeb71d620e3a0; tests cef6ef5bffb7d448c42a8e9af175e39c375e05b5. Duplicate/conflicting FREQ is fail-closed.
+Earlier commit-clock parser identities 1475705f2a21b3d0c986c37df7cfeb71d620e3a0 / cef6ef5bffb7d448c42a8e9af175e39c375e05b5 are superseded by the release-current recurrence identities above.
 
-Remaining release gates are full canonical regression execution, main-branch integration/readback, and an independent >=1200 useful-work sample if qualifying work remains.
+Remaining release gates are full canonical regression execution and main-branch integration/readback. The independent >=1200 useful-work sample gate is PASS via LT04-R126-T9.
