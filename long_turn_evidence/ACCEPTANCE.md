@@ -5,17 +5,14 @@
 | >=900 one-turn capability | LT03 exact 940s | PASS |
 | independent >=900 repeat | LT04-R118-T6B exact 1191s | PASS |
 | >=1200 stretch | LT04-R126-T9 exact 1219s | PASS |
-| no cross-invocation sum | validator S5 diagnostic | PASS |
-| historical record preserved | observations.json blob 19d020b7b5918211124f0d6ada5895318cf12854 | PASS |
-| exact-over-censored authority | exact_evidence + hardened authority selector; runtime identities reject blank/malformed values | CANDIDATE VERIFIED |
-| evidence v1/v2 normalization | versioning + validator | CANDIDATE VERIFIED |
-| 899/900/1199/1200 admission policy | admission + expanded tests/property check | CANDIDATE VERIFIED |
-| commit-clock recovery | commit-backed and legacy recovery paths both require exact_schedule + exact unbounded FREQ=HOURLY; VEVENT envelope/conflicting-readback fail closed | CANDIDATE VERIFIED |
-| exact canonical runner blob set | R149 repin landed; canonical ACCEPTANCE pin binding awaits verified refresh | PENDING |
-| unchanged exact canonical runner execution | run_canonical_checks.py rc=0 + sentinel | PENDING |
-| schema/runtime identity parity | schemas and validator/authority runtime reject whitespace-only identities; validator/authority regressions cover runtime behavior | CANDIDATE VERIFIED |
-| MANIFEST identity current | Canonical MANIFEST was rebound in R149; ACCEPTANCE binding awaits verified refresh | PENDING |
+| no cross-invocation sum | validator diagnostic | PASS |
+| historical record preserved | observations.json 19d020b7... | PASS |
+| exact-over-censored authority | authority 8d64d694... + test c4b185e1... | CANDIDATE VERIFIED |
+| exact canonical runner blob set | R162 pin bb8d5b99...; 29/29 tree audit | PASS |
+| unchanged exact canonical runner execution | rc=0 + LT04_CANONICAL_CHECKS_PASS | PENDING |
+| schema/runtime identity parity | schemas and runtime reject malformed identities | CANDIDATE VERIFIED |
+| structural schema/runtime parity | R157 consumer package + R162 explicit schema regression coverage | CANDIDATE VERIFIED |
+| canonical raw-GitHub timestamp contract | shared parser/schema + R157 consumers | CANDIDATE VERIFIED |
+| MANIFEST identity current | R162 MANIFEST binds current pin/source and identities | PASS |
 
-Runtime rule: preserve every exact >=900 success. Between target and stretch, continue only safe qualifying useful work; no-work enters reserve. At or above stretch, safe finalization enters reserve. Never pad and never round measured duration.
-
-R151 verified binding note: canonical MANIFEST blob 46e67f0aeef12df723212245e0b888d46eda3034 references legacy scheduler b7f6edc9efdfe1ac03d40dcd24d47cb56224c019, test_scheduler a972ff6250094f3f835ae29b96503e56f44650ee, and exact pin 102c7b5a968883d38d28422f9754a5bbb3940f84. The two matrix rows remain PENDING until their row-level state is safely rebound; do not interpret this note as FULL_RUNNER PASS.
+R162 binding note: FULL_RUNNER remains PENDING until unchanged exact runner execution succeeds. Pin/MANIFEST PASS does not imply runner execution or main integration.
