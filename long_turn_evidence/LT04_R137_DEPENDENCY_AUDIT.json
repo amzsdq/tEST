@@ -1,0 +1,26 @@
+{
+  "session": "LT04-R137-T20",
+  "result": "PASS",
+  "scope": "static local dependency closure of unchanged run_canonical_checks.py",
+  "runner_tests": 13,
+  "runner_scripts": 2,
+  "local_dependency_edges": {
+    "test_admission.py": ["admission.py"],
+    "test_validator.py": ["validator.py", "fixtures.json"],
+    "test_lineage.py": ["lineage.py"],
+    "test_hardening.py": ["validator.py"],
+    "test_versioning.py": ["versioning.py", "validator.py", "schema.json"],
+    "test_schema_contract.py": ["schema.json", "exact_evidence.schema.json"],
+    "test_authority.py": ["authority.py", "observations.json", "exact_evidence.json"],
+    "test_authority_fallback.py": ["authority.py", "observations.json", "exact_evidence.json"],
+    "validate_observations.py": ["validator.py", "authority.py", "observations.json", "exact_evidence.json"],
+    "test_scheduler.py": ["scheduler.py"],
+    "test_scheduler_v2.py": ["scheduler_v2.py"],
+    "test_recovery.py": ["recovery.py", "recovery_commit_clock.py", "scheduler_v2.py"],
+    "test_recovery_commit_clock.py": ["recovery_commit_clock.py", "scheduler_v2.py"],
+    "validator.py": ["versioning.py"],
+    "report.py": ["validator.py", "fixtures.json"]
+  },
+  "closure": "all local dependencies above are represented in the 29-file pin set",
+  "full_runner": "PENDING"
+}
