@@ -10,6 +10,15 @@ class SchedulerV2Tests(unittest.TestCase):
   live="BEGIN:VEVENT\nDTSTART;TZID=Asia/Seoul:20260925T122024\nRRULE:FREQ=HOURLY\nEND:VEVENT";self.assertTrue(verify_readback("2026-09-25T03:17:24Z",live)["exact_match"])
  def test_vevent_z_exact_readback(self):
   live="BEGIN:VEVENT\nDTSTART:20260925T032024Z\nRRULE:FREQ=HOURLY\nEND:VEVENT";self.assertTrue(verify_readback("2026-09-25T03:17:24Z",live)["exact_match"])
+ def test_junk_before_dtstart_rejected(self):
+  live="junk\nDTSTART:20260925T032024Z"
+  with self.assertRaisesRegex(ValueError,"VEVENT envelope"):verify_readback("2026-09-25T03:17:24Z",live)
+ def test_junk_inside_vevent_rejected(self):
+  live="BEGIN:VEVENT\nJUNK:X\nDTSTART:20260925T032024Z\nRRULE:FREQ=HOURLY\nEND:VEVENT"
+  with self.assertRaisesRegex(ValueError,"unexpected live schedule content"):verify_readback("2026-09-25T03:17:24Z",live)
+ def test_nested_vevent_rejected(self):
+  live="BEGIN:VEVENT\nBEGIN:VEVENT\nDTSTART:20260925T032024Z\nEND:VEVENT\nEND:VEVENT"
+  with self.assertRaisesRegex(ValueError,"VEVENT envelope"):verify_readback("2026-09-25T03:17:24Z",live)
  def test_missing_dtstart_rejected(self):
   with self.assertRaisesRegex(ValueError,"DTSTART missing or ambiguous"):verify_readback("2026-09-25T03:17:24Z","BEGIN:VEVENT\nRRULE:FREQ=HOURLY\nEND:VEVENT")
  def test_dtstart_prefix_spoof_rejected(self):

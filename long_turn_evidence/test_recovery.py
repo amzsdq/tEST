@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 import unittest
 from recovery import decide
-R={'automation_id':'A','start':{'id':1},'end':None,'last_durable_boundary':{'id':2}};L={'automation_id':'A','enabled':True,'timing_mode':'exact_schedule','rrule':'FREQ=HOURLY'}
+R={'automation_id':'A','start':{'id':1},'start_verified':True,'end':None,'last_durable_boundary':{'id':2}};L={'automation_id':'A','enabled':True,'timing_mode':'exact_schedule','rrule':'FREQ=HOURLY'}
 class RecoveryTests(unittest.TestCase):
  def test_resume_censored(self):self.assertEqual(decide(R,L)['action'],'RESUME_CENSORED')
+ def test_unverified_start_requires_verification(self):
+  r=dict(R);r['start_verified']=False;self.assertEqual(decide(r,L)['action'],'VERIFY_START_BEFORE_RESUME')
+ def test_missing_start_verification_requires_verification(self):
+  r=dict(R);r.pop('start_verified');self.assertEqual(decide(r,L)['action'],'VERIFY_START_BEFORE_RESUME')
  def test_verified_finalized_not_resumed(self):
   r=dict(R);r.update({'end':{'id':3},'end_verified':True});self.assertEqual(decide(r,L)['action'],'DO_NOT_RESUME_FINALIZED')
  def test_unverified_end_reconstructs(self):

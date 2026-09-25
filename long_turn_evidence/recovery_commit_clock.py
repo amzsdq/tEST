@@ -15,11 +15,24 @@ def _hourly_preserved(live):
             checks.append(False)
         else:
             stripped = [line.strip() for line in schedule.splitlines() if line.strip()]
-            if not stripped or stripped[0] != "BEGIN:VEVENT" or stripped[-1] != "END:VEVENT":
+            if (not stripped or stripped[0] != "BEGIN:VEVENT" or stripped[-1] != "END:VEVENT"
+                    or stripped.count("BEGIN:VEVENT") != 1 or stripped.count("END:VEVENT") != 1):
                 checks.append(False)
                 return bool(checks) and all(checks)
-            rrules = [line.strip().removeprefix("RRULE:")
-                      for line in schedule.splitlines() if line.strip().startswith("RRULE:")]
+            dtstarts = [line for line in stripped if line.startswith("DTSTART")]
+            valid_dtstarts = [line for line in dtstarts
+                              if line.startswith("DTSTART:") or line.startswith("DTSTART;TZID=")]
+            if len(dtstarts) != 1 or len(valid_dtstarts) != 1:
+                checks.append(False)
+                return bool(checks) and all(checks)
+            allowed = [line for line in stripped
+                       if line in ("BEGIN:VEVENT", "END:VEVENT")
+                       or line.startswith("DTSTART:") or line.startswith("DTSTART;TZID=")
+                       or line.startswith("RRULE:")]
+            if len(allowed) != len(stripped):
+                checks.append(False)
+                return bool(checks) and all(checks)
+            rrules = [line.removeprefix("RRULE:") for line in stripped if line.startswith("RRULE:")]
             checks.append(len(rrules) == 1 and _is_hourly_rrule(rrules[0]))
     return bool(checks) and all(checks)
 

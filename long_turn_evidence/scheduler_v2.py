@@ -14,7 +14,17 @@ def parse_live_dtstart(value):
         raise ValueError("live DTSTART must be non-empty string")
     if "\n" not in value and not value.startswith("BEGIN:VEVENT"):
         return parse(value)
-    lines = [x.strip() for x in value.splitlines() if x.strip().startswith("DTSTART")]
+    stripped = [x.strip() for x in value.splitlines() if x.strip()]
+    if (not stripped or stripped[0] != "BEGIN:VEVENT" or stripped[-1] != "END:VEVENT"
+            or stripped.count("BEGIN:VEVENT") != 1 or stripped.count("END:VEVENT") != 1):
+        raise ValueError("live schedule must be one VEVENT envelope")
+    allowed = [x for x in stripped
+               if x in ("BEGIN:VEVENT", "END:VEVENT")
+               or x.startswith("DTSTART:") or x.startswith("DTSTART;TZID=")
+               or x.startswith("RRULE:")]
+    if len(allowed) != len(stripped):
+        raise ValueError("unexpected live schedule content")
+    lines = [x for x in stripped if x.startswith("DTSTART")]
     valid = [x for x in lines if x.startswith("DTSTART:") or x.startswith("DTSTART;TZID=")]
     if len(valid) != 1 or len(lines) != 1:
         raise ValueError("DTSTART missing or ambiguous in live schedule")

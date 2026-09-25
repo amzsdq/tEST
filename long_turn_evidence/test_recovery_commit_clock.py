@@ -5,6 +5,12 @@ SESSION={"automation_id":"A","start_commit":"start","start_verified":True,"end_c
 LIVE={"automation_id":"A","enabled":True,"timing_mode":"exact_schedule","rrule":"FREQ=HOURLY"}
 class CommitClockRecoveryTests(unittest.TestCase):
  def test_open_session_resumes(self):self.assertEqual(decide(SESSION,LIVE)["action"],"RESUME_OPEN_SESSION")
+ def test_schedule_without_dtstart_is_rejected(self):
+  live={"automation_id":"A","enabled":True,"timing_mode":"exact_schedule","schedule":"BEGIN:VEVENT\nRRULE:FREQ=HOURLY\nEND:VEVENT"};self.assertEqual(decide(SESSION,live)["action"],"RECURRENCE_DEGRADED")
+ def test_nested_vevent_is_rejected(self):
+  live={"automation_id":"A","enabled":True,"timing_mode":"exact_schedule","schedule":"BEGIN:VEVENT\nBEGIN:VEVENT\nDTSTART:20260925T120000Z\nRRULE:FREQ=HOURLY\nEND:VEVENT\nEND:VEVENT"};self.assertEqual(decide(SESSION,live)["action"],"RECURRENCE_DEGRADED")
+ def test_unexpected_schedule_content_is_rejected(self):
+  live={"automation_id":"A","enabled":True,"timing_mode":"exact_schedule","schedule":"BEGIN:VEVENT\nJUNK:X\nDTSTART:20260925T120000Z\nRRULE:FREQ=HOURLY\nEND:VEVENT"};self.assertEqual(decide(SESSION,live)["action"],"RECURRENCE_DEGRADED")
  def test_full_vevent_schedule_is_accepted(self):
   live={"automation_id":"A","enabled":True,"timing_mode":"exact_schedule","schedule":"BEGIN:VEVENT\nDTSTART:20260925T120000\nRRULE:FREQ=HOURLY\nEND:VEVENT"};self.assertEqual(decide(SESSION,live)["action"],"RESUME_OPEN_SESSION")
  def test_parameterized_rrule_is_rejected_for_canonical_liveness(self):
