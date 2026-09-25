@@ -13,4 +13,6 @@ Authority candidate blob: d6d09f0781e9a37814a8cd4b9a2f73969c7edfdd.
 
 Lineage hardening candidate blobs: lineage 14463582633e50c843bb6f78e9b074eb79365497; tests db96d77a59e8c9c483d0f62547a2eca93266b5fe.
 
+Commit-clock recurrence hardening blobs: recovery ed81dd73cb2e7fec81610caadab03fc06c901d8b; tests 45201ea86972839bdbabdd13c6ee8b7a09fbeb11. Prefix-spoof RRULE values are fail-closed.
+
 Remaining release gates are full canonical regression execution, main-branch integration/readback, and an independent >=1200 useful-work sample if qualifying work remains.
