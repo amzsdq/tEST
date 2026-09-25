@@ -1,0 +1,8 @@
+{
+  "base": "lt04-r145-final-repin2",
+  "candidate": "lt04-r146-doc-repair",
+  "candidate_ahead": 34,
+  "changed_files": 34,
+  "exact_set_changed_files": [],
+  "exact_set_unchanged": true
+}
