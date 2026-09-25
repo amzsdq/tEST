@@ -1,0 +1,16 @@
+{
+  "session":"LT04-R119-T6",
+  "candidate_branch":"lt04-canonical-r119-ready",
+  "candidate_commit":"5f3f595505177fb228feba2b1e3643c6313674ca",
+  "base_main":"4d505d164a0b7cbdae9b6872574f3c981aca38b7",
+  "ahead_by":5,
+  "behind_by":0,
+  "historical_observations_unchanged":true,
+  "admission_policy_integrated_on_candidate":true,
+  "versioning_integrated_on_candidate":true,
+  "authority_integrated_on_candidate":true,
+  "scheduler_recovery_added_on_candidate":true,
+  "main_integrated":false,
+  "verification":{"admission_exhaustive":true,"authority_940_smoke":true,"scheduler_recovery_smoke":true},
+  "remaining":["canonical main integration","full repository regression execution","canonical documentation synchronization","main readback"]
+}
