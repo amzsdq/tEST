@@ -1,16 +1,11 @@
 """Select authoritative exact evidence without rewriting historical censored observations."""
-from datetime import datetime, timezone
+from scheduler_v2 import parse_github_commit_created_at
 
 def _ts(value):
-    if not isinstance(value, str) or not value:
-        raise ValueError("EXACT_TIMESTAMP_INVALID")
     try:
-        dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
-    except ValueError as exc:
+        return parse_github_commit_created_at(value)
+    except (ValueError, TypeError) as exc:
         raise ValueError("EXACT_TIMESTAMP_INVALID") from exc
-    if dt.tzinfo is None:
-        raise ValueError("EXACT_TIMESTAMP_NOT_TIMEZONE_AWARE")
-    return dt.astimezone(timezone.utc)
 
 def _marker(value, label):
     if not isinstance(value, dict):
@@ -42,23 +37,21 @@ def select_authority(observation, exact_records):
             raise ValueError("EXACT_RECORD_INVALID")
         if set(exact) != {"evidence_id","invocation_id","automation_id","source","supersedes_observation_invocation_id","start","end"}:
             raise ValueError("EXACT_RECORD_FIELDS_INVALID")
+        evidence_id = _identity(exact.get("evidence_id"), "EXACT_EVIDENCE_ID_INVALID")
         supersedes = _identity(exact.get("supersedes_observation_invocation_id"), "EXACT_SUPERSEDES_INVOCATION_ID_INVALID")
         exact_invocation = _identity(exact.get("invocation_id"), "EXACT_INVOCATION_ID_INVALID")
         exact_automation = _identity(exact.get("automation_id"), "EXACT_AUTOMATION_ID_INVALID")
+        if exact.get("source") != "raw_github_start_end":
+            raise ValueError("EXACT_SOURCE_INVALID")
+        start_marker = _marker(exact.get("start"), "START")
+        end_marker = _marker(exact.get("end"), "END")
         if supersedes != observation_invocation: continue
         if exact_invocation != observation_invocation: continue
-        evidence_id = exact.get("evidence_id")
-        if not isinstance(evidence_id, str) or not evidence_id.strip():
-            raise ValueError("EXACT_EVIDENCE_ID_INVALID")
         if evidence_id in seen_ids:
             raise ValueError("DUPLICATE_EXACT_EVIDENCE_ID")
         seen_ids.add(evidence_id)
         if exact_automation != observation_automation:
             raise ValueError("EXACT_AUTOMATION_MISMATCH")
-        if exact.get("source") != "raw_github_start_end":
-            continue
-        start_marker = _marker(exact.get("start"), "START")
-        end_marker = _marker(exact.get("end"), "END")
         if start_marker != observation.get("start"):
             raise ValueError("EXACT_START_MISMATCH")
         start = _ts(start_marker["created_at"]); end = _ts(end_marker["created_at"])

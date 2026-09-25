@@ -41,4 +41,23 @@ class AuthorityTests(unittest.TestCase):
   with self.assertRaisesRegex(ValueError,"EXACT_RECORD_FIELDS_INVALID"):select_authority(LT03,[dict(EXACT[0],extra="x")])
  def test_nonpositive_target_fails_closed(self):
   with self.assertRaisesRegex(ValueError,"AUTHORITY_TARGET_INVALID"):select_authority(dict(LT03,target_seconds=0),EXACT)
+
+ def test_noncanonical_raw_marker_timestamp_fails_closed(self):
+  for value in ("2026-09-24T15:32:04+00:00","2026-09-24T15:32:04.000Z","2026-W39-4T15:32:04Z"):
+   bad=dict(EXACT[0]);bad["end"]={"id":bad["end"]["id"],"created_at":value}
+   with self.subTest(value=value):
+    with self.assertRaisesRegex(ValueError,"EXACT_TIMESTAMP_INVALID"):select_authority(LT03,[bad])
+ def test_nonraw_source_fails_closed(self):
+  with self.assertRaisesRegex(ValueError,"EXACT_SOURCE_INVALID"):select_authority(LT03,[dict(EXACT[0],source="other")])
+ def test_irrelevant_schema_invalid_records_fail_closed(self):
+  base=dict(EXACT[0],supersedes_observation_invocation_id="OTHER",invocation_id="OTHER")
+  cases=[
+   (dict(base,source="other"),"EXACT_SOURCE_INVALID"),
+   (dict(base,evidence_id="   "),"EXACT_EVIDENCE_ID_INVALID"),
+   (dict(base,start={"id":1,"created_at":"2026-09-24T15:16:24Z","extra":"x"}),"EXACT_START_FIELDS_INVALID"),
+   (dict(base,end={"id":2,"created_at":"2026-09-24T15:32:04+00:00"}),"EXACT_TIMESTAMP_INVALID"),
+  ]
+  for bad,msg in cases:
+   with self.subTest(msg=msg):
+    with self.assertRaisesRegex(ValueError,msg):select_authority(LT03,[bad])
 if __name__=="__main__":unittest.main(verbosity=2)

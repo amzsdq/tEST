@@ -59,4 +59,13 @@ class RecoveryTests(unittest.TestCase):
   r=dict(R);r.update({'end':{'id':3,'created_at':'2026-09-24T23:59:59Z'},'end_verified':True});self.assertEqual(decide(r,L)['action'],'RECONSTRUCT_BEFORE_RESUME')
  def test_no_boundary_reconstructs(self):
   r=dict(R);r['last_durable_boundary']=None;self.assertEqual(decide(r,L)['action'],'RECONSTRUCT_BEFORE_RESUME')
+
+ def test_unknown_marker_fields_reconstruct_or_invalidate(self):
+  r=dict(R);r['start']=dict(R['start'],extra='x');self.assertEqual(decide(r,L)['action'],'INVALID_SESSION')
+  r=dict(R);r['last_durable_boundary']=dict(R['last_durable_boundary'],extra='x');self.assertEqual(decide(r,L)['action'],'RECONSTRUCT_BEFORE_RESUME')
+  r=dict(R);r['end']={'id':3,'created_at':'2026-09-25T00:02:00Z','extra':'x'};self.assertEqual(decide(r,L)['action'],'RECONSTRUCT_BEFORE_RESUME')
+ def test_noncanonical_raw_marker_timestamps_fail_closed(self):
+  for value in ('2026-09-25T00:00:00+00:00','2026-09-25T00:00:00.000Z','2026-W39-5T00:00:00Z'):
+   with self.subTest(value=value):
+    r=dict(R);r['start']={'id':1,'created_at':value};self.assertEqual(decide(r,L)['action'],'INVALID_SESSION')
 if __name__=='__main__':unittest.main(verbosity=2)
