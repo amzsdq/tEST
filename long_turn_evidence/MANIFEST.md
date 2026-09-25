@@ -17,7 +17,7 @@ Lineage hardening candidate blobs: lineage 14463582633e50c843bb6f78e9b074eb79365
 Commit-clock recurrence hardening release-current blobs: recovery 6bd21ca7c32063d897e5829165fad5757f8afdf4; tests 70fd5b1e48849a1057a16b0b51de0f29f67edb1f. Verified START, exact_schedule, enabled state, and exactly one unbounded FREQ=HOURLY recurrence are required; COUNT/UNTIL/INTERVAL, prefix spoofing, conflicting representations, and malformed VEVENT readback fail closed.
 
 Scheduler-v2 DTSTART hardening blobs: scheduler 3e6eb460435cb79ccbe5b3fa1315fa3eed074807; tests 9fd07d3ec6ee913e1893963ea1bc2cd14fa0fbf5. Duplicate/spoofed DTSTART is fail-closed.
-Legacy recovery release-current blobs: recovery 17267353e56d7ad5b417c837b28cb3bee389de88; tests da230029bbb98eb86d28243ac05ae6427cefdf7c.
-Exact canonical runner blob: e1f6cee2b42951333797d27cd7b8e12436133b19. Exact input pin manifest blob: 8d907b20c85b09aed297d46c4848cae6fb440da7; fresh R140 recursive-tree audit confirms 29/29 identities.
+Legacy recovery release-current blobs: recovery 5fc2a07448b97c076bb6f8a35abb4a38b773d34e; tests 5ec2a9ac28ea41ce2b06f125251b7a26c61c5652.
+Exact canonical runner blob: e1f6cee2b42951333797d27cd7b8e12436133b19. Exact input pin manifest blob: 6541921172224892078891e70c8d25fea590ebd9; fresh R140 recursive-tree audit confirms 29/29 identities.
 
 Remaining release gates are full canonical regression execution and main-branch integration/readback. The independent >=1200 useful-work sample gate is PASS via LT04-R126-T9.
