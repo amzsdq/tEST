@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 import unittest
 from recovery_commit_clock import decide
-SESSION={"automation_id":"A","start_commit":"start","end_commit":None}
+SESSION={"automation_id":"A","start_commit":"start","start_verified":True,"end_commit":None}
 LIVE={"automation_id":"A","enabled":True,"rrule":"FREQ=HOURLY"}
 class CommitClockRecoveryTests(unittest.TestCase):
  def test_open_session_resumes(self):self.assertEqual(decide(SESSION,LIVE)["action"],"RESUME_OPEN_SESSION")
  def test_full_vevent_schedule_is_accepted(self):
   live={"automation_id":"A","enabled":True,"schedule":"BEGIN:VEVENT\nDTSTART:20260925T120000\nRRULE:FREQ=HOURLY\nEND:VEVENT"}
   self.assertEqual(decide(SESSION,live)["action"],"RESUME_OPEN_SESSION")
+ def test_unverified_start_requires_verification(self):
+  self.assertEqual(decide(dict(SESSION,start_verified=False),LIVE)["action"],"VERIFY_START_BEFORE_RESUME")
  def test_verified_end_is_final(self):self.assertEqual(decide(dict(SESSION,end_commit="end",end_verified=True),LIVE)["action"],"DO_NOT_RESUME_FINALIZED")
  def test_unverified_end_requires_verification(self):self.assertEqual(decide(dict(SESSION,end_commit="end"),LIVE)["action"],"VERIFY_END_BEFORE_RESUME")
  def test_missing_start_is_invalid(self):self.assertEqual(decide(dict(SESSION,start_commit=None),LIVE)["action"],"INVALID_SESSION")

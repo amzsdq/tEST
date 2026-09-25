@@ -1,8 +1,7 @@
 """Cold recovery for commit-backed clock sessions."""
 
 def _hourly_preserved(live):
-    rrule = live.get("rrule")
-    if rrule == "FREQ=HOURLY":
+    if live.get("rrule") == "FREQ=HOURLY":
         return True
     schedule = live.get("schedule")
     return isinstance(schedule, str) and "RRULE:FREQ=HOURLY" in schedule.splitlines()
@@ -10,6 +9,8 @@ def _hourly_preserved(live):
 def decide(session, live):
     if not session.get("start_commit"):
         return {"action":"INVALID_SESSION","reason":"missing START commit"}
+    if session.get("start_verified") is not True:
+        return {"action":"VERIFY_START_BEFORE_RESUME","reason":"START commit exists but readback is not verified"}
     if session.get("end_commit"):
         if session.get("end_verified") is True:
             return {"action":"DO_NOT_RESUME_FINALIZED","reason":"verified END commit already present"}
