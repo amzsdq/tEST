@@ -20,4 +20,9 @@ class LineageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"INVALID_START_ID"): resolve_end(1,2,[dict(VALID,start_id=True)])
     def test_naive_timestamp_fails_closed(self):
         with self.assertRaisesRegex(ValueError,"INVALID_END_TIMESTAMP"): resolve_end(1,2,[dict(VALID,created_at="2026-09-24T00:01:00")])
+
+    def test_noncanonical_end_timestamps_fail_closed(self):
+        for value in ("2026-09-24T00:01:00+00:00","2026-09-24T00:01:00.000Z","2026-W39-4T00:01:00Z","2026-09-24 00:01:00Z"):
+            with self.subTest(value=value):
+                with self.assertRaisesRegex(ValueError,"INVALID_END_TIMESTAMP"): resolve_end(1,2,[dict(VALID,created_at=value)])
 if __name__=="__main__": unittest.main(verbosity=2)
