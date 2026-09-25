@@ -8,7 +8,7 @@
     "test_lineage.py": "db96d77a59e8c9c483d0f62547a2eca93266b5fe",
     "test_hardening.py": "355ca1c5c134c32e65ff67bf339c8f910f3088be",
     "test_versioning.py": "e13399b4576e8f9f15653fb03b61558de39ed071",
-    "test_schema_contract.py": "44e6c92bdb1069369db1314da8cbc71b4523a1b7",
+    "test_schema_contract.py": "63994d4bb2c18d974dc5acba6956b8e54ecea997",
     "test_authority.py": "c107fc6ffcd7cec5cdb9e738206672809d10d935",
     "test_authority_fallback.py": "61775044820abbb2c1cae949caa240ae7def7bbe",
     "validate_observations.py": "0d75b3bfa1c7cef70e2ec80dda1c18ef743df991",
@@ -27,11 +27,11 @@
     "recovery.py": "5fc2a07448b97c076bb6f8a35abb4a38b773d34e",
     "recovery_commit_clock.py": "6bd21ca7c32063d897e5829165fad5757f8afdf4",
     "fixtures.json": "bc269b52a866b377e52813edb9395f1a7225d881",
-    "schema.json": "f004e260ad08408c3e2596be84a7ddd3703edfba",
-    "exact_evidence.schema.json": "651c995eb34c1b9e8ef0bd937a418e62b3c71d30",
+    "schema.json": "2d6be7cb9bd5ae810b27178ee1f11927eeee49aa",
+    "exact_evidence.schema.json": "44715e7c541eacb340320075a4e21287213909ef",
     "observations.json": "19d020b7b5918211124f0d6ada5895318cf12854",
     "exact_evidence.json": "2e2f24d82adea1ca656dc90f61825a0927fb6847"
   },
-  "pinned_source_branch": "lt04-r140-static-closure-final",
-  "pinned_source_commit": "ca117348cf38ce4decdd00fb40b896a3c2de6bbd"
+  "pinned_source_branch": "lt04-r143-schema-parity-tests",
+  "pinned_source_commit": "62db9194eca7610de76a9af784143eef5c7b0322"
 }
