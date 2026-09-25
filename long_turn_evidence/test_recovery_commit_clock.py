@@ -44,6 +44,15 @@ class CommitClockRecoveryTests(unittest.TestCase):
  def test_verified_end_is_final(self):self.assertEqual(decide(dict(SESSION,end_commit="end",end_verified=True),LIVE)["action"],"DO_NOT_RESUME_FINALIZED")
  def test_unverified_end_requires_verification(self):self.assertEqual(decide(dict(SESSION,end_commit="end"),LIVE)["action"],"VERIFY_END_BEFORE_RESUME")
  def test_missing_start_is_invalid(self):self.assertEqual(decide(dict(SESSION,start_commit=None),LIVE)["action"],"INVALID_SESSION")
+ def test_malformed_start_commit_is_invalid(self):
+  for value in ({"sha":"x"}, [], True, 7, "   "):
+   with self.subTest(value=value):self.assertEqual(decide(dict(SESSION,start_commit=value),LIVE)["action"],"INVALID_SESSION")
+ def test_malformed_end_commit_requires_verification(self):
+  for value in ({"sha":"x"}, [], True, 7, "   "):
+   with self.subTest(value=value):self.assertEqual(decide(dict(SESSION,end_commit=value,end_verified=True),LIVE)["action"],"VERIFY_END_BEFORE_RESUME")
+ def test_nonmapping_containers_are_invalid(self):
+  self.assertEqual(decide([],LIVE)["action"],"INVALID_SESSION")
+  self.assertEqual(decide(SESSION,[])["action"],"INVALID_SESSION")
  def test_identity_mismatch_blocks(self):self.assertEqual(decide(SESSION,dict(LIVE,automation_id="B"))["action"],"AUTHORITY_BLOCK")
  def test_nonhourly_schedule_degrades(self):
   live={"automation_id":"A","enabled":True,"timing_mode":"exact_schedule","schedule":"BEGIN:VEVENT\nRRULE:FREQ=DAILY\nEND:VEVENT"};self.assertEqual(decide(SESSION,live)["action"],"RECURRENCE_DEGRADED")
