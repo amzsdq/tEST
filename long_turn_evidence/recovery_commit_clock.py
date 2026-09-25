@@ -2,8 +2,6 @@
 from scheduler_v2 import parse_live_dtstart
 
 def _is_hourly_rrule(value):
-    # Canonical relay requires an unbounded one-hour recurrence. Parameters such
-    # as COUNT, UNTIL, INTERVAL, or BY* can truncate or alter liveness.
     return value == "FREQ=HOURLY"
 
 def _hourly_preserved(live):
@@ -42,12 +40,20 @@ def _hourly_preserved(live):
             checks.append(len(rrules) == 1 and _is_hourly_rrule(rrules[0]))
     return bool(checks) and all(checks)
 
+def _commit_id(value):
+    return isinstance(value,str) and bool(value.strip())
+
 def decide(session, live):
-    if not session.get("start_commit"):
-        return {"action":"INVALID_SESSION","reason":"missing START commit"}
+    if not isinstance(session,dict) or not isinstance(live,dict):
+        return {"action":"INVALID_SESSION","reason":"session/live must be objects"}
+    if not _commit_id(session.get("start_commit")):
+        return {"action":"INVALID_SESSION","reason":"missing or malformed START commit"}
     if session.get("start_verified") is not True:
         return {"action":"VERIFY_START_BEFORE_RESUME","reason":"START commit exists but readback is not verified"}
-    if session.get("end_commit"):
+    end_commit=session.get("end_commit")
+    if end_commit is not None:
+        if not _commit_id(end_commit):
+            return {"action":"VERIFY_END_BEFORE_RESUME","reason":"END commit is malformed"}
         if session.get("end_verified") is True:
             return {"action":"DO_NOT_RESUME_FINALIZED","reason":"verified END commit already present"}
         return {"action":"VERIFY_END_BEFORE_RESUME","reason":"END commit exists but readback is not verified"}

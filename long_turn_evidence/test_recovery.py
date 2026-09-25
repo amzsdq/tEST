@@ -8,8 +8,18 @@ class RecoveryTests(unittest.TestCase):
   r=dict(R);r['start_verified']=False;self.assertEqual(decide(r,L)['action'],'VERIFY_START_BEFORE_RESUME')
  def test_missing_start_verification_requires_verification(self):
   r=dict(R);r.pop('start_verified');self.assertEqual(decide(r,L)['action'],'VERIFY_START_BEFORE_RESUME')
+ def test_missing_start_object_is_invalid(self):
+  r=dict(R);r.pop('start');self.assertEqual(decide(r,L)['action'],'INVALID_SESSION')
+ def test_malformed_start_object_is_invalid(self):
+  r=dict(R);r['start']='start';self.assertEqual(decide(r,L)['action'],'INVALID_SESSION')
+ def test_malformed_boundary_reconstructs(self):
+  r=dict(R);r['last_durable_boundary']='boundary';self.assertEqual(decide(r,L)['action'],'RECONSTRUCT_BEFORE_RESUME')
+ def test_nonmapping_record_is_invalid(self):self.assertEqual(decide([],L)['action'],'INVALID_SESSION')
+ def test_nonmapping_live_is_invalid(self):self.assertEqual(decide(R,[])['action'],'INVALID_SESSION')
  def test_verified_finalized_not_resumed(self):
   r=dict(R);r.update({'end':{'id':3},'end_verified':True});self.assertEqual(decide(r,L)['action'],'DO_NOT_RESUME_FINALIZED')
+ def test_malformed_end_reconstructs(self):
+  r=dict(R);r['end']='end';r['end_verified']=True;self.assertEqual(decide(r,L)['action'],'RECONSTRUCT_BEFORE_RESUME')
  def test_unverified_end_reconstructs(self):
   r=dict(R);r['end']={'id':3};self.assertEqual(decide(r,L)['action'],'RECONSTRUCT_BEFORE_RESUME')
  def test_identity_mismatch(self):
