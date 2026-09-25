@@ -32,6 +32,8 @@ class AuthorityTests(unittest.TestCase):
    for key in ('supersedes_observation_invocation_id','invocation_id','automation_id'):
     with self.subTest(side=key,value=value):
      with self.assertRaises(ValueError):select_authority(LT03,[dict(EXACT[0],**{key:value})])
+ def test_whitespace_evidence_id_fails_closed(self):
+  with self.assertRaisesRegex(ValueError,"EXACT_EVIDENCE_ID_INVALID"):select_authority(LT03,[dict(EXACT[0],evidence_id="   ")])
  def test_nonpositive_target_fails_closed(self):
   with self.assertRaisesRegex(ValueError,"AUTHORITY_TARGET_INVALID"):select_authority(dict(LT03,target_seconds=0),EXACT)
 if __name__=="__main__":unittest.main(verbosity=2)
