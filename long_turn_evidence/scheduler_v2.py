@@ -47,3 +47,13 @@ def verify_readback(reference_created_at, live_schedule_or_dtstart, lead_seconds
     observed = parse_live_dtstart(live_schedule_or_dtstart)
     return {"intended_utc":intended.isoformat(),"observed_utc":observed.isoformat(),
             "exact_match":intended == observed,"delta_seconds":int((observed-intended).total_seconds())}
+
+
+def parse_github_commit_created_at(value):
+    """Parse canonical GitHub commit created_at: second-resolution UTC Z only."""
+    if not isinstance(value, str) or len(value) != 20 or value[4] != "-" or value[7] != "-" or value[10] != "T" or value[13] != ":" or value[16] != ":" or value[19] != "Z":
+        raise ValueError("GitHub commit created_at must be canonical UTC Z timestamp")
+    try:
+        return datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+    except ValueError as exc:
+        raise ValueError("GitHub commit created_at must be canonical UTC Z timestamp") from exc
