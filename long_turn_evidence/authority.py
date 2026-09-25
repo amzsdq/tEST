@@ -44,7 +44,7 @@ def select_authority(observation, exact_records):
         if supersedes != observation_invocation: continue
         if exact_invocation != observation_invocation: continue
         evidence_id = exact.get("evidence_id")
-        if not isinstance(evidence_id, str) or not evidence_id:
+        if not isinstance(evidence_id, str) or not evidence_id.strip():
             raise ValueError("EXACT_EVIDENCE_ID_INVALID")
         if evidence_id in seen_ids:
             raise ValueError("DUPLICATE_EXACT_EVIDENCE_ID")
