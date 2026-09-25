@@ -1,8 +1,0 @@
-{
-  "manifest_duplicate_cleanup": "LANDED",
-  "manifest_duplicate_clean_blob": "a422b47546065d502bd379b5e84bf8d7292aab43",
-  "final_identity_rebind": "BLOCKED_BEFORE_APPLICATION",
-  "acceptance_rebind": "BLOCKED_BEFORE_APPLICATION",
-  "manifest_corrected": false,
-  "manifest_format_clean": true
-}
