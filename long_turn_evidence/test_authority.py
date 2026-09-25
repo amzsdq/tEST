@@ -21,4 +21,8 @@ class AuthorityTests(unittest.TestCase):
  def test_bool_end_id_fails_closed(self):
   bad=[dict(EXACT[0],end={"id":True,"created_at":"2026-09-24T15:32:04Z"})]
   with self.assertRaisesRegex(ValueError,"EXACT_END_ID_INVALID"):select_authority(LT03,bad)
+ def test_bool_target_fails_closed(self):
+  with self.assertRaisesRegex(ValueError,"AUTHORITY_TARGET_INVALID"):select_authority(dict(LT03,target_seconds=True),EXACT)
+ def test_nonpositive_target_fails_closed(self):
+  with self.assertRaisesRegex(ValueError,"AUTHORITY_TARGET_INVALID"):select_authority(dict(LT03,target_seconds=0),EXACT)
 if __name__=="__main__":unittest.main(verbosity=2)

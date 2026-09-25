@@ -24,6 +24,9 @@ def _marker(value, label):
 def select_authority(observation, exact_records):
     if not isinstance(observation, dict) or not isinstance(exact_records, list):
         raise ValueError("AUTHORITY_INPUT_INVALID")
+    target = observation.get("target_seconds", 900)
+    if isinstance(target, bool) or not isinstance(target, int) or target <= 0:
+        raise ValueError("AUTHORITY_TARGET_INVALID")
     matches = []
     seen_ids = set()
     for exact in exact_records:
@@ -56,6 +59,6 @@ def select_authority(observation, exact_records):
     if len(matches) == 1:
         exact, seconds = matches[0]
         return {"kind":"exact","evidence_id":exact["evidence_id"],"exact_duration_seconds":seconds,
-                "target_crossed":seconds >= observation.get("target_seconds",900)}
+                "target_crossed":seconds >= target}
     return {"kind":"historical_record","invocation_id":observation["invocation_id"],
             "historical_end_present":observation.get("end") is not None}
