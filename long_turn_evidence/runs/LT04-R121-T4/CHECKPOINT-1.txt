@@ -1,0 +1,3 @@
+session=LT04-R121-T4
+checkpoint=1
+findings=main unchanged; candidate 1 ahead 0 behind; historical observations unchanged; manifest stale SHA confirmed; fresh dynamic core execution PASS exhaustive=20004 randomized=100000 authority=940 scheduler/recovery PASS
