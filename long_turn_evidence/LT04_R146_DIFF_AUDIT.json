@@ -1,0 +1,9 @@
+{
+  "base": "lt04-r145-final-repin2",
+  "candidate": "lt04-r146-doc-repair",
+  "ahead": 11,
+  "behind": 0,
+  "exact_source_or_test_changes": [],
+  "pin_applicability": "R145 29/29 remains applicable to exact set",
+  "observations_blob": "19d020b7b5918211124f0d6ada5895318cf12854"
+}
