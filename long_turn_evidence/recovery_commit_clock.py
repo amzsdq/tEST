@@ -1,10 +1,16 @@
 """Cold recovery for commit-backed clock sessions."""
 
+def _is_hourly_rrule(value):
+    return isinstance(value, str) and (value == "FREQ=HOURLY" or value.startswith("FREQ=HOURLY;"))
+
 def _hourly_preserved(live):
-    if live.get("rrule") == "FREQ=HOURLY" or (isinstance(live.get("rrule"), str) and live["rrule"].startswith("FREQ=HOURLY;")):
+    if _is_hourly_rrule(live.get("rrule")):
         return True
     schedule = live.get("schedule")
-    return isinstance(schedule, str) and any(line.strip().startswith("RRULE:FREQ=HOURLY") for line in schedule.splitlines())
+    if not isinstance(schedule, str):
+        return False
+    return any(_is_hourly_rrule(line.strip().removeprefix("RRULE:"))
+               for line in schedule.splitlines() if line.strip().startswith("RRULE:"))
 
 def decide(session, live):
     if not session.get("start_commit"):

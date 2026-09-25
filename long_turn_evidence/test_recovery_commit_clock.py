@@ -9,6 +9,9 @@ class CommitClockRecoveryTests(unittest.TestCase):
   live={"automation_id":"A","enabled":True,"schedule":"BEGIN:VEVENT\nDTSTART:20260925T120000\nRRULE:FREQ=HOURLY\nEND:VEVENT"};self.assertEqual(decide(SESSION,live)["action"],"RESUME_OPEN_SESSION")
  def test_hourly_rrule_with_parameters_is_accepted(self):
   live={"automation_id":"A","enabled":True,"schedule":"BEGIN:VEVENT\nRRULE:FREQ=HOURLY;COUNT=3\nEND:VEVENT"};self.assertEqual(decide(SESSION,live)["action"],"RESUME_OPEN_SESSION")
+ def test_hourly_prefix_spoof_is_rejected(self):
+  for schedule in ("BEGIN:VEVENT\nRRULE:FREQ=HOURLYEVIL\nEND:VEVENT","BEGIN:VEVENT\nRRULE:FREQ=HOURLYTHING;COUNT=3\nEND:VEVENT"):
+   with self.subTest(schedule=schedule):self.assertEqual(decide(SESSION,{"automation_id":"A","enabled":True,"schedule":schedule})["action"],"RECURRENCE_DEGRADED")
  def test_unverified_start_requires_verification(self):self.assertEqual(decide(dict(SESSION,start_verified=False),LIVE)["action"],"VERIFY_START_BEFORE_RESUME")
  def test_verified_end_is_final(self):self.assertEqual(decide(dict(SESSION,end_commit="end",end_verified=True),LIVE)["action"],"DO_NOT_RESUME_FINALIZED")
  def test_unverified_end_requires_verification(self):self.assertEqual(decide(dict(SESSION,end_commit="end"),LIVE)["action"],"VERIFY_END_BEFORE_RESUME")
