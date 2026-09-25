@@ -1,0 +1,6 @@
+[WORK_MARKER]
+session=LT04-R133-T16
+phase=END
+status=CONTINUE
+candidate=lt04-r133-fail-closed-hardening
+full_runner=PENDING
