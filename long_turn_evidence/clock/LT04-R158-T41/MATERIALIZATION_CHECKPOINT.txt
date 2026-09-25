@@ -1,0 +1,1 @@
+R158 materialization checkpoint: fresh local Git-blob SHA proof 29/29 after R157 rematerialization; schema.json wrapper display newline independently normalized against filesystem size and pinned blob.
