@@ -1,16 +1,35 @@
 {
   "session":"LT04-R119-T6",
-  "candidate_branch":"lt04-canonical-r119-ready",
-  "candidate_commit":"5f3f595505177fb228feba2b1e3643c6313674ca",
+  "candidate_branch":"lt04-canonical-r119-final3",
+  "candidate_commit":"3eee261cb38654db7b651bbadee076debac84b9b",
   "base_main":"4d505d164a0b7cbdae9b6872574f3c981aca38b7",
-  "ahead_by":5,
-  "behind_by":0,
-  "historical_observations_unchanged":true,
-  "admission_policy_integrated_on_candidate":true,
-  "versioning_integrated_on_candidate":true,
-  "authority_integrated_on_candidate":true,
-  "scheduler_recovery_added_on_candidate":true,
+  "historical_observations_sha":"19d020b7b5918211124f0d6ada5895318cf12854",
   "main_integrated":false,
-  "verification":{"admission_exhaustive":true,"authority_940_smoke":true,"scheduler_recovery_smoke":true},
-  "remaining":["canonical main integration","full repository regression execution","canonical documentation synchronization","main readback"]
+  "candidate_features":[
+    "stretch admission policy",
+    "evidence v1/v2 normalization",
+    "separate exact evidence authority",
+    "canonical observation authority selection",
+    "exact-evidence schema",
+    "VEVENT-aware scheduler readback",
+    "verified-START cold recovery",
+    "canonical regression runner",
+    "synchronized migration documentation"
+  ],
+  "verified_smokes":[
+    "admission exhaustive elapsed 0..5000 x gates",
+    "admission 100000 randomized target/stretch cases",
+    "LT03 exact authority 940 seconds",
+    "malformed authority marker fail-closed checks",
+    "representative legacy/v2 validator compatibility",
+    "schema parse/contract",
+    "VEVENT scheduler parsing",
+    "scheduler/recovery state smoke"
+  ],
+  "remaining_release_gates":[
+    "execute full canonical regression runner in repository-capable Python environment",
+    "integrate candidate to main through a permitted canonical write path",
+    "read back main identities",
+    "close independent >=1200-second useful-work sample"
+  ]
 }
