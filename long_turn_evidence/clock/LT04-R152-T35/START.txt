@@ -1,4 +1,0 @@
-session_id=LT04-R152-T35
-kind=START
-clock_source=GITHUB_COMMIT_CREATED_AT
-parent_session=LT04-R151-T34
