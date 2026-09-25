@@ -1,0 +1,1 @@
+{"staged_runner":"run_staged_checks.py","test_modules":6,"declared_test_methods":19,"manual_smoke_checks":["admission-fixed-matrix","admission-10000-generated","authority-1000-generated","historical-observation-integration","clock-readback-equality"],"canonical_main_integration_complete":false}
