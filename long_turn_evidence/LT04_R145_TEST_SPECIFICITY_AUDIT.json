@@ -1,8 +1,0 @@
-{
-  "session_id": "LT04-R145-T28",
-  "status": "PARTIAL",
-  "fixed": ["hourly_prefix_spoof now includes valid DTSTART", "multiple_rrule_lines now includes valid DTSTART"],
-  "remaining": ["conflicting_rrule_representations fixture lacks DTSTART", "nonhourly_schedule fixture lacks DTSTART"],
-  "impact": "test-specificity only; source remains fail-closed",
-  "full_runner": "PENDING"
-}
