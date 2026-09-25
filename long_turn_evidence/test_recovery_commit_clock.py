@@ -18,6 +18,9 @@ class CommitClockRecoveryTests(unittest.TestCase):
  def test_duplicate_nonfreq_key_is_rejected(self):
   rrule="FREQ=HOURLY;COUNT=3;COUNT=4"
   self.assertEqual(decide(SESSION,{"automation_id":"A","enabled":True,"rrule":rrule})["action"],"RECURRENCE_DEGRADED")
+ def test_multiple_rrule_lines_are_rejected(self):
+  schedule="BEGIN:VEVENT\nRRULE:FREQ=HOURLY\nRRULE:FREQ=DAILY\nEND:VEVENT"
+  self.assertEqual(decide(SESSION,{"automation_id":"A","enabled":True,"schedule":schedule})["action"],"RECURRENCE_DEGRADED")
  def test_unverified_start_requires_verification(self):self.assertEqual(decide(dict(SESSION,start_verified=False),LIVE)["action"],"VERIFY_START_BEFORE_RESUME")
  def test_verified_end_is_final(self):self.assertEqual(decide(dict(SESSION,end_commit="end",end_verified=True),LIVE)["action"],"DO_NOT_RESUME_FINALIZED")
  def test_unverified_end_requires_verification(self):self.assertEqual(decide(dict(SESSION,end_commit="end"),LIVE)["action"],"VERIFY_END_BEFORE_RESUME")

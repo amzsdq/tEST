@@ -24,8 +24,9 @@ def _hourly_preserved(live):
     schedule = live.get("schedule")
     if not isinstance(schedule, str):
         return False
-    return any(_is_hourly_rrule(line.strip().removeprefix("RRULE:"))
-               for line in schedule.splitlines() if line.strip().startswith("RRULE:"))
+    rrules = [line.strip().removeprefix("RRULE:")
+              for line in schedule.splitlines() if line.strip().startswith("RRULE:")]
+    return len(rrules) == 1 and _is_hourly_rrule(rrules[0])
 
 def decide(session, live):
     if not session.get("start_commit"):
