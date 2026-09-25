@@ -15,4 +15,7 @@ Lineage hardening candidate blobs: lineage 14463582633e50c843bb6f78e9b074eb79365
 
 Commit-clock recurrence hardening blobs: recovery ed81dd73cb2e7fec81610caadab03fc06c901d8b; tests 45201ea86972839bdbabdd13c6ee8b7a09fbeb11. Prefix-spoof RRULE values are fail-closed.
 
+Scheduler-v2 DTSTART hardening blobs: scheduler f876c48a9e4f1ad587e5cff4f07eae4e8c54b6a7; tests 8d3291704bc0373c14bc89a41efcebb9690cf88b. Duplicate/spoofed DTSTART is fail-closed.
+Commit-clock exact RRULE parser blobs: recovery 1475705f2a21b3d0c986c37df7cfeb71d620e3a0; tests cef6ef5bffb7d448c42a8e9af175e39c375e05b5. Duplicate/conflicting FREQ is fail-closed.
+
 Remaining release gates are full canonical regression execution, main-branch integration/readback, and an independent >=1200 useful-work sample if qualifying work remains.
