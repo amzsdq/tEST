@@ -1,0 +1,21 @@
+{
+  "session": "LT04-R137-T20",
+  "candidate_branch": "lt04-r137-doc-rebuild",
+  "gates": {
+    "stretch_1200": "PASS",
+    "manifest_current": "PASS",
+    "acceptance_manifest_gate_current": "PASS",
+    "pin_audit_29_of_29": "PASS",
+    "exact_materialization": "PASS_LAST_VERIFIED_NO_EXACT_SOURCE_CHANGES_SINCE",
+    "full_runner": "PENDING",
+    "main_integration": "PENDING"
+  },
+  "manifest_blob": "127184f570cf9f1ce23ce2096db42dd4776e1fee",
+  "acceptance_blob": "208c89123d6d57032a3be1b395d2f04e646de447",
+  "pin_blob": "877906659c1f47aa02f0c11e592f04beed1dfe4d",
+  "observations_blob": "19d020b7b5918211124f0d6ada5895318cf12854",
+  "known_nonblocking_doc_gap": "README stale Python-absence sentence; correction safety-blocked",
+  "known_static_hardening_findings": "LT04_R137_STATIC_REVIEW.json",
+  "promotion_allowed": false,
+  "promotion_blocker": "unchanged exact run_canonical_checks.py has not executed with rc=0 and LT04_CANONICAL_CHECKS_PASS"
+}
