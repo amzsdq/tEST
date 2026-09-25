@@ -1,0 +1,1 @@
+LT04 T6 evidence branch. Source writes to main remained blocked; this branch preserves clock evidence and audit notes.
