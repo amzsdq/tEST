@@ -1,8 +1,0 @@
-{
-  "start_created_at": "2026-09-25T07:57:35Z",
-  "latest_checkpoint_created_at": "2026-09-25T08:02:53Z",
-  "elapsed_seconds": 318,
-  "minimum_seconds": 600,
-  "eligible_to_end": false,
-  "action": "CONTINUE_USEFUL_WORK"
-}
