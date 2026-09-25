@@ -1,6 +1,6 @@
 {
-  "candidate_branch": "lt04-r126-hardened-v13",
-  "candidate_commit": "2019e9021c5e19b0a217815d1ba1a08e3152335b",
+  "candidate_branch": "lt04-r126-hardened-v18",
+  "candidate_commit": "692903c2e777ee8cc537d50da962ecd61e1967ef",
   "runner": "long_turn_evidence/run_canonical_checks.py",
   "pass_sentinel": "LT04_CANONICAL_CHECKS_PASS",
   "files": {
@@ -17,7 +17,7 @@
     "test_scheduler.py": "398d31b9fd778c108d231ef116029ca605778330",
     "test_scheduler_v2.py": "8d3291704bc0373c14bc89a41efcebb9690cf88b",
     "test_recovery.py": "aba212192317706670c42ac24c59b24493d618df",
-    "test_recovery_commit_clock.py": "5bebf3814416f834c12e7d1d9c8d789e019945c3",
+    "test_recovery_commit_clock.py": "83c5a3b45a35aa70ee18f1e335dbfcc464f4dc9a",
     "validator.py": "ddb4fce0a4eba78c3f0d4af3a676cc87c0ee47b9",
     "report.py": "15895ec4a2b86e9e6c7680323d6ecf419c1faaec",
     "admission.py": "54e6e7eb1a08ed9ba3ef8e84a1f1797bba773146",
@@ -27,7 +27,7 @@
     "scheduler.py": "c879d9506ce710171113ea7225f3690d6264a3d5",
     "scheduler_v2.py": "f876c48a9e4f1ad587e5cff4f07eae4e8c54b6a7",
     "recovery.py": "eb0b50a8b24931e2225ca74d2ed7ad886209a660",
-    "recovery_commit_clock.py": "12a050bf2e414bded540d51588fd91f098177032",
+    "recovery_commit_clock.py": "105897946b7127017de8ed31621c7eb434ff04ec",
     "fixtures.json": "bc269b52a866b377e52813edb9395f1a7225d881",
     "schema.json": "f004e260ad08408c3e2596be84a7ddd3703edfba",
     "exact_evidence.schema.json": "651c995eb34c1b9e8ef0bd937a418e62b3c71d30",
