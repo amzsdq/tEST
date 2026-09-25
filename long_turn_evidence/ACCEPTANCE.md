@@ -17,3 +17,5 @@
 | MANIFEST identity current | Canonical MANIFEST was rebound in R149; ACCEPTANCE binding awaits verified refresh | PENDING |
 
 Runtime rule: preserve every exact >=900 success. Between target and stretch, continue only safe qualifying useful work; no-work enters reserve. At or above stretch, safe finalization enters reserve. Never pad and never round measured duration.
+
+R151 verified binding note: canonical MANIFEST blob 46e67f0aeef12df723212245e0b888d46eda3034 references legacy scheduler b7f6edc9efdfe1ac03d40dcd24d47cb56224c019, test_scheduler a972ff6250094f3f835ae29b96503e56f44650ee, and exact pin 102c7b5a968883d38d28422f9754a5bbb3940f84. The two matrix rows remain PENDING until their row-level state is safely rebound; do not interpret this note as FULL_RUNNER PASS.
