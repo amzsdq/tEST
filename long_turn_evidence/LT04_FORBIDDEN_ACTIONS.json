@@ -1,0 +1,16 @@
+{
+  "forbidden_without_new_evidence":[
+    "Issue-comment START/END clock writes",
+    "immediate identical retry of a safety-blocked default-branch marker write",
+    "immediate identical retry of blocked remote terminal execution",
+    "claiming main integration complete while canonical main SHAs remain unchanged",
+    "rewriting the historical LT03 censored observation",
+    "summing invocations to claim one-turn duration"
+  ],
+  "preferred_paths":[
+    "long-turn-clock branch for future START/END markers",
+    "lt04-work-t6-clean for staged migration artifacts",
+    "readback by commit SHA and blob SHA",
+    "new mechanism or execution path after repeated failure"
+  ]
+}
