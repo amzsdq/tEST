@@ -1,0 +1,11 @@
+{
+  "manifest_current_blob": "a422b47546065d502bd379b5e84bf8d7292aab43",
+  "manifest_duplicate_sentence": false,
+  "manifest_stale_test_identity": true,
+  "manifest_stale_pin_identity": true,
+  "acceptance_blob": "4be019c4ffca47d81eb66d15c39325e0e12e5ccb",
+  "acceptance_stale_pin_identity": true,
+  "acceptance_stale_manifest_binding": true,
+  "final_test_identity": "b2a08a86ae8d5dd08a156089c5a15645a70c98c8",
+  "final_pin_identity": "fa366013f81ea4ef95f4f50a580bdaf2b733858a"
+}
