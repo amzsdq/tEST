@@ -12,7 +12,7 @@ LT03 exact one-turn WORKED=940s proves the >=900-second target for that sample. 
 
 Therefore >=900 is no longer UNPROVEN. The broader capability remains `CONSTRAINED` because evidence is workload/tool-path specific, but it is neither `PHYSICALLY_IMPOSSIBLE` nor `DIRECT_UNAVAILABLE`.
 
-The >=1200-second stretch remains unproven by the 1191-second sample. Nine missing seconds must not be rounded away.
+The >=1200-second stretch is now proven by LT04-R126-T9 at exactly 1219s (20:19) on one same-branch GitHub commit-clock session. This is an independent stretch PASS; it is not rounded and no invocations are summed.
 
 
 ## Release verification status
