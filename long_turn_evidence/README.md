@@ -61,4 +61,4 @@ LT03 exact WORKED=940s proves >=900. LT04-R118-T6B independently measured WORKED
 
 - LT04-R126-T9 is an exact same-branch GitHub commit-clock sample of 1219s (20:19), so the independent >=1200 stretch gate is PASS.
 - R127 materialized all 29 pinned exact runner inputs to an authorized filesystem and verified GitHub text against filesystem readback for every file.
-- FULL_RUNNER remains PENDING because that execution host reports no Python interpreter; materialization success is not execution success.
+- FULL_RUNNER remains PENDING because exact unchanged runner execution is not currently permitted on the authorized host; Python 3.12.14 was found, so interpreter absence is no longer the blocker. Materialization success is not execution success.
