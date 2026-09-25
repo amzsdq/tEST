@@ -1,0 +1,26 @@
+{
+  "session": "LT04-R126-T9",
+  "candidate_branch": "lt04-r126-hardened-v12a",
+  "candidate_commit": "d20761f5b1a887ce360baa2ed8bbe9ccd66529d2",
+  "full_runner": "PENDING",
+  "exact_runner_inputs": {
+    "file_count": 29,
+    "identity_readback": "29/29 PASS before authority/RRULE updates; changed authority and RRULE blobs separately read back and pinned",
+    "input_manifest_blob": "27387dbc3e5a1c1d5c3d9045fb43f64083ddc8bd"
+  },
+  "hardening": {
+    "lineage_bool_id": "PASS",
+    "recurrence_prefix_spoof": "FIXED",
+    "duplicate_rrule_keys": "FIXED",
+    "dtstart_spoof_and_duplicate": "FIXED",
+    "authority_target_type": "FIXED"
+  },
+  "release_gates": {
+    "manifest_current": false,
+    "reason": "MANIFEST refresh to latest RRULE identities safety-blocked twice; do not promote until repaired/read back",
+    "canonical_main_integrated": false,
+    "main_head": "4d505d164a0b7cbdae9b6872574f3c981aca38b7",
+    "exact_unchanged_runner_executed": false
+  },
+  "historical_observations_sha": "19d020b7b5918211124f0d6ada5895318cf12854"
+}
