@@ -1,0 +1,7 @@
+[
+  {"elapsed":899,"target":900,"stretch":900,"work":true,"safe":true,"expected":"CONTINUE"},
+  {"elapsed":900,"target":900,"stretch":900,"work":true,"safe":true,"expected":"RESERVE_ENTRY"},
+  {"elapsed":900,"target":900,"stretch":900,"work":true,"safe":false,"expected":"FINALIZATION_BLOCKED"},
+  {"elapsed":1,"target":1,"stretch":2,"work":true,"safe":true,"expected":"CONTINUE_STRETCH"},
+  {"elapsed":2,"target":1,"stretch":2,"work":true,"safe":true,"expected":"RESERVE_ENTRY"}
+]
