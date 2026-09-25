@@ -1,0 +1,13 @@
+{
+  "session_id": "LT04-R131-T14",
+  "audit": "legacy recovery.py fail-closed parity",
+  "finding": "recovery.py accepts missing timing_mode and validates only live.rrule == FREQ=HOURLY; unlike recovery_commit_clock.py it does not require exact_schedule or VEVENT schedule validation.",
+  "recovery_blob": "eb0b50a8b24931e2225ca74d2ed7ad886209a660",
+  "test_recovery_blob": "aba212192317706670c42ac24c59b24493d618df",
+  "runner_includes_test_recovery": true,
+  "existing_tests_cover_timing_mode": false,
+  "existing_tests_cover_schedule_form": false,
+  "classification": "STATIC_HARDENING_GAP",
+  "full_runner": "PENDING",
+  "observations_sha": "19d020b7b5918211124f0d6ada5895318cf12854"
+}
