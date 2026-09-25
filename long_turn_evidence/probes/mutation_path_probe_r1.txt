@@ -1,2 +1,0 @@
-probe=contents_api_create_file
-purpose=diagnose durable marker transport
