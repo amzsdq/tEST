@@ -1,0 +1,6 @@
+{
+  "lt03_exact_seconds":940,
+  "lt03_historical_lower_bound_seconds":833,
+  "lt02_exact_seconds":411,
+  "lt04_gates":["admission-boundaries","versioning","authority","scheduler-v2","commit-clock-recovery","full-regression","docs-sync","main-readback"]
+}
